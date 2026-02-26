@@ -1,0 +1,23 @@
+{
+  "name": "numori",
+  "version": "0.4.0",
+  "description": "Numori – Logik-Rätsel",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --linux AppImage"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "de.numori.app",
+    "productName": "Numori",
+    "linux": {
+      "target": "AppImage",
+      "category": "Game",
+      "icon": "assets/icons"
+    }
+  }
+}

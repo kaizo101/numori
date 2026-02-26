@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUMORI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <header>
+      <div class="header-inner">
+        <h1>NUMORI</h1>
+        <span class="subtitle">Logik-Rätsel</span>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="control-group">
+        <label for="size">Größe</label>
+        <select id="size">
+          <option value="3">3×3</option>
+          <option value="4" selected>4×4</option>
+          <option value="5">5×5</option>
+          <option value="6">6×6</option>
+          <option value="7">7×7</option>
+        </select>
+      </div>
+      <div class="control-group">
+  <div class="control-label-row">
+    <label for="difficulty">Schwierigkeit</label>
+    <div class="info-wrap">
+      <button class="info-btn" tabindex="-1">?</button>
+      <div class="info-popup">
+        <strong>Leicht</strong>
+        <ul>
+          <li>Käfige: max. 2 Zellen</li>
+          <li>Nur Addition (+)</li>
+          <li>Bis zu 30% Einzelzellen</li>
+        </ul>
+        <strong>Mittel</strong>
+        <ul>
+          <li>Käfige: max. 3 Zellen</li>
+          <li>Addition, Subtraktion, Multiplikation</li>
+          <li>Max. 12% Einzelzellen</li>
+          <li>Addition deutlich häufiger</li>
+        </ul>
+        <strong>Schwer</strong>
+        <ul>
+          <li>Käfige: max. 4 Zellen</li>
+          <li>Alle Operatoren inkl. Division</li>
+          <li>Keine Einzelzellen</li>
+          <li>Alle Operatoren gleich wahrscheinlich</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <select id="difficulty">
+    <option value="easy">Leicht</option>
+    <option value="medium" selected>Mittel</option>
+    <option value="hard">Schwer</option>
+  </select>
+</div>
+
+      <div class="toolbar-sep"></div>
+      <button id="btn-new"   class="btn btn-primary">Neues Rätsel</button>
+      <button id="btn-solve" class="btn btn-ghost">Lösung anzeigen</button>
+      <button id="btn-reset" class="btn btn-ghost">Zurücksetzen</button>
+      <div class="toolbar-sep"></div>
+      <!-- Stift-Button (quadratisch) -->
+      <button id="btn-notes"
+              class="btn btn-pencil"
+              data-active="false"
+              title="Notiz-Modus (N)">
+        ✏️
+      </button>
+      <button id="btn-validate"
+        class="btn btn-pencil"
+        data-active="false"
+        title="Sofort-Validierung ein/aus">
+  ✓
+</button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="board-container">
+      <div id="board"></div>
+    </div>
+
+    <div class="footer">
+      Pfeiltasten: Navigation &nbsp;·&nbsp;
+      Ziffern: Eingabe &nbsp;·&nbsp;
+      N: Notiz-Modus &nbsp;·&nbsp;
+      Entf / Backspace: Löschen
+    </div>
+
+  </div>
+  <div id="modal-overlay" class="modal-overlay">
+  <div class="modal">
+    <p>Alle Eingaben des aktuellen Rätsels löschen?</p>
+    <div class="modal-buttons">
+      <button id="modal-confirm" class="btn btn-primary">Ja, löschen</button>
+      <button id="modal-cancel"  class="btn btn-ghost">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
