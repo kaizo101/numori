@@ -6,6 +6,7 @@ function createWindow() {
         width: 900,
         height: 700,
         title: 'Numori',
+        icon: path.join(__dirname, 'assets/icons/png/numori-48.png'),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true

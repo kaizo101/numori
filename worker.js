@@ -1,11 +1,26 @@
 'use strict';
 
+// ══ 0. SEEDED PRNG (Mulberry32) ══════════════════════════════════
+
+function mulberry32(seed) {
+    return function() {
+        seed |= 0;
+        seed = seed + 0x6D2B79F5 | 0;
+        let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+}
+
+let rng = Math.random; // wird beim Start überschrieben
+
+
 // ══ 1. HILFSFUNKTIONEN ══════════════════════════════════════════
 
 function shuffle(arr) {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(rng() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
@@ -13,7 +28,7 @@ function shuffle(arr) {
 
 function pickOp(allowed, weights) {
     const total = allowed.reduce((s, o) => s + (weights[o] ?? 1), 0);
-    let r = Math.random() * total;
+    let r = rng() * total;
     for (const op of allowed) {
         r -= weights[op] ?? 1;
         if (r <= 0) return op;
@@ -138,7 +153,7 @@ function generateCages(solution, diff) {
         const cage = { cells: [start] };
         cageIdx[start.r][start.c] = idx;
         cages.push(cage);
-        const want = 1 + Math.floor(Math.random() * cfg.maxSize);
+        const want = 1 + Math.floor(rng() * cfg.maxSize);
 
         while (cage.cells.length < want) {
             const frontier = [];
@@ -148,7 +163,7 @@ function generateCages(solution, diff) {
                         !frontier.some(f => f.r === nb.r && f.c === nb.c))
                         frontier.push(nb);
                     if (frontier.length === 0) break;
-                    const pick = frontier[Math.floor(Math.random() * frontier.length)];
+                    const pick = frontier[Math.floor(rng() * frontier.length)];
             cageIdx[pick.r][pick.c] = idx;
             cage.cells.push(pick);
         }
@@ -238,14 +253,12 @@ function getCageValidValues(cage, n) {
 
 
 // ══ 8. SOLVER: MRV + FORWARD CHECKING ═══════════════════════════
-// Kein Timeout – Eindeutigkeit immer vollständig geprüft
 
 function hasUniqueSolution(n, cages) {
     const board  = Array.from({ length: n }, () => Array(n).fill(0));
     const rowSet = Array.from({ length: n }, () => new Set());
     const colSet = Array.from({ length: n }, () => new Set());
 
-    // =-Käfige sofort vorausfüllen
     for (const cage of cages) {
         if (cage.op !== '=') continue;
         const { r, c } = cage.cells[0];
@@ -256,7 +269,6 @@ function hasUniqueSolution(n, cages) {
         colSet[c].add(v);
     }
 
-    // Kandidaten mit Käfig-Constraints initialisieren
     const cands = Array.from({ length: n }, (_, r) =>
     Array.from({ length: n }, (_, c) => {
         if (board[r][c] !== 0) return new Set([board[r][c]]);
@@ -331,25 +343,20 @@ function hasUniqueSolution(n, cages) {
 
     function bt() {
         if (count > 1) return;
-
         const cell = pickCell();
         if (cell === null) {
             if (board.every(row => row.every(v => v !== 0)) &&
                 cages.every(cage => cageOk(cage, true))) count++;
             return;
         }
-
         const { r, c } = cell;
         for (const v of [...cands[r][c]]) {
             if (count > 1) return;
-
             board[r][c] = v;
             rowSet[r].add(v);
             colSet[c].add(v);
-
             const removed = [];
             let valid = true;
-
             for (let i = 0; i < n; i++) {
                 if (i !== c && board[r][i] === 0 && cands[r][i].has(v)) {
                     cands[r][i].delete(v); removed.push([r, i, v]);
@@ -361,14 +368,11 @@ function hasUniqueSolution(n, cages) {
                     if (cands[i][c].size === 0) { valid = false; break; }
                 }
             }
-
             if (valid) {
                 const cage = cageOf[r][c];
                 if (!cageOk(cage, allFilled(cage))) valid = false;
             }
-
             if (valid) bt();
-
             board[r][c] = 0;
             rowSet[r].delete(v);
             colSet[c].delete(v);
@@ -424,10 +428,12 @@ function generatePuzzle(n, diff) {
 // ══ 11. WORKER MESSAGE HANDLER ══════════════════════════════════
 
 self.onmessage = function(e) {
-    const { n, diff } = e.data;
+    const { n, diff, seed } = e.data;
+    // Seed setzen – immer deterministisch
+    rng = mulberry32(seed);
     try {
         const result = generatePuzzle(n, diff);
-        self.postMessage({ success: true, solution: result.solution, cages: result.cages });
+        self.postMessage({ success: true, solution: result.solution, cages: result.cages, seed });
     } catch (err) {
         self.postMessage({ success: false, error: err.message });
     }

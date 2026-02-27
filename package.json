@@ -17,7 +17,7 @@
     "linux": {
       "target": "AppImage",
       "category": "Game",
-      "icon": "assets/icons"
+      "icon": "assets/icons/png/numori-icon-48.png"
     }
   }
 }

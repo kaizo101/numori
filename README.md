@@ -14,22 +14,25 @@ Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enth
 
 ---
 
-## Features
+## Features (v0.5.0)
+- ✅ Prozedural generierte Rätsel – unbegrenzte einzigartige Puzzles
+- ✅ Rastergrößen: 3×3 bis 7×7
+- ✅ 3 Schwierigkeitsgrade
+- ✅ **Rätsel-IDs** – Puzzles teilen/wiederholen
+- ✅ **Timer** mit Toggle-Button
+- ✅ **Gewinn-Banner** mit Stats
+- ✅ **Sofort-Validierung** (V-Taste)
+- ✅ **Notizen** (N-Taste)
+- ✅ Vollständige Tastatursteuerung
 
-- Prozedural generierte Rätsel – unbegrenzte einzigartige Puzzles
-- Rastergrössen: 3x3 bis 7x7
-- 3 Schwierigkeitsgrade: Leicht, Mittel, Schwer
-- Notizmodus – Kandidaten-Ziffern eintragen (Taste: N)
-- Lösung anzeigen bei Bedarf
-- Zurücksetzen – Rätsel von vorne beginnen
+## Geplant für v0.6.0
+- Undo/Redo
+- Tipps
+- Leaderboard
+- Mobile-Optimierungen
 
-### Geplant für v0.5.0
-- Rätsel-ID zum Teilen und Wiederholen von Puzzles
-- Gewinn-Nachricht bei erfolgreichem Lösen
-- Timer
 
 ### Geplant für v1.0.0
 - Android APK
-- PWA (offline nutzbar, auf Homescreen installierbar)
 - Statistiken und Bestzeiten
 - Optimiertes Layout für mobile Geräte
