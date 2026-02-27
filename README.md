@@ -28,11 +28,10 @@ Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enth
 ## Geplant für v0.6.0
 - Undo/Redo
 - Tipps
-- Leaderboard
-- Mobile-Optimierungen
-
+- Windows-EXE
 
 ### Geplant für v1.0.0
 - Android APK
 - Statistiken und Bestzeiten
 - Optimiertes Layout für mobile Geräte
+- Leaderboard
