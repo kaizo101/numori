@@ -59,4 +59,4 @@
 ## Geplant für v0.6.0
 - Einen Tipp geben
 - Undo-Funktion
-- Leaderboard
+- Windows-EXE

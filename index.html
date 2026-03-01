@@ -17,74 +17,83 @@
     </header>
 
     <div class="toolbar">
-      <div class="toolbar-row">
+      <div class="toolbar-grid">
 
-        <div class="control-group">
-          <div class="control-label-row">
-            <label for="size">Größe</label>
+        <!-- Zeile 1, Spalte 1: Controls -->
+        <div class="toolbar-controls">
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="size">Größe</label>
+            </div>
+            <select id="size">
+              <option value="3">3×3</option>
+              <option value="4" selected>4×4</option>
+              <option value="5">5×5</option>
+              <option value="6">6×6</option>
+              <option value="7">7×7</option>
+            </select>
           </div>
-          <select id="size">
-            <option value="3">3×3</option>
-            <option value="4" selected>4×4</option>
-            <option value="5">5×5</option>
-            <option value="6">6×6</option>
-            <option value="7">7×7</option>
-          </select>
-        </div>
 
-        <div class="control-group">
-          <div class="control-label-row">
-            <label for="difficulty">Schwierigkeit</label>
-            <div class="info-wrap">
-              <button class="info-btn" tabindex="-1">?</button>
-              <div class="info-popup">
-                <strong>Leicht</strong>
-                <ul>
-                  <li>Käfige: max. 2 Zellen</li>
-                  <li>Nur Addition (+)</li>
-                  <li>Bis zu 30% Einzelzellen</li>
-                </ul>
-                <strong>Mittel</strong>
-                <ul>
-                  <li>Käfige: max. 3 Zellen</li>
-                  <li>Addition, Subtraktion, Multiplikation</li>
-                  <li>Max. 12% Einzelzellen</li>
-                  <li>Addition deutlich häufiger</li>
-                </ul>
-                <strong>Schwer</strong>
-                <ul>
-                  <li>Käfige: max. 4 Zellen</li>
-                  <li>Alle Operatoren inkl. Division</li>
-                  <li>Keine Einzelzellen</li>
-                  <li>Alle Operatoren gleich wahrscheinlich</li>
-                </ul>
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="difficulty">Schwierigkeit</label>
+              <div class="info-wrap">
+                <button class="info-btn" tabindex="-1">?</button>
+                <div class="info-popup">
+                  <strong>Leicht</strong>
+                  <ul>
+                    <li>Kleine Käfige (1–2 Zellen)</li>
+                    <li>Nur Addition – ideal zum Einsteigen</li>
+                  </ul>
+                  <strong>Mittel</strong>
+                  <ul>
+                    <li>Käfige bis 3 Zellen</li>
+                    <li>Addition, Subtraktion & Multiplikation</li>
+                    <li>Ausgewogene Herausforderung</li>
+                  </ul>
+                  <strong>Schwer</strong>
+                  <ul>
+                    <li>Größere Käfige (bis 4 Zellen)</li>
+                    <li>Alle vier Rechenarten inkl. Division</li>
+                    <li>Für erfahrene Rätsler</li>
+                  </ul>
+                </div>
               </div>
             </div>
+            <select id="difficulty">
+              <option value="easy">Leicht</option>
+              <option value="medium" selected>Mittel</option>
+              <option value="hard">Schwer</option>
+            </select>
           </div>
-          <select id="difficulty">
-            <option value="easy">Leicht</option>
-            <option value="medium" selected>Mittel</option>
-            <option value="hard">Schwer</option>
-          </select>
+
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="seed-input">Rätsel-ID</label>
+            </div>
+            <div class="seed-input-row">
+              <input id="seed-input"
+                     type="text"
+                     maxlength="12"
+                     spellcheck="false"
+                     autocomplete="off"
+                     >
+              <button id="btn-load-seed" class="btn btn-ghost" title="Rätsel mit dieser ID laden">▶</button>
+            </div>
+          </div>
         </div>
 
-        <div class="control-group">
-          <div class="control-label-row">
-            <label for="seed-input">Rätsel-ID</label>
-          </div>
-          <input id="seed-input"
-                 type="text"
-                 maxlength="12"
-                 spellcheck="false"
-                 autocomplete="off"
-                 placeholder="z. B. AB3X7K">
+        <!-- Zeile 1+2, Spalte 2: Trenner (überspannt beide Zeilen) -->
+        <div class="toolbar-sep-vertical toolbar-sep-main"></div>
+
+        <!-- Zeile 1, Spalte 3: Aktions-Buttons -->
+        <div class="toolbar-actions">
+          <button id="btn-new"   class="btn btn-primary">Neues Rätsel</button>
+          <button id="btn-solve" class="btn btn-ghost">Lösung</button>
+          <button id="btn-reset" class="btn btn-ghost">Reset</button>
         </div>
 
-        <div class="toolbar-sep"></div>
-        <button id="btn-new"   class="btn btn-primary">Neues Rätsel</button>
-        <button id="btn-solve" class="btn btn-ghost">Lösung</button>
-        <button id="btn-reset" class="btn btn-ghost">Reset</button>
-        <div class="toolbar-sep"></div>
+        <!-- Zeile 2, Spalte 1: Icon-Buttons -->
         <div class="toolbar-icons">
           <button id="btn-notes"
                   class="btn btn-pencil"
@@ -94,11 +103,37 @@
                   class="btn btn-pencil"
                   data-active="false"
                   title="Sofort-Validierung ein/aus">✓</button>
+          <button id="btn-hint"
+                  class="btn btn-pencil"
+                  title="Tipp anzeigen">💡</button>
+          <button id="undoBtn"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  title="Undo (Strg+Z)">↶</button>
+          <button id="redoBtn"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  title="Redo (Strg+Y)">↷</button>
           <button id="btn-timer"
                   class="btn btn-pencil"
                   data-active="false"
-                  title="Timer anzeigen">⏱</button>
-          <span id="timer-display" class="timer-display hidden">00:00</span>
+                  title="Wettkampf-Modus (Zeit wird für Leaderboard gespeichert)">🏆</button>
+          <span id="timer-display" class="timer-display hidden" style="display:none"></span>
+        </div>
+
+        <!-- Zeile 2, Spalte 3: Fortschrittsbalken -->
+        <div class="progress-wrap">
+          <div class="progress-label">Fortschritt <span id="progress-text">0%</span></div>
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Züge-Kärtchen: überspannt beide Zeilen, ganz rechts -->
+        <div class="toolbar-sep-vertical"></div>
+        <div class="move-card">
+          <div class="move-card-label">Züge</div>
+          <div id="move-count" class="move-card-value">0</div>
         </div>
 
       </div>
@@ -109,7 +144,7 @@
     <div id="board-container">
       <div id="welcome-screen" class="welcome-screen">
         <div class="welcome-inner">
-          <span class="welcome-icon">🧩</span>
+          <img src="assets/icons/png/numori-1024.png" alt="Numori" class="welcome-icon-img">
           <h2>Willkommen bei NUMORI</h2>
           <p>Wähle Größe und Schwierigkeit,<br>dann klicke <strong>Neues Rätsel</strong>.</p>
           <p class="welcome-hint">Oder gib eine Rätsel-ID ein, um ein bekanntes Rätsel zu laden.</p>
@@ -121,9 +156,12 @@
     <div class="footer">
       Pfeiltasten: Navigation &nbsp;·&nbsp;
       Ziffern: Eingabe &nbsp;·&nbsp;
-      N: Notiz-Modus &nbsp;·&nbsp;
+      N: Notizen &nbsp;·&nbsp;
       V: Validierung &nbsp;·&nbsp;
-      Entf / Backspace: Löschen
+      Entf: Löschen &nbsp;·&nbsp;
+      Strg+Z/Y: Undo/Redo &nbsp;·&nbsp;
+      🏆: Wettkampf-Modus
+
     </div>
 
   </div>
