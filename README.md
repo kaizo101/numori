@@ -1,6 +1,6 @@
 # Numori
 
-Numori ist ein kostenloses, werbefreies Logik-Rätselspiel basierend auf dem KenKen/Calcudoku-Prinzip.
+Numori ist ein kostenloses, werbefreies Logik-Rätselspiel basierend auf dem Calcudoku-Prinzip.
 Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enthält – und die Käfig-Ziele erfüllt sind.
 
 ![Numori – Klassisches Theme](screenshot.png)
