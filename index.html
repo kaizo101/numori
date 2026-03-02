@@ -14,6 +14,10 @@
         <h1>NUMORI</h1>
         <span class="subtitle">Logik-Rätsel</span>
       </div>
+<span class="version">v0.7.0</span>
+      <button id="btn-settings" class="btn-settings" title="Einstellungen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </header>
 
     <div class="toolbar">
@@ -23,7 +27,7 @@
         <div class="toolbar-controls">
           <div class="control-group">
             <div class="control-label-row">
-              <label for="size">Größe</label>
+              <label for="size"><span class="label-upper">GRÖẞE</span><span class="label-title">Größe</span></label>
             </div>
             <select id="size">
               <option value="3">3×3</option>
@@ -32,6 +36,19 @@
               <option value="6">6×6</option>
               <option value="7">7×7</option>
             </select>
+            <div class="custom-select" id="custom-size" data-target="size">
+              <button class="custom-select-btn" type="button">
+                <span class="custom-select-label">4×4</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-dropdown">
+                <div class="custom-select-option" data-value="3">3×3</div>
+                <div class="custom-select-option" data-value="4" data-selected>4×4</div>
+                <div class="custom-select-option" data-value="5">5×5</div>
+                <div class="custom-select-option" data-value="6">6×6</div>
+                <div class="custom-select-option" data-value="7">7×7</div>
+              </div>
+            </div>
           </div>
 
           <div class="control-group">
@@ -65,6 +82,17 @@
               <option value="medium" selected>Mittel</option>
               <option value="hard">Schwer</option>
             </select>
+            <div class="custom-select" id="custom-difficulty" data-target="difficulty">
+              <button class="custom-select-btn" type="button">
+                <span class="custom-select-label">Mittel</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-dropdown">
+                <div class="custom-select-option" data-value="easy">Leicht</div>
+                <div class="custom-select-option" data-value="medium" data-selected>Mittel</div>
+                <div class="custom-select-option" data-value="hard">Schwer</div>
+              </div>
+            </div>
           </div>
 
           <div class="control-group">
@@ -78,7 +106,7 @@
                      spellcheck="false"
                      autocomplete="off"
                      >
-              <button id="btn-load-seed" class="btn btn-ghost" title="Rätsel mit dieser ID laden">▶</button>
+              <button id="btn-load-seed" class="btn btn-ghost" title="Rätsel mit dieser ID laden"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
             </div>
           </div>
         </div>
@@ -98,26 +126,31 @@
           <button id="btn-notes"
                   class="btn btn-pencil"
                   data-active="false"
-                  title="Notiz-Modus (N)">✏️</button>
+                  title="Notiz-Modus (N)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
           <button id="btn-validate"
                   class="btn btn-pencil"
                   data-active="false"
-                  title="Sofort-Validierung ein/aus">✓</button>
+                  title="Sofort-Validierung ein/aus"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+          <div class="toolbar-sep"></div>
           <button id="btn-hint"
                   class="btn btn-pencil"
-                  title="Tipp anzeigen">💡</button>
+                  title="Tipp anzeigen"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></button>
           <button id="undoBtn"
                   class="btn btn-pencil"
                   data-active="false"
-                  title="Undo (Strg+Z)">↶</button>
+                  title="Undo (Strg+Z)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg></button>
           <button id="redoBtn"
                   class="btn btn-pencil"
                   data-active="false"
-                  title="Redo (Strg+Y)">↷</button>
+                  title="Redo (Strg+Y)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg></button>
+          <div class="toolbar-sep"></div>
+          <button id="btn-pdf"
+                  class="btn btn-pencil"
+                  title="Als PDF speichern"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg></button>
           <button id="btn-timer"
                   class="btn btn-pencil"
                   data-active="false"
-                  title="Wettkampf-Modus (Zeit wird für Leaderboard gespeichert)">🏆</button>
+                  title="Wettkampf-Modus (Zeit wird für Leaderboard gespeichert)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></button>
           <span id="timer-display" class="timer-display hidden" style="display:none"></span>
         </div>
 
@@ -141,7 +174,15 @@
 
     <div id="status" class="status"></div>
 
+    <div id="pdf-info" style="display:none">
+      <div class="pdf-info-inner">
+        <span class="pdf-logo">NUMORI</span>
+        <span class="pdf-meta" id="pdf-meta"></span>
+      </div>
+    </div>
+
     <div id="board-container">
+      <span id="timer-display-header" class="timer-display-header"></span>
       <div id="welcome-screen" class="welcome-screen">
         <div class="welcome-inner">
           <img src="assets/icons/png/numori-1024.png" alt="Numori" class="welcome-icon-img">
@@ -160,7 +201,7 @@
       V: Validierung &nbsp;·&nbsp;
       Entf: Löschen &nbsp;·&nbsp;
       Strg+Z/Y: Undo/Redo &nbsp;·&nbsp;
-      🏆: Wettkampf-Modus
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg> Wettkampf-Modus
 
     </div>
 
@@ -180,14 +221,67 @@
   <!-- Gewinn-Banner -->
   <div id="win-banner" class="win-banner">
     <div class="win-banner-inner">
-      <span class="win-icon">🎉</span>
+      <div class="win-trophy">
+        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+          <path d="M4 22h16"/>
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+        </svg>
+      </div>
+      <div class="win-divider"></div>
       <div class="win-text">
         <strong id="win-title">Perfekt gelöst!</strong>
-        <span id="win-details"></span>
+        <div class="win-stats">
+          <div class="win-stat">
+            <span class="win-stat-label">Größe</span>
+            <span class="win-stat-value" id="win-stat-size">—</span>
+          </div>
+          <div class="win-stat-sep"></div>
+          <div class="win-stat">
+            <span class="win-stat-label">Schwierigkeit</span>
+            <span class="win-stat-value" id="win-stat-diff">—</span>
+          </div>
+          <div class="win-stat-sep"></div>
+          <div class="win-stat">
+            <span class="win-stat-label">Zeit</span>
+            <span class="win-stat-value" id="win-stat-time">—</span>
+          </div>
+        </div>
+        <div class="win-seed-row">
+          <span class="win-stat-label">Rätsel-ID</span>
+          <span class="win-stat-seed" id="win-stat-seed">—</span>
+        </div>
+        <span id="win-details" style="display:none"></span>
       </div>
       <div class="win-buttons">
         <button id="win-new"   class="btn btn-primary">Neues Rätsel</button>
         <button id="win-close" class="btn btn-ghost">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Einstellungs-Modal -->
+  <div id="settings-overlay" class="modal-overlay">
+    <div class="modal settings-modal">
+      <h2 class="settings-title">Einstellungen</h2>
+      <div class="settings-section">
+        <div class="settings-label">Design</div>
+        <div class="settings-themes">
+          <button class="theme-btn" data-theme="default">
+            <span class="theme-preview theme-preview-default"></span>
+            <span>Klassisch</span>
+          </button>
+          <button class="theme-btn" data-theme="dark">
+            <span class="theme-preview theme-preview-dark"></span>
+            <span>Numori Dark</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button id="settings-close" class="btn btn-primary">Schließen</button>
       </div>
     </div>
   </div>

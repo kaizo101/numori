@@ -1,68 +1,77 @@
-# NUMORI
+# Numori
 
 Numori ist ein kostenloses, werbefreies Logik-Rätselspiel basierend auf dem KenKen/Calcudoku-Prinzip.
 Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enthält – und die Käfig-Ziele erfüllt sind.
 
-![Numori Screenshot](screenshot.png)
+![Numori – Klassisches Theme](screenshot.png)
 
 ---
 
 ## Spielprinzip
 
-- Jede Zahl von 1 bis N muss in jeder Zeile und Spalte genau einmal vorkommen.
-- Jeder markierte Käfig zeigt eine Zahl und eine Rechenoperation (z. B. `6×`). Die Zahlen im Käfig müssen mit der angegebenen Operation das Ziel ergeben.
-- Käfige mit nur einer Zelle zeigen direkt den gesuchten Wert.
+- Jede Zeile und Spalte enthält jede Zahl von 1 bis N genau einmal
+- Käfige geben eine Zielzahl und eine Rechenoperation vor (+, −, x, ÷)
+- Die Zahlen im Käfig müssen mit der Operation das Ziel ergeben
 
 ---
 
-## Features
+## Features (v0.7.0)
 
-- **Größen:** 3×3 bis 7×7
-- **Schwierigkeitsgrade:** Leicht, Mittel, Schwer
-- **Rätsel-ID:** Jedes Rätsel hat eine eindeutige ID (z. B. `4M-AB3X7K`) – damit lässt sich ein Rätsel jederzeit exakt reproduzieren und teilen
-- **Undo/Redo** – Strg+Z / Strg+Y oder Toolbar-Buttons
-- **Notiz-Modus** – Hilfszahlen in Zellen eintragen (Taste `N`)
-- **Tippgeber** – zeigt auf Wunsch die korrekte Zahl für eine Zelle (💡)
-- **Sofort-Validierung** – hebt richtige und falsche Eingaben hervor (Taste `V`)
-- **Fortschrittsbalken** – zeigt den Lösungsfortschritt in Echtzeit
-- **Züge-Zähler** – zählt eingetragene Zahlen
-- **Wettkampf-Modus** (🏆, in Entwicklung) – Zeitmessung für zukünftiges Leaderboard
+- Prozedural generierte Rätsel – unbegrenzte einzigartige Puzzles
+- Rastergrößen: 3x3 bis 7x7
+- 3 Schwierigkeitsgrade (Leicht, Mittel, Schwer)
+- Rätsel-IDs – Puzzles teilen und wiederholen
+- PDF-Export – Rätsel als leeres A4-PDF speichern und ausdrucken
+- Theme-System – Klassisch und Numori Dark
+- Wettkampf-Modus mit Timer (nur aktivierbar auf leerem Rätsel)
+- Gewinn-Banner mit Statistiken
+- Sofort-Validierung (V-Taste)
+- Notizen (N-Taste)
+- Tipps
+- Undo/Redo
+- Vollständige Tastatursteuerung
+
+---
+
+## Themes
+
+Numori bietet aktuell zwei Themes, wählbar über den Zahnrad-Button im Header. Die Auswahl wird gespeichert.
+
+- **Klassisch** — warmes, helles Design mit Georgia-Schrift und beigem Hintergrund
+- **Numori Dark** — dunkles Design im Stil des App-Icons, blaugraue Farbpalette, Poppins-Schrift und Goldakzente im Gewinnbanner
 
 ---
 
 ## Tastaturkürzel
 
 | Taste | Aktion |
-|---|---|
-| Pfeiltasten | Navigation |
+|-------|--------|
+| Pfeiltasten | Zelle navigieren |
 | 1–9 | Zahl eingeben |
-| Entf / Backspace | Zelle löschen |
-| N | Notiz-Modus umschalten |
+| Entf / Backspace | Zelle leeren |
+| N | Notizmodus umschalten |
 | V | Validierung umschalten |
 | Strg+Z | Undo |
 | Strg+Y | Redo |
 
 ---
 
-## Download & Installation
-
-Fertige Builds für Windows (.exe) und Linux (.AppImage) sind unter [Releases](../../releases) verfügbar – einfach herunterladen und starten.
-
----
-
-## Lizenz
-
-MIT
-
----
-
 ## Roadmap
 
-### v0.7.0
-- Überarbeitete Toolbar
-- PDF-Export
-- Verschiedene Layouts zur Wahl
+### v0.8.0
+- Konsolen-Theme (grün auf schwarz)
+- Tägliches Rätsel
+- Automatisches Speichern des Spielstands
 
 ### v1.0.0
 - Android APK
-- Leaderboard-Funktion
+- Statistiken und Bestzeiten
+- Leaderboard
+
+---
+
+## Autor
+
+Entwickelt von Lukas Schäfer — Feedback und Beiträge willkommen.
+
+Lizenz: MIT

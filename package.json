@@ -1,6 +1,6 @@
 {
   "name": "numori",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Numori – Logik-Rätsel",
   "main": "main.js",
   "scripts": {
@@ -25,12 +25,16 @@
       }
     ],
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Game",
       "icon": "assets/icons/png/numori-1024.png"
     },
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "assets/icons/numori.ico"
     },
     "nsis": {
@@ -51,5 +55,7 @@
       "!**/{appveyor.yml,.travis.yml,circle.yml}",
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ]
-  }
+  },
+  "author": "Lukas Schäfer",
+  "license": "MIT"
 }

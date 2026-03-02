@@ -1,5 +1,80 @@
 "use strict";
 
+// 0. THEME
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+    localStorage.setItem('numori-theme', theme);
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+    // Inputs übernehmen font-family nicht per CSS-Vererbung in Chromium
+    const font = theme === 'dark' ? "'Poppins', system-ui, sans-serif" : "";
+    const seedInput = document.getElementById('seed-input');
+    if (seedInput) seedInput.style.fontFamily = font;
+}
+
+function initTheme() {
+    const saved = localStorage.getItem('numori-theme') || 'default';
+    applyTheme(saved);
+}
+
+// Custom Select Logik
+function syncCustomSelect(targetId, value) {
+    const cs = document.querySelector(`.custom-select[data-target="${targetId}"]`);
+    if (!cs) return;
+    const opt = cs.querySelector(`.custom-select-option[data-value="${value}"]`);
+    if (!opt) return;
+    cs.querySelector('.custom-select-label').textContent = opt.textContent;
+    cs.querySelectorAll('.custom-select-option').forEach(o => delete o.dataset.selected);
+    opt.dataset.selected = '';
+}
+
+function initCustomSelects() {
+    document.querySelectorAll('.custom-select').forEach(cs => {
+        const btn = cs.querySelector('.custom-select-btn');
+        const dropdown = cs.querySelector('.custom-select-dropdown');
+        const label = cs.querySelector('.custom-select-label');
+        const targetId = cs.dataset.target;
+        const nativeSelect = document.getElementById(targetId);
+
+        // Öffnen/Schließen
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = cs.classList.contains('open');
+            // Alle anderen schließen
+            document.querySelectorAll('.custom-select.open').forEach(o => o.classList.remove('open'));
+            if (!isOpen) cs.classList.add('open');
+        });
+
+        // Option wählen
+        cs.querySelectorAll('.custom-select-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                const val = opt.dataset.value;
+                const text = opt.textContent;
+                label.textContent = text;
+                nativeSelect.value = val;
+                nativeSelect.dispatchEvent(new Event('change'));
+                // Selected-Markierung
+                cs.querySelectorAll('.custom-select-option').forEach(o => delete o.dataset.selected);
+                opt.dataset.selected = '';
+                cs.classList.remove('open');
+            });
+        });
+    });
+
+    // Außerhalb klicken schließt alle
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select.open').forEach(cs => cs.classList.remove('open'));
+    });
+
+    // Escape schließt
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.custom-select.open').forEach(cs => cs.classList.remove('open'));
+        }
+    });
+}
+
 // 1. OPERATOR-SYMBOLE
 const OPSYMBOL = { '+': '+', '-': '−', '*': '×', '/': '÷' };
 function formatLabel(op, target) {
@@ -21,6 +96,7 @@ let timerInterval = null; // setInterval-Handle
 let elapsedSeconds = 0; // immer mitlaufen, auch wenn unsichtbar
 let timerVisible = false; // Toggle-Status
 let timerStopped = false; // true: Rätsel gelöst oder Lösung gezeigt
+let competitiveBlocked = false; // true: Tipp/Validierung genutzt, Wettkampf-Modus gesperrt
 let solvedByCheat = false; // true: Lösung anzeigen wurde genutzt
 
 // Tipp-Zustand
@@ -45,6 +121,7 @@ function startTimer() {
     elapsedSeconds = 0;
     timerStopped = false;
     solvedByCheat = false;
+    competitiveBlocked = false;
     updateTimerDisplay();
     timerInterval = setInterval(() => {
         elapsedSeconds++;
@@ -63,20 +140,20 @@ function stopTimer(cheat = false) {
 
 function updateTimerDisplay() {
     if (!timerVisible) return;
-    const status = document.getElementById('status');
-    if (!status) return;
-    // Zeit am Ende der Statuszeile anhängen oder aktualisieren
-    const text = status.textContent.replace(/\s*\|?\s*Zeit: \d{2}:\d{2}$/, '');
-    status.textContent = text + (text ? '  |  Zeit: ' : 'Zeit: ') + formatTime(elapsedSeconds);
+    const headerTimer = document.getElementById('timer-display-header');
+    if (headerTimer) headerTimer.textContent = formatTime(elapsedSeconds);
 }
 
 // 3b. GEWINN-BANNER
 function showWinBanner(timeStr, size, diff, seed) {
     const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
     const banner = document.getElementById('win-banner');
-    const details = document.getElementById('win-details');
-    if (!banner || !details) return;
-    details.textContent = `${size}x${size} ${diffLabels[diff] ?? diff} ID: ${seed} Zeit: ${timeStr}`;
+    if (!banner) return;
+    const el = (id) => document.getElementById(id);
+    if (el('win-stat-size'))  el('win-stat-size').textContent  = `${size}×${size}`;
+    if (el('win-stat-diff'))  el('win-stat-diff').textContent  = diffLabels[diff] ?? diff;
+    if (el('win-stat-time'))  el('win-stat-time').textContent  = timeStr;
+    if (el('win-stat-seed'))  el('win-stat-seed').textContent  = seed;
     banner.classList.add('visible');
 }
 
@@ -148,6 +225,8 @@ function getCell(r, c) {
 }
 
 function renderBoard(puzzle) {
+    const welcome = document.getElementById('welcome-screen');
+    if (welcome) welcome.style.display = 'none';
     const n = puzzle.solution.length;
     const el = document.getElementById('board');
     el.innerHTML = '';
@@ -170,11 +249,11 @@ function renderBoard(puzzle) {
             cell.dataset.c = c;
             const id = cageId[r][c];
 
-            // Borders
-            if (r > 0 && cageId[r-1][c] !== id) cell.classList.add('bt');
-            if (r < n - 1 && cageId[r+1][c] !== id) cell.classList.add('bb');
-            if (c > 0 && cageId[r][c-1] !== id) cell.classList.add('bl');
-            if (c < n - 1 && cageId[r][c+1] !== id) cell.classList.add('br');
+            // Borders – innere Käfig-Grenzen + äußere Ränder
+            if (r === 0 || cageId[r-1][c] !== id) cell.classList.add('bt');
+            if (r === n - 1 || cageId[r+1][c] !== id) cell.classList.add('bb');
+            if (c === 0 || cageId[r][c-1] !== id) cell.classList.add('bl');
+            if (c === n - 1 || cageId[r][c+1] !== id) cell.classList.add('br');
 
             // Cage-Label
             if (id >= 0) {
@@ -222,7 +301,18 @@ function renderBoard(puzzle) {
     moveCount = 0;
     const moveEl = document.getElementById('move-count');
     if (moveEl) moveEl.textContent = '0';
+    updateTimerBtn();
     selectCell(0, 0);
+
+    // Ecken-Zellen für Dark-Theme border-radius markieren
+    const boardEl = document.getElementById('board');
+    if (boardEl) {
+        const cells = boardEl.querySelectorAll('.cell');
+        if (cells.length >= 1) cells[0].classList.add('corner-tl');
+        if (cells.length >= n) cells[n - 1].classList.add('corner-tr');
+        if (cells.length >= n * (n - 1) + 1) cells[n * (n - 1)].classList.add('corner-bl');
+        if (cells.length >= n * n) cells[n * n - 1].classList.add('corner-br');
+    }
 }
 
 function resizeBoard() {
@@ -339,6 +429,7 @@ function updateMoveCount(delta = 1) {
     moveCount = Math.max(0, moveCount + delta);
     const el = document.getElementById('move-count');
     if (el) el.textContent = moveCount;
+    if (!timerVisible) updateTimerBtn();
 }
 
 // 10. VALIDIERUNG
@@ -413,23 +504,38 @@ function setValidationMode(active) {
     // Im Timer-Modus keine Validierung erlaubt
     if (timerVisible && active) return;
     validationActive = active;
+    if (active) {
+        competitiveBlocked = true;
+        updateTimerBtn();
+    }
     const btn = document.getElementById('btn-validate');
     if (btn) btn.dataset.active = active ? 'true' : 'false';
     validateAll();
 }
 
+function updateTimerBtn() {
+    const btn = document.getElementById('btn-timer');
+    if (!btn) return;
+    const blocked = moveCount > 0 || competitiveBlocked;
+    btn.disabled = !timerVisible && blocked;
+    btn.title = blocked && !timerVisible
+        ? 'Wettkampf-Modus nicht mehr aktivierbar (Züge oder Hilfe bereits genutzt)'
+        : 'Wettkampf-Modus (Zeit wird für Leaderboard gespeichert)';
+    btn.style.opacity = (!timerVisible && blocked) ? '0.35' : '';
+    btn.style.cursor = (!timerVisible && blocked) ? 'not-allowed' : '';
+}
+
 function setTimerVisible(active) {
+    // Wettkampf-Modus nur aktivierbar wenn noch kein Zug gemacht und keine Hilfe genutzt
+    if (active && (moveCount > 0 || competitiveBlocked)) return;
     timerVisible = active;
     const btn = document.getElementById('btn-timer');
     if (btn) btn.dataset.active = active ? 'true' : 'false';
 
-    // Zeit aus Statuszeile entfernen wenn deaktiviert
-    if (!active) {
-        const status = document.getElementById('status');
-        if (status) status.textContent = status.textContent.replace(/\s*\|?\s*Zeit: \d{2}:\d{2}$/, '');
-    } else {
-        updateTimerDisplay();
-    }
+    const headerTimer = document.getElementById('timer-display-header');
+    if (headerTimer) headerTimer.textContent = active ? formatTime(elapsedSeconds) : '';
+    if (active) updateTimerDisplay();
+    updateTimerBtn();
 
     // Timer-Modus aktiv: Validierung deaktivieren und sperren
     const btnValidate = document.getElementById('btn-validate');
@@ -602,6 +708,8 @@ function giveHint() {
     userBoard[r][c]  = currentPuzzle.solution[r][c];
     notesBoard[r][c].clear();
     hintBoard[r][c]  = true;
+    competitiveBlocked = true;
+    if (!timerVisible) updateTimerBtn();
 
     const cell    = getCell(r, c);
     const valSpan = cell?.querySelector('.cell-value');
@@ -650,6 +758,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 rawSeed = parsed.raw;
                 sizeEl.value = String(n);
                 diffEl.value = diff;
+                syncCustomSelect('size', String(n));
+                syncCustomSelect('difficulty', diff);
             } else {
                 // Legacy oder reiner Seed ohne Präfix
                 n    = parseInt(sizeEl.value, 10);
@@ -724,6 +834,47 @@ window.addEventListener('DOMContentLoaded', () => {
     btnTimer.addEventListener('click', () => setTimerVisible(!timerVisible));
     const btnHint = document.getElementById('btn-hint');
     if (btnHint) btnHint.addEventListener('click', giveHint);
+
+    // Settings
+    const btnSettings = document.getElementById('btn-settings');
+    const settingsOverlay = document.getElementById('settings-overlay');
+    const settingsClose = document.getElementById('settings-close');
+
+    if (btnSettings) btnSettings.addEventListener('click', () => {
+        settingsOverlay.classList.add('visible');
+    });
+    if (settingsClose) settingsClose.addEventListener('click', () => {
+        settingsOverlay.classList.remove('visible');
+    });
+    if (settingsOverlay) settingsOverlay.addEventListener('click', (e) => {
+        if (e.target === settingsOverlay) settingsOverlay.classList.remove('visible');
+    });
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+    });
+
+    initTheme();
+    initCustomSelects();
+
+    const btnPdf = document.getElementById('btn-pdf');
+    if (btnPdf) {
+        btnPdf.addEventListener('click', async () => {
+            if (!currentPuzzle) return;
+            if (window.electronAPI) {
+                const n = currentPuzzle.solution.length;
+                const diff = document.getElementById('difficulty').value;
+                const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
+                const pdfMeta = document.getElementById('pdf-meta');
+                if (pdfMeta) {
+                    pdfMeta.textContent = `${n}×${n}  ·  ${diffLabels[diff]}  ·  ID: ${currentPuzzle.seed}`;
+                }
+                const result = await window.electronAPI.exportPDF();
+                if (result?.success) {
+                    statusEl.textContent = 'PDF gespeichert.';
+                }
+            }
+        });
+    }
     document.getElementById('win-close').addEventListener('click', hideWinBanner);
     document.getElementById('win-new').addEventListener('click', () => {
         hideWinBanner();
