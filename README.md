@@ -76,6 +76,13 @@ Numori bietet drei Themes, wählbar über den Zahnrad-Button im Header. Die Ausw
 
 ---
 
+## Lizenz
+
+Numori ist lizenziert unter der **GNU General Public License v3.0**.
+Siehe [LICENSE](LICENSE) für den vollständigen Lizenztext.
+
+---
+
 ## Autor
 
 Entwickelt von Lukas Schäfer — Feedback und Beiträge willkommen.
