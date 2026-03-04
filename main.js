@@ -16,6 +16,49 @@ function createWindow() {
     });
     win.loadFile('index.html');
     win.setMenuBarVisibility(false);
+
+    let closeConfirmed = false;
+
+    win.on('close', (e) => {
+        if (closeConfirmed) return; // bereits bestätigt, normal schließen
+        e.preventDefault();
+
+        (async () => {
+            let dirty = false;
+            try {
+                dirty = await win.webContents.executeJavaScript('window._isDirty === true');
+            } catch (_) {}
+
+            if (!dirty) {
+                closeConfirmed = true;
+                win.close();
+                return;
+            }
+
+            const { response } = await dialog.showMessageBox(win, {
+                type: 'question',
+                title: 'Numori',
+                message: 'Du hast ein laufendes Rätsel.',
+                detail: 'Möchtest du den aktuellen Stand speichern, bevor du die App schließt?',
+                buttons: ['Speichern & Schließen', 'Verwerfen', 'Abbrechen'],
+                defaultId: 0,
+                cancelId: 2,
+            });
+
+            if (response === 2) return; // Abbrechen – nichts tun
+
+            if (response === 0) {
+                // Speichern
+                try {
+                    await win.webContents.executeJavaScript('window._saveStateForElectron && window._saveStateForElectron()');
+                    await new Promise(r => setTimeout(r, 150));
+                } catch (_) {}
+            }
+
+            closeConfirmed = true;
+            win.close();
+        })();
+    });
 }
 
 app.whenReady().then(createWindow);

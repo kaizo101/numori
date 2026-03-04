@@ -2,15 +2,26 @@
 
 // 0. THEME
 function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+    const validThemes = ['dark', 'console'];
+    document.documentElement.setAttribute('data-theme', validThemes.includes(theme) ? theme : '');
     localStorage.setItem('numori-theme', theme);
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.theme === theme);
     });
     // Inputs übernehmen font-family nicht per CSS-Vererbung in Chromium
-    const font = theme === 'dark' ? "'Poppins', system-ui, sans-serif" : "";
+    const font = theme === 'dark' ? "'Poppins', system-ui, sans-serif"
+               : theme === 'console' ? "'Share Tech Mono', monospace"
+               : "";
     const seedInput = document.getElementById('seed-input');
     if (seedInput) seedInput.style.fontFamily = font;
+    // Welcome-Icon je nach Theme tauschen
+    const welcomeIcon = document.getElementById('welcome-icon');
+    if (welcomeIcon) {
+        welcomeIcon.src = theme === 'console'
+            ? 'assets/icons/numori_console.png'
+            : 'assets/icons/png/numori-1024.png';
+    }
+    initConsoleStatus();
 }
 
 function initTheme() {
@@ -109,7 +120,235 @@ let redoStack = []; // Redo-Stack
 
 const MAX_HISTORY = 50; // Begrenzung für Performance
 
-// 3. TIMER-FUNKTIONEN
+// TYPEWRITER-STATUS (nur Console-Theme)
+let _typewriterTimeout = null;
+let _seedTypewriterTimeout = null;
+window._isDirty = false;
+window._dailyMode = false;
+window._dailyDateKey = null;
+
+function setStatus(text) {
+    const el = document.getElementById('status');
+    if (!el) return;
+    if (document.documentElement.getAttribute('data-theme') !== 'console') {
+        el.textContent = text;
+        return;
+    }
+    // Laufende Animation abbrechen
+    if (_typewriterTimeout) {
+        clearTimeout(_typewriterTimeout);
+        _typewriterTimeout = null;
+    }
+    el.textContent = '';
+    let i = 0;
+    const lowerText = text.toLowerCase();
+    function type() {
+        if (i < lowerText.length) {
+            el.textContent = lowerText.slice(0, i + 1);
+            i++;
+            _typewriterTimeout = setTimeout(type, 28);
+        } else {
+            _typewriterTimeout = null;
+        }
+    }
+    type();
+}
+
+function setSeedTypewriter(text) {
+    const el = document.getElementById('seed-input');
+    if (!el) return;
+    if (document.documentElement.getAttribute('data-theme') !== 'console') {
+        el.value = text;
+        return;
+    }
+    if (_seedTypewriterTimeout) {
+        clearTimeout(_seedTypewriterTimeout);
+        _seedTypewriterTimeout = null;
+    }
+    el.value = '';
+    let i = 0;
+    function type() {
+        if (i < text.length) {
+            el.value = text.slice(0, i + 1);
+            i++;
+            _seedTypewriterTimeout = setTimeout(type, 28);
+        } else {
+            _seedTypewriterTimeout = null;
+        }
+    }
+    type();
+}
+
+function saveGameState() {
+    if (!currentPuzzle) return;
+    try {
+        const state = {
+            puzzle: currentPuzzle,
+            userBoard,
+            notesBoard: notesBoard.map(row => row.map(s => [...s])),
+            hintBoard,
+            elapsedSeconds,
+            moveCount,
+            validationActive,
+            timerVisible,
+            savedAt: Date.now(),
+        };
+        localStorage.setItem('numori-savedGame', JSON.stringify(state));
+        window._isDirty = false;
+window._dailyMode = false;
+window._dailyDateKey = null;
+    } catch(e) { console.error('Speichern fehlgeschlagen:', e); }
+}
+
+function loadGameState() {
+    try {
+        const raw = localStorage.getItem('numori-savedGame');
+        if (!raw) return null;
+        const s = JSON.parse(raw);
+        // notesBoard Sets wiederherstellen
+        s.notesBoard = s.notesBoard.map(row => row.map(arr => new Set(arr)));
+        return s;
+    } catch(e) { return null; }
+}
+
+function clearSavedGame() {
+    localStorage.removeItem('numori-savedGame');
+}
+
+// ── TÄGLICHES RÄTSEL ──────────────────────────────────────────
+const DAILY_SCHEDULE = [
+    // So  Mo      Di        Mi      Do        Fr      Sa
+    { n: 6, diff: 'hard'   },  // 0 = Sonntag
+    { n: 4, diff: 'easy'   },  // 1 = Montag
+    { n: 4, diff: 'medium' },  // 2 = Dienstag
+    { n: 5, diff: 'easy'   },  // 3 = Mittwoch
+    { n: 5, diff: 'medium' },  // 4 = Donnerstag
+    { n: 5, diff: 'hard'   },  // 5 = Freitag
+    { n: 6, diff: 'medium' },  // 6 = Samstag
+];
+
+function getDailyDateKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getDailySeed(dateKey) {
+    // Deterministischer Hash aus Datum → 6-stelliger Seed
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let h = 5381;
+    for (let i = 0; i < dateKey.length; i++) {
+        h = Math.imul(h, 33) ^ dateKey.charCodeAt(i);
+    }
+    h = h >>> 0;
+    let seed = '';
+    for (let i = 0; i < 6; i++) {
+        seed += chars[h % chars.length];
+        h = Math.imul(h, 1664525) + 1013904223 >>> 0;
+    }
+    return seed;
+}
+
+function getDailyConfig() {
+    const dateKey = getDailyDateKey();
+    const dow = new Date().getDay(); // 0=So, 1=Mo, ...
+    const { n, diff } = DAILY_SCHEDULE[dow];
+    const rawSeed = getDailySeed(dateKey);
+    return { n, diff, rawSeed, dateKey, fullSeed: buildFullSeed(n, diff, rawSeed) };
+}
+
+function getDailySolvedKey(dateKey) {
+    return `numori-daily-solved-${dateKey}`;
+}
+
+function markDailySolved(dateKey, timeStr) {
+    localStorage.setItem(getDailySolvedKey(dateKey), timeStr);
+}
+
+function getDailySolvedTime(dateKey) {
+    return localStorage.getItem(getDailySolvedKey(dateKey));
+}
+
+function initDailyButton() {
+    const btn = document.getElementById('btn-daily');
+    if (!btn) return;
+
+    const { dateKey, fullSeed, n, diff } = getDailyConfig();
+    const solvedTime = getDailySolvedTime(dateKey);
+    const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
+
+    if (solvedTime) {
+        btn.title = `Tägliches Rätsel – heute bereits gelöst (${solvedTime})`;
+        btn.dataset.solved = 'true';
+    }
+
+    btn.addEventListener('click', () => {
+        window._dailyMode = true;
+        window._dailyDateKey = dateKey;
+        if (window._newPuzzle) {
+            window._newPuzzle(fullSeed);
+        } else {
+            // Fallback: Seed ins Input setzen und btn-new klicken
+            const seedInput = document.getElementById('seed-input');
+            if (seedInput) seedInput.value = fullSeed;
+            document.getElementById('btn-new')?.click();
+        }
+        if (solvedTime) setStatus(`tägliches rätsel – heute bereits gelöst (${solvedTime})`);
+    });
+}
+
+// ──────────────────────────────────────────────────────────────
+
+function restoreGameState(s) {
+    currentPuzzle  = s.puzzle;
+    userBoard      = s.userBoard;
+    notesBoard     = s.notesBoard;
+    hintBoard      = s.hintBoard;
+    elapsedSeconds = s.elapsedSeconds || 0;
+    moveCount      = s.moveCount || 0;
+    validationActive = s.validationActive || false;
+
+    requestAnimationFrame(() => {
+        renderBoard(currentPuzzle);
+        // userBoard/notesBoard/hintBoard nach renderBoard wiederherstellen
+        const n = currentPuzzle.solution.length;
+        for (let r = 0; r < n; r++) {
+            for (let c = 0; c < n; c++) {
+                userBoard[r][c]  = s.userBoard[r][c];
+                notesBoard[r][c] = s.notesBoard[r][c];
+                hintBoard[r][c]  = s.hintBoard[r][c];
+                const cell = getCell(r, c);
+                const valSpan = cell?.querySelector('.cell-value');
+                if (valSpan) valSpan.textContent = s.userBoard[r][c] ? String(s.userBoard[r][c]) : '';
+                if (s.hintBoard[r][c]) cell?.classList.add('hint');
+                updateNotesDisplay(r, c);
+            }
+        }
+        if (s.validationActive) validateAll();
+        // Timer wiederherstellen (pausiert)
+        timerStopped = false;
+        updateTimerDisplay();
+        if (s.timerVisible) setTimerVisible(true);
+        const moveEl = document.getElementById('move-count');
+        if (moveEl) moveEl.textContent = moveCount;
+        updateUndoRedoButtons();
+        updateProgress();
+        setStatus('spielstand wiederhergestellt.');
+        window._isDirty = true;
+    });
+}
+
+// Expose saveState for Electron main process
+window._saveStateForElectron = saveGameState;
+
+function initConsoleStatus() {
+    const el = document.getElementById('status');
+    if (!el) return;
+    if (document.documentElement.getAttribute('data-theme') === 'console') {
+        el.textContent = '';
+    }
+}
+
+
 function formatTime(secs) {
     const m = String(Math.floor(secs / 60)).padStart(2, '0');
     const s = String(secs % 60).padStart(2, '0');
@@ -145,7 +384,7 @@ function updateTimerDisplay() {
 }
 
 // 3b. GEWINN-BANNER
-function showWinBanner(timeStr, size, diff, seed) {
+function showWinBanner(timeStr, size, diff, seed, denied=false) {
     const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
     const banner = document.getElementById('win-banner');
     if (!banner) return;
@@ -153,15 +392,186 @@ function showWinBanner(timeStr, size, diff, seed) {
     if (el('win-stat-size'))  el('win-stat-size').textContent  = `${size}×${size}`;
     if (el('win-stat-diff'))  el('win-stat-diff').textContent  = diffLabels[diff] ?? diff;
     if (el('win-stat-time'))  el('win-stat-time').textContent  = timeStr;
+    if (el('win-stat-moves')) el('win-stat-moves').textContent = moveCount;
     if (el('win-stat-seed'))  el('win-stat-seed').textContent  = seed;
     banner.classList.add('visible');
+    _matrixWinData = { size: size+'x'+size, diff, time: timeStr, seed, moves: moveCount, denied };
+    startMatrixRain();
+    const btnSolve = document.getElementById('btn-solve');
+    if (btnSolve) btnSolve.disabled = true;
 }
 
 function hideWinBanner() {
     const banner = document.getElementById('win-banner');
     if (!banner) return;
     banner.classList.remove('visible');
+    stopMatrixRain();
+    const btnSolve = document.getElementById('btn-solve');
+    if (btnSolve) btnSolve.disabled = false;
 }
+
+
+// MATRIX WIN SCREEN (Console-Theme only)
+let _matrixAnimFrame = null;
+let _matrixKeyHandler = null;
+let _matrixWinData = null;
+
+function startMatrixRain() {
+    if (document.documentElement.getAttribute('data-theme') !== 'console') return;
+    const canvas = document.getElementById('matrix-canvas');
+    if (!canvas) return;
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.cssText = 'display:block !important; position:fixed; top:0; left:0; z-index:99999; pointer-events:none;';
+    const ctx = canvas.getContext('2d');
+    const FS = 14;
+    const cols = Math.floor(canvas.width / FS);
+    const rows = Math.floor(canvas.height / FS);
+    // Phases
+    const RAIN=0, FLASH=1, FLY=2, TYPEWRITE=3, IDLE=4;
+    let phase=RAIN, ticks=0;
+    const RAIN_TICKS=400, FLASH_TICKS=90, FLY_TICKS=110;
+    const drops = Array.from({length:cols}, ()=>Math.floor(Math.random()*-rows));
+    // Win data
+    const d = _matrixWinData||{};
+    const diffLabel = {easy:'easy',medium:'medium',hard:'hard'}[d.diff]||'';
+    const denied = d.denied || false;
+    const ACCENT = denied ? '#ff2020' : '#00ff41';
+    const TITLE_TEXT = denied ? 'ACCESS DENIED' : 'ACCESS GRANTED';
+    const statLines = denied ? [
+        '',
+        'ERROR CODE 21: cheater or developer detected',
+        '',
+        '> type "loser" to continue',
+    ] : [
+        '',
+        'size:  '+(d.size||'')+' / '+(diffLabel||''),
+        'time:  '+(d.time||'--:--'),
+        'moves: '+(d.moves!==undefined?d.moves:'-'),
+        'id:    '+(d.seed||'').toLowerCase(),
+        '',
+        '> type "start" for new puzzle',
+        '> type "exit"  to close',
+    ];
+    // Layout
+    const TITLE_FS     = FS*2.4;
+    const TITLE_FINAL_Y= canvas.height*0.28;
+    const TITLE_START_Y= canvas.height*0.50;
+    const STATS_START_Y= TITLE_FINAL_Y + TITLE_FS*1.6;
+    const STAT_LINE_H  = FS*1.85;
+    const INPUT_Y = STATS_START_Y + statLines.length*STAT_LINE_H + FS*1.8;
+    const INPUT_X = canvas.width/2 - 180;
+    let flashAlpha=0, flashScale=1, titleY=TITLE_START_Y;
+    let typeLineIdx=0, typeCharIdx=0, typeTick=0;
+    const TYPE_SPEED=5;
+    let inputActive=false, inputValue='', inputBlink=true, inputBlinkTick=0;
+    function activateInput() {
+        if (inputActive) return; inputActive=true;
+        if (_matrixKeyHandler) document.removeEventListener('keydown',_matrixKeyHandler);
+        _matrixKeyHandler=(e)=>{
+            if (!inputActive) return;
+            if (e.key==='Enter'){
+                const cmd=inputValue.trim().toLowerCase();
+                if (cmd==='start'||cmd==='loser'){stopMatrixRain();hideWinBanner();document.getElementById('btn-new')?.click();}
+                else if(cmd==='exit'){stopMatrixRain();hideWinBanner();}
+                else inputValue='';
+            } else if(e.key==='Backspace'){inputValue=inputValue.slice(0,-1);e.preventDefault();}
+            else if(e.key.length===1&&inputValue.length<24) inputValue+=e.key;
+        };
+        document.addEventListener('keydown',_matrixKeyHandler);
+    }
+    function drawTitle(y,alpha,scale){
+        ctx.save(); ctx.globalAlpha=Math.max(0,Math.min(1,alpha));
+        ctx.font='bold '+(TITLE_FS*scale)+'px Share Tech Mono,monospace';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        const tw=ctx.measureText(TITLE_TEXT).width;
+        const padX=36*scale, padY=20*scale;
+        const bx=canvas.width/2-tw/2-padX, bw=tw+padX*2;
+        const bh=TITLE_FS*scale+padY*2, by=y-bh/2;
+        ctx.strokeStyle=ACCENT; ctx.lineWidth=3*scale;
+        ctx.shadowColor=ACCENT; ctx.shadowBlur=12*alpha;
+        ctx.strokeRect(bx,by,bw,bh);
+        ctx.shadowBlur=0;
+        ctx.fillStyle=ACCENT; ctx.shadowColor=ACCENT; ctx.shadowBlur=28*alpha;
+        ctx.fillText(TITLE_TEXT,canvas.width/2,y);
+        ctx.shadowBlur=0; ctx.restore();
+    }
+
+    function drawStats(revLines,lastChars){
+        ctx.font=FS+'px Share Tech Mono,monospace';
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.fillStyle=ACCENT;
+        const statsX = canvas.width/2 - 90;
+        for(let i=0;i<statLines.length;i++){
+            if(i>revLines) break;
+            const line=i<revLines?statLines[i]:statLines[i].slice(0,lastChars);
+            const isCentered = i===0 || statLines[i].startsWith('>') || statLines[i].startsWith('ERROR');
+            if(isCentered){ ctx.textAlign='center'; ctx.fillText(line,canvas.width/2,STATS_START_Y+i*STAT_LINE_H); ctx.textAlign='left'; }
+            else { ctx.fillText(line,statsX,STATS_START_Y+i*STAT_LINE_H); }
+        }
+    }
+    function drawInput(){
+        inputBlinkTick++; if(inputBlinkTick%40===0) inputBlink=!inputBlink;
+        ctx.font=FS+'px Share Tech Mono,monospace';
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.fillStyle=denied?'#aa1010':'#00aa2a';
+        ctx.fillText('> '+inputValue+(inputBlink?'_':' '),INPUT_X,INPUT_Y);
+    }
+    function draw(){
+        ticks++;
+        if(phase===RAIN){
+            ctx.fillStyle="rgba(0,0,0,0.14)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.font=FS+"px Share Tech Mono,monospace"; ctx.textAlign="left"; ctx.textBaseline="alphabetic";
+            for(let c=0;c<cols;c++){
+                const pool="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#%&!?/|^~+-*=<>.:;{}[]()";const y=drops[c],ch=pool[Math.floor(Math.random()*pool.length)];
+                if(y>=0&&y<rows){const t=denied?Math.min(1,ticks/RAIN_TICKS):0;const r=Math.round(t*255),g=Math.round((1-t)*255);const dropColor=y<2?"#ffffff":"rgb("+r+","+g+",0)";ctx.fillStyle=dropColor;ctx.fillText(ch,c*FS,y*FS+FS);}
+                if(Math.random()<0.55)drops[c]++;if(drops[c]>rows+12)drops[c]=Math.floor(Math.random()*-70);
+            }
+            if(ticks>RAIN_TICKS){phase=FLASH;ticks=0;}
+        }else if(phase===FLASH){
+            ctx.fillStyle="rgba(0,0,0,0.18)";ctx.fillRect(0,0,canvas.width,canvas.height);
+            const pr=ticks/FLASH_TICKS;
+            if(pr<0.35){flashAlpha=pr/0.35;flashScale=1+(1-flashAlpha)*0.25;}else{flashAlpha=1;flashScale=1;}
+            drawTitle(TITLE_START_Y,flashAlpha,flashScale);
+            if(ticks>=FLASH_TICKS){phase=FLY;ticks=0;titleY=TITLE_START_Y;}
+        }else if(phase===FLY){
+            ctx.fillStyle="rgba(0,0,0,0.12)";ctx.fillRect(0,0,canvas.width,canvas.height);
+            const ease=1-Math.pow(1-(ticks/FLY_TICKS),3);
+            titleY=TITLE_START_Y+(TITLE_FINAL_Y-TITLE_START_Y)*ease;
+            drawTitle(titleY,1,1);
+            if(ticks>=FLY_TICKS){phase=TYPEWRITE;ticks=0;typeLineIdx=0;typeCharIdx=0;typeTick=0;}
+        }else if(phase===TYPEWRITE){
+            ctx.fillStyle="rgba(0,0,0,0.88)";ctx.fillRect(0,0,canvas.width,canvas.height);
+            drawTitle(TITLE_FINAL_Y,1,1);
+            typeTick++;
+            if(typeTick%TYPE_SPEED===0){
+                const cur=statLines[typeLineIdx]||"";
+                if(typeCharIdx<cur.length){typeCharIdx++;}
+                else if(typeLineIdx<statLines.length-1){typeLineIdx++;typeCharIdx=0;}
+                else{phase=IDLE;activateInput();}
+            }
+            drawStats(typeLineIdx,typeCharIdx);
+            if(Math.floor(ticks/22)%2===0){
+                ctx.fillStyle=ACCENT;ctx.textBaseline="alphabetic";
+                const tw=ctx.measureText((statLines[typeLineIdx]||"").slice(0,typeCharIdx)).width;
+                const sX2=canvas.width/2-90;const isCent=typeLineIdx===0||statLines[typeLineIdx].startsWith(">") || statLines[typeLineIdx].startsWith("ERROR");const cX=isCent?canvas.width/2+tw/2+3:sX2+tw+3;ctx.fillRect(cX,STATS_START_Y+typeLineIdx*STAT_LINE_H-FS*0.9,2,FS);
+            }
+        }else{
+            ctx.fillStyle="rgba(0,0,0,0.88)";ctx.fillRect(0,0,canvas.width,canvas.height);
+            drawTitle(TITLE_FINAL_Y,1,1);
+            drawStats(statLines.length,0);
+            drawInput();
+        }
+        _matrixAnimFrame=requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+function stopMatrixRain(){
+    if(_matrixAnimFrame){cancelAnimationFrame(_matrixAnimFrame);_matrixAnimFrame=null;}
+    if(_matrixKeyHandler){document.removeEventListener("keydown",_matrixKeyHandler);_matrixKeyHandler=null;}
+    const c=document.getElementById("matrix-canvas");
+    if(c){c.style.display="none";c.getContext("2d").clearRect(0,0,c.width,c.height);}
+}
+
 
 // 4. SEED-HILFSFUNKTIONEN
 // Präfix-Kodierung: Größe (3-7) + Schwierigkeit (E/M/H) + '-' + 6-Zeichen-Seed
@@ -289,6 +699,8 @@ function renderBoard(puzzle) {
         }
     }
 
+    window._isDirty = true;
+    _errorCooldown = false;
     userBoard = Array.from({ length: n }, () => Array(n).fill(0));
     notesBoard = Array.from({ length: n }, () => Array.from({ length: n }, () => new Set()));
     hintBoard = Array.from({ length: n }, () => Array(n).fill(false));
@@ -325,9 +737,20 @@ function resizeBoard() {
 
 // 7. ZELLE AUSWÄHLEN
 function selectCell(r, c) {
-    getCell(selected.r, selected.c)?.classList.remove('selected');
+    const prevCell = getCell(selected.r, selected.c);
+    prevCell?.classList.remove('selected');
+    prevCell?.querySelector('.cell-cursor')?.remove();
     selected = { r, c };
-    getCell(r, c)?.classList.add('selected');
+    const newCell = getCell(r, c);
+    newCell?.classList.add('selected');
+    // Blinkenden Cursor für Console-Theme einfügen (nur wenn Zelle leer)
+    if (newCell && document.documentElement.getAttribute('data-theme') === 'console') {
+        if (!newCell.querySelector('.cell-value')?.textContent) {
+            const cursor = document.createElement('div');
+            cursor.className = 'cell-cursor';
+            newCell.appendChild(cursor);
+        }
+    }
 }
 
 // 8. ZAHL EINGEBEN + SAVE STATE v0.6.0
@@ -390,6 +813,25 @@ function setNumber(r, c, v) {
     cell?.classList.remove('invalid', 'correct');
     validateAll();
     commitState(r, c); // ← Zustand nach Änderung speichern
+
+    // Alle Zellen voll aber falsch → Error-Flash
+    if (v !== 0 && !timerStopped) {
+        const allFilled = userBoard.every(row => row.every(val => val !== 0));
+        if (allFilled) {
+            const allCorrect = userBoard.every((row, r2) => row.every((val, c2) => val === currentPuzzle.solution[r2][c2]));
+            if (!allCorrect) showErrorFlash();
+        }
+    }
+
+    // Console-Cursor aktualisieren
+    if (document.documentElement.getAttribute('data-theme') === 'console') {
+        cell?.querySelector('.cell-cursor')?.remove();
+        if (v === 0 && cell?.classList.contains('selected')) {
+            const cursor = document.createElement('div');
+            cursor.className = 'cell-cursor';
+            cell.appendChild(cursor);
+        }
+    }
 }
 
 
@@ -448,6 +890,105 @@ function updateProgress() {
         bar.classList.toggle('complete', filled === total);
     }
     if (text) text.textContent = `${filled} / ${total} (${pct}%)`;
+
+}
+
+// ── ERROR FLASH (alle Themes) ────────────────────────────────
+let _errorCooldown = false;
+
+function showErrorFlash() {
+    if (_errorCooldown) return;
+    const theme = document.documentElement.getAttribute('data-theme') || 'default';
+    if (theme === 'console') { showConsoleError(); return; }
+
+    _errorCooldown = true;
+
+    const isDark = theme === 'dark';
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = [
+        'position:fixed', 'inset:0', 'z-index:99999',
+        `background:${isDark ? 'rgba(0,0,0,0.75)' : 'rgba(255,255,255,0.85)'}`,
+        'display:flex', 'flex-direction:column',
+        'align-items:center', 'justify-content:center',
+        'pointer-events:none', 'opacity:0',
+        'transition:opacity 0.5s ease',
+        'backdrop-filter:blur(2px)',
+    ].join(';');
+
+    const titleColor   = isDark ? '#ff8888' : '#aa0000';
+    const titleShadow  = isDark ? '0 0 20px rgba(255,100,100,0.5)' : 'none';
+    const subtitleColor= isDark ? '#cc6666' : '#cc3333';
+    const borderColor  = isDark ? 'rgba(255,100,100,0.3)' : 'rgba(170,0,0,0.2)';
+
+    const title    = isDark ? 'Nicht ganz richtig.' : 'Nicht korrekt.';
+    const subtitle = isDark ? 'Noch nicht alle Zellen stimmen.' : 'Es sind noch Fehler vorhanden.';
+
+    overlay.innerHTML = `
+        <div style="
+            border:1px solid ${borderColor};
+            border-radius:12px;
+            padding:2rem 3rem;
+            text-align:center;
+            background:${isDark ? 'rgba(40,20,20,0.9)' : 'rgba(255,245,245,0.95)'};
+            box-shadow:${isDark ? '0 8px 32px rgba(0,0,0,0.6)' : '0 4px 24px rgba(170,0,0,0.1)'};
+        ">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">✗</div>
+            <div style="font-family:inherit;font-size:1.3rem;font-weight:600;color:${titleColor};text-shadow:${titleShadow};margin-bottom:0.4rem;">${title}</div>
+            <div style="font-size:0.85rem;color:${subtitleColor};opacity:0.85;">${subtitle}</div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => { overlay.style.opacity = '1'; });
+
+    setTimeout(() => {
+        overlay.style.transition = 'opacity 0.6s ease';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.remove();
+            setTimeout(() => { _errorCooldown = false; }, 1500);
+        }, 600);
+    }, 1800);
+}
+
+function showConsoleError() {
+    if (_errorCooldown) return;
+    _errorCooldown = true;
+
+    // Overlay-Element erstellen
+    const overlay = document.createElement('div');
+    overlay.id = 'console-error-overlay';
+    overlay.style.cssText = [
+        'position:fixed', 'inset:0', 'z-index:99999',
+        'background:rgba(0,0,0,0.88)', 'display:flex',
+        'flex-direction:column', 'align-items:center', 'justify-content:center',
+        'pointer-events:none', 'opacity:0',
+        'transition:opacity 0.5s ease'
+    ].join(';');
+
+    overlay.innerHTML = `
+        <div style="font-family:'Share Tech Mono',monospace;font-size:clamp(3rem,10vw,7rem);font-weight:bold;color:#ff2020;text-shadow:0 0 30px #ff2020,0 0 60px rgba(255,32,32,0.4);letter-spacing:8px;">ERROR</div>
+        <div style="width:240px;height:1px;background:#ff2020;opacity:0.4;margin:1rem 0;"></div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:clamp(0.7rem,2vw,1rem);color:#cc0000;text-shadow:0 0 8px #ff2020;letter-spacing:2px;">not all cells correct</div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Fade in
+    requestAnimationFrame(() => {
+        overlay.style.opacity = '1';
+    });
+
+    // Fade out nach 1.8s
+    setTimeout(() => {
+        overlay.style.transition = 'opacity 0.6s ease';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.remove();
+            setTimeout(() => { _errorCooldown = false; }, 1500);
+        }, 600);
+    }, 1800);
 }
 
 function validateAll() {
@@ -480,14 +1021,26 @@ function validateAll() {
     }
 
     // Gewinn-Prüfung läuft IMMER, unabhängig von validationActive
-    const allCorrect = userBoard.every((row, r) => row.every((v, c) => v === currentPuzzle.solution[r][c]));
+    const allFilled = userBoard.every(row => row.every(v => v !== 0));
+    const allCorrect = allFilled && userBoard.every((row, r) => row.every((v, c) => v === currentPuzzle.solution[r][c]));
+
+
     if (allCorrect && !timerStopped) {
         stopTimer();
         const timeStr = formatTime(elapsedSeconds);
         const diff = document.getElementById('difficulty').value;
         const n = currentPuzzle.solution.length;
-        document.getElementById('status').textContent = `${n}x${n} gelöst!`;
-        showWinBanner(timeStr, n, diff, currentPuzzle.seed);
+        window._isDirty = false;
+        if (window._dailyMode && window._dailyDateKey) {
+            const dTimeStr = formatTime(elapsedSeconds);
+            markDailySolved(window._dailyDateKey, dTimeStr);
+            window._dailyMode = false;
+            const dBtn = document.getElementById('btn-daily');
+            if (dBtn) { dBtn.dataset.solved = 'true'; dBtn.title = `Tägliches Rätsel – heute bereits gelöst (${dTimeStr})`; }
+        }
+        setStatus(`${n}×${n} gelöst!`);
+        const allHints = hintBoard && userBoard.every((row,r)=>row.every((v,c)=>v===0||hintBoard[r][c]));
+        showWinBanner(timeStr, n, diff, currentPuzzle.seed, allHints);
         if (timerVisible) saveToLeaderboard(elapsedSeconds, n, diff, currentPuzzle.seed);
     }
     updateProgress();
@@ -507,11 +1060,56 @@ function setValidationMode(active) {
     if (active) {
         competitiveBlocked = true;
         updateTimerBtn();
+        // Prüfen ob falsche Zahlen vorhanden sind
+        if (currentPuzzle) {
+            const n = currentPuzzle.solution.length;
+            let wrongCount = 0;
+            for (let r = 0; r < n; r++) {
+                for (let c = 0; c < n; c++) {
+                    if (userBoard[r][c] !== 0 && userBoard[r][c] !== currentPuzzle.solution[r][c]) wrongCount++;
+                }
+            }
+            if (wrongCount > 0) {
+                const msg = document.getElementById('clear-invalid-msg');
+                if (msg) msg.textContent = wrongCount === 1
+                    ? '1 falsche Zahl gefunden. Löschen?'
+                    : `${wrongCount} falsche Zahlen gefunden. Löschen?`;
+                document.getElementById('clear-invalid-overlay')?.classList.add('visible');
+            }
+        }
     }
     const btn = document.getElementById('btn-validate');
     if (btn) btn.dataset.active = active ? 'true' : 'false';
     validateAll();
 }
+
+function clearInvalidCells() {
+    if (!currentPuzzle) return;
+    const n = currentPuzzle.solution.length;
+    const changes = [];
+    for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+            if (userBoard[r][c] !== 0 && userBoard[r][c] !== currentPuzzle.solution[r][c]) {
+                changes.push({
+                    r, c,
+                    prevValue: userBoard[r][c],
+                    prevNotes: new Set(notesBoard[r][c]),
+                    prevHint:  hintBoard[r][c],
+                    nextValue: 0,
+                    nextNotes: new Set(notesBoard[r][c]),
+                    nextHint:  false,
+                });
+            }
+        }
+    }
+    if (changes.length === 0) return;
+    saveStateBatch(changes);
+    for (const ch of changes) applyCell(ch.r, ch.c, 0, ch.nextNotes, false);
+    validateAll();
+    const statusEl = document.getElementById('status');
+    if (statusEl) setStatus(`${changes.length} falsche ${changes.length === 1 ? 'Zahl' : 'Zahlen'} gelöscht.`);
+}
+
 
 function updateTimerBtn() {
     const btn = document.getElementById('btn-timer');
@@ -523,6 +1121,71 @@ function updateTimerBtn() {
         : 'Wettkampf-Modus (Zeit wird für Leaderboard gespeichert)';
     btn.style.opacity = (!timerVisible && blocked) ? '0.35' : '';
     btn.style.cursor = (!timerVisible && blocked) ? 'not-allowed' : '';
+}
+
+function showCountdown(onComplete) {
+    // Board während Countdown sperren
+    const boardEl = document.getElementById('board');
+    if (boardEl) boardEl.style.pointerEvents = 'none';
+
+    const theme = document.documentElement.getAttribute('data-theme') || 'default';
+    const isConsole = theme === 'console';
+    const isDark = theme === 'dark';
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = [
+        'position:fixed', 'inset:0', 'z-index:99999',
+        'display:flex', 'align-items:center', 'justify-content:center',
+        'pointer-events:none',
+        `background:${isConsole ? 'rgba(0,0,0,0.7)' : isDark ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)'}`,
+        'backdrop-filter:blur(2px)',
+    ].join(';');
+
+    const numEl = document.createElement('div');
+    const baseStyle = [
+        'font-weight:bold',
+        `font-family:${isConsole ? "'Share Tech Mono', monospace" : 'inherit'}`,
+        'font-size:clamp(5rem,20vw,12rem)',
+        'line-height:1',
+        'transition:transform 0.1s ease, opacity 0.15s ease',
+    ].join(';');
+    numEl.style.cssText = baseStyle;
+    overlay.appendChild(numEl);
+    document.body.appendChild(overlay);
+
+    const colors = {
+        console: ['#00ff41', '#00cc35', '#009922'],
+        dark:    ['#e2e8f0', '#94a3b8', '#64748b'],
+        default: ['#1a1a1a', '#555', '#999'],
+    };
+    const themeColors = colors[isConsole ? 'console' : isDark ? 'dark' : 'default'];
+
+    let count = 3;
+
+    function tick() {
+        if (count === 0) {
+            overlay.style.transition = 'opacity 0.2s ease';
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.remove(); if (boardEl) boardEl.style.pointerEvents = ''; onComplete(); }, 200);
+            return;
+        }
+
+        numEl.style.opacity = '0';
+        numEl.style.transform = 'scale(1.4)';
+        numEl.textContent = isConsole ? count + '_' : count;
+        numEl.style.color = themeColors[3 - count] || themeColors[2];
+        if (isConsole) numEl.style.textShadow = `0 0 30px ${themeColors[0]}`;
+
+        requestAnimationFrame(() => {
+            numEl.style.opacity = '1';
+            numEl.style.transform = 'scale(1)';
+        });
+
+        count--;
+        setTimeout(tick, 800);
+    }
+
+    tick();
 }
 
 function setTimerVisible(active) {
@@ -592,7 +1255,7 @@ function undo() {
     if (history.length === 0 || !currentPuzzle) return;
     const batch = history.pop();
     redoStack.push(batch);
-    updateMoveCount(-1);
+    updateMoveCount(1);
     for (const s of batch) applyCell(s.r, s.c, s.prevValue, s.prevNotes, s.prevHint);
     validateAll();
     updateUndoRedoButtons();
@@ -602,7 +1265,6 @@ function redo() {
     if (redoStack.length === 0 || !currentPuzzle) return;
     const batch = redoStack.pop();
     history.push(batch);
-    updateMoveCount(1);
     for (const s of batch) applyCell(s.r, s.c, s.nextValue, s.nextNotes, s.nextHint);
     validateAll();
     updateUndoRedoButtons();
@@ -773,7 +1435,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         const fullSeedStr = buildFullSeed(n, diff, rawSeed);
-        if (seedInput) seedInput.value = fullSeedStr;
+        if (seedInput) setSeedTypewriter(fullSeedStr);
         const seedInt = seedToInt(rawSeed, n, diff);
 
         if (generationWorker) {
@@ -782,7 +1444,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         btnNew.disabled = true;
         btnNew.textContent = 'Generiere...';
-        statusEl.textContent = `Generiere ${n}x${n}-Rätsel ${diffLabels[diff]} (${fullSeedStr})`;
+        setStatus(`Generiere ${n}x${n}-Rätsel ${diffLabels[diff]}…`);
 
         generationWorker = new Worker('worker.js');
         generationWorker.onmessage = function(e) {
@@ -790,18 +1452,31 @@ window.addEventListener('DOMContentLoaded', () => {
             if (e.data.success) {
                 currentPuzzle = { solution: e.data.solution, cages: e.data.cages, seed: fullSeedStr };
                 setNotesMode(false);
+                validationActive = false;
+                const _vBtn = document.getElementById('btn-validate');
+                if (_vBtn) _vBtn.dataset.active = 'false';
+                // _dailyMode nur beibehalten wenn das generierte Rätsel auch der Tages-Seed ist
+                if (window._dailyMode && fullSeedStr !== getDailyConfig().fullSeed) {
+                    window._dailyMode = false;
+                    window._dailyDateKey = null;
+                }
                 requestAnimationFrame(() => renderBoard(currentPuzzle));
-                startTimer();
-                statusEl.textContent = `${n}x${n} ${diffLabels[diff]} ID: ${fullSeedStr}`;
+                if (timerVisible) {
+                    showCountdown(() => startTimer());
+                } else {
+                    startTimer();
+                }
+                setStatus(`${n}×${n} ${diffLabels[diff]}`);
+                btnSolve.disabled = false;
             } else {
-                statusEl.textContent = 'Fehler beim Generieren – bitte erneut klicken.';
+                setStatus('Fehler beim Generieren – bitte erneut klicken.');
             }
             btnNew.disabled = false;
             btnNew.textContent = 'Neues Rätsel';
         };
         generationWorker.onerror = function(err) {
             generationWorker = null;
-            statusEl.textContent = 'Fehler beim Generieren – bitte erneut klicken.';
+            setStatus('Fehler beim Generieren – bitte erneut klicken.');
             console.error(err);
             btnNew.disabled = false;
             btnNew.textContent = 'Neues Rätsel';
@@ -824,9 +1499,10 @@ window.addEventListener('DOMContentLoaded', () => {
         moveCount = 0;
         const moveEl = document.getElementById('move-count');
         if (moveEl) moveEl.textContent = '-';
-        statusEl.textContent = 'Lösung angezeigt. Zeit gestoppt.';
+        setStatus('Lösung angezeigt. Zeit gestoppt.');
     }
 
+    window._newPuzzle = newPuzzle;
     btnNew.addEventListener('click', () => newPuzzle(null));
     btnSolve.addEventListener('click', solveAll);
     btnNotes.addEventListener('click', () => setNotesMode(!notesMode));
@@ -855,6 +1531,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
     initTheme();
     initCustomSelects();
+    initDailyButton();
+
+    // Gespeicherten Spielstand automatisch laden (falls vorhanden)
+    const saved = loadGameState();
+    if (saved) {
+        clearSavedGame();
+        restoreGameState(saved);
+    }
 
     const btnPdf = document.getElementById('btn-pdf');
     if (btnPdf) {
@@ -870,7 +1554,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
                 const result = await window.electronAPI.exportPDF();
                 if (result?.success) {
-                    statusEl.textContent = 'PDF gespeichert.';
+                    setStatus('PDF gespeichert.');
                 }
             }
         });
@@ -906,6 +1590,21 @@ window.addEventListener('DOMContentLoaded', () => {
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) modalOverlay.classList.remove('visible');
     });
+
+    // Falsche-Zahlen-Modal
+    const clearInvalidOverlay = document.getElementById('clear-invalid-overlay');
+    const clearInvalidConfirm = document.getElementById('clear-invalid-confirm');
+    const clearInvalidCancel  = document.getElementById('clear-invalid-cancel');
+    if (clearInvalidConfirm) clearInvalidConfirm.addEventListener('click', () => {
+        clearInvalidOverlay.classList.remove('visible');
+        clearInvalidCells();
+    });
+    if (clearInvalidCancel) clearInvalidCancel.addEventListener('click', () => {
+        clearInvalidOverlay.classList.remove('visible');
+    });
+    if (clearInvalidOverlay) clearInvalidOverlay.addEventListener('click', (e) => {
+        if (e.target === clearInvalidOverlay) clearInvalidOverlay.classList.remove('visible');
+    });
         modalConfirm.addEventListener('click', () => {
             modalOverlay.classList.remove('visible');
             if (!currentPuzzle) return;
@@ -923,7 +1622,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
             startTimer();
-            statusEl.textContent = 'Rätsel zurückgesetzt.';
+            setStatus('Rätsel zurückgesetzt.');
             selectCell(0, 0);
             history = [];
             redoStack = [];

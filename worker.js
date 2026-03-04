@@ -185,7 +185,7 @@ function generateCages(solution, diff) {
                 const nbIdx  = cageIdx[nb.r][nb.c];
                 if (nbIdx === myIdx) continue;
                 const nbCage = cages[nbIdx];
-                if (nbCage.cells.length > 0 && nbCage.cells.length <= cfg.maxSize) {
+                if (nbCage.cells.length > 0 && nbCage.cells.length < cfg.maxSize) {
                     nbCage.cells.push({ r, c });
                     cageIdx[r][c] = nbIdx;
                     single.cells  = [];
