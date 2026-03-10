@@ -1,11 +1,15 @@
 {
   "name": "numori",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Numori – Logik-Rätsel",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "update-tracks": "node scripts/update-tracks.js"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.0"
   },
   "devDependencies": {
     "electron": "^33.0.0",
@@ -57,5 +61,5 @@
     ]
   },
   "author": "Lukas Schäfer",
-  "license": "MIT"
+  "license": "GPL-3.0-only"
 }

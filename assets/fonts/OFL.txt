@@ -1,8 +1,9 @@
-Copyright (c) <dates>, <Copyright Holder> (<URL|email>),
-with Reserved Font Name <Reserved Font Name>.
-Copyright (c) <dates>, <additional Copyright Holder> (<URL|email>),
-with Reserved Font Name <additional Reserved Font Name>.
-Copyright (c) <dates>, <additional Copyright Holder> (<URL|email>).
+Copyright (c) 2014-2020, Indian Type Foundry (https://www.indiantypefoundry.com),
+with Reserved Font Name "Poppins".
+Copyright (c) 2015, Peter Hull (https://github.com/phoikoi),
+with Reserved Font Name "VT323".
+Copyright (c) 2012, Carrois Type Design (https://www.carrois.com),
+with Reserved Font Name "Share Tech Mono".
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.9.0 — 2026-03-10
+
+### Neu
+- **Musikplayer** (Console-Theme) — 17 lizenzfreie Chiptune-Tracks; Play/Pause, Vor/Zurück, Lautstärkeregler; scrollbare Playlist mit Track-Auswahl; Marquee-Animation für Interpret und Titel; Lautstärke wird in localStorage gespeichert
+- **Zahlenpad-Overlay** — frei positionierbares und skalierbares Zahlenpad; Notiz-Modus-Toggle direkt im Pad; Position und Skalierung werden in localStorage gespeichert; ein/ausschaltbar über Toolbar-Button
+- **Statistiken** — Modal mit Bestzeit, Durchschnittszeit, besten Zügen und Anzahl gelöster Rätsel pro Größe und Schwierigkeit; Reset-Option; Statistiken in localStorage gespeichert
+- **Interaktives Tutorial** — 3 Erklär-Slides (Spielprinzip, Käfige & Operationen, nützliche Funktionen) gefolgt von einem spielbaren 3×3-Rätsel; beim ersten Start wird gefragt ob das Tutorial übersprungen werden soll; jederzeit über die Einstellungen aufrufbar; theme-spezifisches Design
+- **Automatische Updates** — Updateprüfung beim Start via `electron-updater`; nicht-invasives Banner mit Download- und Install-Option; Installation beim nächsten Neustart
+- **GitHub Pages** — Numori ist unter [kaizo101.github.io/numori](https://kaizo101.github.io/numori) als Webversion verfügbar; Mobile-Optimierung folgt in v1.0
+
+### Verbesserungen
+- **Schwierigkeitsmodell** überarbeitet: `maxSingleRatio` für Leicht von 40% auf 20% gesenkt (weniger Gratis-Zellen); Multiplikation bei Mittel auf 2-Zeller beschränkt (verhindert brutal schwere Großkäfige); größenabhängige Op-Gewichte für Mittel (3+-Zeller immer Addition, 2-Zeller ausgewogenes `+/-/*`); toter Soft-Cap-Code (`targetAvgSize`) entfernt
+- **Header und Toolbar** skalieren jetzt korrekt mit der Fenstergröße (clamp-Werte mit v0.8-Minimum)
+- **Toolbar** überarbeitet – Theme-Wechsel, Statistiken und Einstellungen als separate Buttons oben rechts
+- Käfigränder-Radien für Eck-Zellen im Dark-Theme
+
+### Bugfixes
+- `saveGameState` hat den Daily-Mode-Zustand fälschlicherweise zurückgesetzt (Copy-Paste-Fehler)
+- Undo erhöhte den Züge-Zähler statt ihn unverändert zu lassen
+- `#btn-load-seed` hatte eine fest kodierte Höhe und lief bei großen Fenstern aus dem Seed-Input-Feld heraus
+
+---
+
 ## v0.8.0 — 2026-03-04
 
 ### Neu
@@ -17,17 +40,6 @@
 - Züge-Zähler überarbeitet
 - Info-Popup im Console-Theme überarbeitet (Scanlines, Rahmen)
 - Modalfenster im Console-Theme durchgängig lowercase
-
----
-
-## v0.9.0 — geplant
-
-### Geplant
-- **Musikplayer** — Hintergrundmusik während des Spiels
-- **Maussteuerung** — Zahlenpad direkt auf dem Board, vollständige Bedienung ohne Tastatur
-- **Aktualisierungsverwaltung** — Automatische Updates via Electron
-- **Statistiken** — Bestzeiten pro Größe und Schwierigkeit, Anzahl gelöster Rätsel, Durchschnittszeit
-- **Interaktives Tutorial** — Schritt-für-Schritt-Einführung ins Spielprinzip anhand eines einfachen 3×3-Rätsels
 
 ---
 

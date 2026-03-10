@@ -7,6 +7,15 @@ Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enth
 
 ---
 
+## Webversion
+
+Numori ist auch als Webversion verfügbar:
+👉 [kaizo101.github.io/numori](https://kaizo101.github.io/numori)
+
+Optimiert für Desktop-Browser. Mobile-Unterstützung folgt in v1.0.
+
+---
+
 ## Spielprinzip
 
 - Jede Zeile und Spalte enthält jede Zahl von 1 bis N genau einmal
@@ -15,7 +24,7 @@ Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enth
 
 ---
 
-## Features (v0.8.0)
+## Features (v0.9.0)
 
 - Prozedural generierte Rätsel – unbegrenzte einzigartige Puzzles
 - Rastergrößen: 3×3 bis 7×7
@@ -23,7 +32,7 @@ Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enth
 - Rätsel-IDs – Puzzles teilen und wiederholen
 - PDF-Export – Rätsel als leeres A4-PDF speichern und ausdrucken
 - Theme-System – Klassisch, Numori Dark, Console
-- Wettkampf-Modus mit Timer und 3-2-1 Countdown
+- Wettkampf-Modus mit Timer und 3-2-1 Countdown *(in Entwicklung)*
 - Tägliches Rätsel mit Wochenplan und Bestzeit-Speicherung
 - Spielstand speichern beim Schließen, automatisch wiederherstellen beim Start
 - Gewinn-Banner mit Statistiken (Größe, Schwierigkeit, Zeit, Züge)
@@ -33,6 +42,13 @@ Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enth
 - Tipps
 - Undo/Redo
 - Vollständige Tastatursteuerung
+- Zahlenpad-Overlay – vollständige Maussteuerung ohne Tastatur
+- Musikplayer – Chiptune-Hintergrundmusik (Console-Theme)
+- Statistiken – Bestzeiten, Durchschnittszeit, gelöste Rätsel pro Größe und Schwierigkeit
+- Interaktives Tutorial – Schritt-für-Schritt-Einführung ins Spielprinzip
+- Automatische Updates via Electron
+- Schriftgröße anpassbar (klein / mittel / groß)
+- Überarbeitete Toolbar – Theme-Wechsel, Statistiken und Einstellungen als separate Buttons
 
 ---
 
@@ -63,16 +79,11 @@ Numori bietet drei Themes, wählbar über den Zahnrad-Button im Header. Die Ausw
 
 ## Roadmap
 
-### v0.9.0
-- Musikplayer
-- Reine Maussteuerung (Zahlenpad auf dem Board)
-- Aktualisierungsverwaltung
-- Statistiken (Bestzeiten, gelöste Rätsel, Durchschnittszeit)
-- Interaktives Tutorial
-
 ### v1.0.0
+- GitHub Pages Webversion – Mobile-Optimierung (Touch, responsive Layout)
 - Android APK (via Capacitor)
 - Leaderboard (lokal)
+- Mehrsprachigkeit (DE/EN)
 
 ---
 
@@ -98,6 +109,18 @@ Lizenz: **SIL Open Font License 1.1**
 Copyright: © 2014–2020 Indian Type Foundry
 
 Die vollständige Lizenzdatei liegt unter `assets/fonts/OFL.txt`.
+
+### VT323
+Genutzt im Console-Theme.
+
+Lizenz: **SIL Open Font License 1.1**
+Copyright: © 2015 Peter Hull
+
+### Share Tech Mono
+Genutzt im Console-Theme.
+
+Lizenz: **SIL Open Font License 1.1**
+Copyright: © 2012 Carrois Type Design
 
 ### Lucide Icons
 Genutzt in der Toolbar (inline SVG).

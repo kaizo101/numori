@@ -14,10 +14,52 @@
         <h1>NUMORI</h1>
         <span class="subtitle">Logik-Rätsel</span>
       </div>
-<span class="version">v0.8.0</span>
+      <div class="header-right">
+      <!-- Musik-Player (nur Console-Theme) -->
+      <div id="music-player" class="music-player" style="display:none">
+        <span class="music-sep">//</span>
+        <div class="music-marquee-wrap">
+          <span class="music-marquee-inner" id="music-marquee-inner">
+            <span id="music-author" class="music-author">–</span><span class="music-sep-inline"> · </span><span id="music-title" class="music-title">–</span>
+            <span class="music-marquee-gap"></span>
+            <span class="music-author music-author-dup" aria-hidden="true">–</span><span class="music-sep-inline"> · </span><span class="music-title music-title-dup" aria-hidden="true">–</span>
+          </span>
+        </div>
+        <div class="music-controls">
+          <button id="music-prev" class="music-btn" title="Zurück">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
+          <button id="music-play" class="music-btn" title="Play/Pause">
+            <svg id="music-play-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button id="music-next" class="music-btn" title="Weiter">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
+          <div class="music-vol-wrap" title="Lautstärke">
+            <div id="music-vol-track" class="music-seek-track music-vol-track">
+              <div id="music-vol-fill" class="music-seek-fill"></div>
+              <div id="music-vol-thumb" class="music-seek-thumb"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Playlist-Toggle (Noten-Icon) -->
+        <div class="music-playlist-wrap">
+          <button id="music-playlist-btn" class="music-btn music-toggle-btn" title="Playlist">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </button>
+          <div id="music-playlist" class="music-playlist" style="display:none"></div>
+        </div>
+      </div>
+            <button id="btn-theme" class="btn-settings" title="Design">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+      </button>
+      <button id="btn-stats" class="btn-settings" title="Statistiken">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </button>
       <button id="btn-settings" class="btn-settings" title="Einstellungen">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
+      </div>
     </header>
 
     <div class="toolbar">
@@ -57,23 +99,32 @@
               <div class="info-wrap">
                 <button class="info-btn" tabindex="-1">?</button>
                 <div class="info-popup">
-                  <strong>Leicht</strong>
-                  <ul>
-                    <li>Kleine Käfige (1–2 Zellen)</li>
-                    <li>Nur Addition – ideal zum Einsteigen</li>
-                  </ul>
-                  <strong>Mittel</strong>
-                  <ul>
-                    <li>Käfige bis 3 Zellen</li>
-                    <li>Addition, Subtraktion & Multiplikation</li>
-                    <li>Ausgewogene Herausforderung</li>
-                  </ul>
-                  <strong>Schwer</strong>
-                  <ul>
-                    <li>Größere Käfige (bis 4 Zellen)</li>
-                    <li>Alle vier Rechenarten inkl. Division</li>
-                    <li>Für erfahrene Rätsler</li>
-                  </ul>
+                  <div class="diff-info">
+                    <div class="diff-info-block">
+                      <strong>Leicht</strong>
+                      <ul>
+                        <li>Einsteigerfreundlich</li>
+                        <li>Kleine Käfige, nur Addition</li>
+                        <li>Logik durch Ausschluss reicht meist aus</li>
+                      </ul>
+                    </div>
+                    <div class="diff-info-block">
+                      <strong>Mittel</strong>
+                      <ul>
+                        <li>Etwas kniffliger</li>
+                        <li>Größere Käfige, mehr Rechenarten</li>
+                        <li>Kombinationen müssen durchdacht werden</li>
+                      </ul>
+                    </div>
+                    <div class="diff-info-block">
+                      <strong>Schwer</strong>
+                      <ul>
+                        <li>Für Profis</li>
+                        <li>Große Käfige, alle Rechenarten</li>
+                        <li>Erfordert systematisches Vorgehen</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -97,7 +148,7 @@
 
           <div class="control-group">
             <div class="control-label-row">
-              <label for="seed-input">Rätsel-ID</label>
+              <div class="control-label-row"><label for="seed-input">Rätsel-ID</label></div>
             </div>
             <div class="seed-input-row">
               <input id="seed-input"
@@ -154,6 +205,10 @@
                   class="btn btn-pencil"
                   data-active="false"
                   title="Wettkampf-Modus (Zeit wird für Leaderboard gespeichert)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></button>
+          <button id="btn-numpad"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  title="Zahlenpad ein/aus"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="16" y1="18" x2="16" y2="18"/></svg></button>
           <span id="timer-display" class="timer-display hidden" style="display:none"></span>
         </div>
 
@@ -199,12 +254,12 @@
 
     <div class="footer">
       Pfeiltasten: Navigation &nbsp;·&nbsp;
-      Ziffern: Eingabe &nbsp;·&nbsp;
       N: Notizen &nbsp;·&nbsp;
       V: Validierung &nbsp;·&nbsp;
       Entf: Löschen &nbsp;·&nbsp;
       Strg+Z/Y: Undo/Redo &nbsp;·&nbsp;
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg> Wettkampf-Modus
+      <span class="footer-version">v0.9.0</span>
 
     </div>
 
@@ -249,6 +304,7 @@
       <div class="win-divider"></div>
       <div class="win-text">
         <strong id="win-title">Perfekt gelöst!</strong>
+        <span id="win-best" style="display:none"></span>
         <div class="win-stats">
           <div class="win-stat">
             <span class="win-stat-label">Größe</span>
@@ -283,26 +339,62 @@
     </div>
   </div>
 
+  <!-- Statistiken-Modal -->
+  <div id="stats-overlay" class="modal-overlay">
+    <div class="modal settings-modal stats-modal">
+      <h2 class="settings-title">Statistiken</h2>
+      <div id="stats-content" class="stats-content"></div>
+      <div class="modal-buttons">
+        <button id="stats-reset" class="btn btn-ghost">Zurücksetzen</button>
+        <button id="stats-close" class="btn btn-primary">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme-Modal -->
+  <div id="theme-overlay" class="modal-overlay">
+    <div class="modal settings-modal">
+      <h2 class="settings-title">Design</h2>
+      <div class="settings-themes">
+        <button class="theme-btn" data-theme="default">
+          <span class="theme-preview theme-preview-default"></span>
+          <span>Klassisch</span>
+        </button>
+        <button class="theme-btn" data-theme="dark">
+          <span class="theme-preview theme-preview-dark"></span>
+          <span>Numori Dark</span>
+        </button>
+        <button class="theme-btn" data-theme="console">
+          <span class="theme-preview theme-preview-console"></span>
+          <span>Konsole</span>
+        </button>
+      </div>
+      <div class="modal-buttons">
+        <button id="theme-close" class="btn btn-primary">Schließen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Einstellungs-Modal -->
   <div id="settings-overlay" class="modal-overlay">
     <div class="modal settings-modal">
       <h2 class="settings-title">Einstellungen</h2>
       <div class="settings-section">
-        <div class="settings-label">Design</div>
-        <div class="settings-themes">
-          <button class="theme-btn" data-theme="default">
-            <span class="theme-preview theme-preview-default"></span>
-            <span>Klassisch</span>
-          </button>
-          <button class="theme-btn" data-theme="dark">
-            <span class="theme-preview theme-preview-dark"></span>
-            <span>Numori Dark</span>
-          </button>
-          <button class="theme-btn" data-theme="console">
-            <span class="theme-preview theme-preview-console"></span>
-            <span>Konsole</span>
-          </button>
+        <div class="settings-label">Schriftgröße</div>
+        <div class="font-scale-btns">
+          <button class="font-scale-btn" data-scale="0.85">Klein</button>
+          <button class="font-scale-btn" data-scale="1.0">Normal</button>
+          <button class="font-scale-btn" data-scale="1.2">Groß</button>
         </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">Hilfe</div>
+        <button id="btn-tutorial" class="btn btn-ghost settings-tutorial-btn">Tutorial starten</button>
+      </div>
+      <div id="debug-section" style="display:none" class="settings-section">
+        <div class="settings-label">Debug</div>
+        <button id="btn-debug-clear" class="btn btn-ghost">LocalStorage leeren</button>
+        <button id="btn-debug-state" class="btn btn-ghost">State in Konsole loggen</button>
       </div>
       <div class="modal-buttons">
         <button id="settings-close" class="btn btn-primary">Schließen</button>
@@ -310,6 +402,85 @@
     </div>
   </div>
 
+  <!-- Tutorial Welcome -->
+  <div id="tut-welcome" class="modal-overlay">
+    <div class="modal">
+      <h2 class="settings-title">Willkommen bei Numori</h2>
+      <p>Bist du mit dem Rätselprinzip vertraut?</p>
+      <div class="modal-buttons">
+        <button id="tut-w-yes" class="btn btn-primary">Ja, direkt loslegen</button>
+        <button id="tut-w-no"  class="btn btn-ghost">Nein, Tutorial starten</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial Overlay -->
+  <div id="tut-overlay" class="modal-overlay">
+    <div class="tut-modal">
+
+      <!-- Phase 1: Slides -->
+      <div id="tut-slides" class="tut-phase">
+        <div class="tut-dots">
+          <span class="tut-dot"></span>
+          <span class="tut-dot"></span>
+          <span class="tut-dot"></span>
+        </div>
+        <h2 id="tut-stitle" class="tut-title"></h2>
+        <div id="tut-sbody" class="tut-body"></div>
+        <div class="tut-nav">
+          <button id="tut-back" class="btn btn-ghost">← Zurück</button>
+          <button class="tut-skip btn btn-ghost">Überspringen</button>
+          <button id="tut-next" class="btn btn-primary">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Phase 2: Puzzle -->
+      <div id="tut-puzzle" class="tut-phase" style="display:none">
+        <h2 class="tut-title">Versuch's selbst!</h2>
+        <p class="tut-hint">3×3-Rätsel – Zahlen 1 bis 3, jede einmal pro Zeile und Spalte.</p>
+        <div id="tut-board" class="tut-board"></div>
+        <div id="tut-numpad" class="tut-numpad">
+          <button class="tnpb" data-v="1">1</button>
+          <button class="tnpb" data-v="2">2</button>
+          <button class="tnpb" data-v="3">3</button>
+          <button class="tnpb tnpb-del" data-v="0">⌫</button>
+        </div>
+        <button class="tut-skip btn btn-ghost">Überspringen</button>
+      </div>
+
+      <!-- Phase 3: Erfolg -->
+      <div id="tut-success" class="tut-phase tut-success-phase" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <h2 class="tut-title">Super gemacht!</h2>
+        <p>Du kennst jetzt alles was du für Numori brauchst. Viel Spaß!</p>
+        <button id="tut-finish" class="btn btn-primary">Los geht's</button>
+      </div>
+
+    </div>
+  </div>
+
   <script src="app.js"></script>
+
+  <!-- Zahlenpad (frei beweglich, direkt im body) -->
+  <div id="numpad-overlay" class="numpad-overlay" style="display:none">
+    <div id="numpad" class="numpad">
+      <div class="numpad-titlebar" id="numpad-titlebar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="numpad-drag-icon"><circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="6" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>
+        <span class="numpad-title-text">Zahlenpad</span>
+        <span class="numpad-title-console">▌zahlenpad</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="numpad-drag-icon"><circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="6" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>
+      </div>
+      <div class="numpad-body">
+        <div class="numpad-grid" id="numpad-grid"></div>
+        <div class="numpad-actions">
+          <button class="numpad-btn numpad-notes" id="numpad-notes" title="Notiz-Modus">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          </button>
+          <button class="numpad-btn numpad-clear" id="numpad-clear" title="Löschen"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+        </div>
+      </div>
+      <div class="numpad-resize" id="numpad-resize"></div>
+    </div>
+  </div>
 </body>
 </html>

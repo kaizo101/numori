@@ -1,6 +1,40 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const fs = require('fs');
 const path = require('path');
+
+// Updater-Konfiguration
+autoUpdater.autoDownload = false;        // Nutzer muss erst zustimmen
+autoUpdater.autoInstallOnAppQuit = true; // Nach Download bei nächstem Beenden installieren
+
+function setupUpdater(win) {
+    autoUpdater.on('update-available', (info) => {
+        win.webContents.send('update-available', info.version);
+    });
+
+    autoUpdater.on('update-downloaded', (info) => {
+        win.webContents.send('update-downloaded', info.version);
+    });
+
+    autoUpdater.on('download-progress', (progress) => {
+        win.webContents.send('update-progress', Math.round(progress.percent));
+    });
+
+    autoUpdater.on('error', (err) => {
+        console.error('Updater-Fehler:', err.message);
+    });
+
+    // Nach kurzem Delay prüfen damit das Fenster bereit ist
+    setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 3000);
+}
+
+ipcMain.on('update-install-now', () => {
+    autoUpdater.quitAndInstall(false, true);
+});
+
+ipcMain.on('update-start-download', () => {
+    autoUpdater.downloadUpdate().catch(() => {});
+});
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -15,6 +49,7 @@ function createWindow() {
         }
     });
     win.loadFile('index.html');
+    win.setAspectRatio(900 / 700); // Proportionales Resizen
     win.setMenuBarVisibility(false);
 
     let closeConfirmed = false;
@@ -61,7 +96,11 @@ function createWindow() {
     });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    createWindow();
+    const win = BrowserWindow.getAllWindows()[0];
+    setupUpdater(win);
+});
 app.on('window-all-closed', () => app.quit());
 
 ipcMain.handle('export-pdf', async () => {
