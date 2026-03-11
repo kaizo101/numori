@@ -780,12 +780,482 @@ border-color: #ddd;
     justify-content: center;
 }
 
-/* ── Responsive ──────────────────────────────────────────────────── */
-@media (max-width: 580px) {
-    header h1    { font-size: 1.4em; letter-spacing: 4px; }
-    .subtitle    { display: none; }
-    .toolbar-sep { display: none; }
-    .toolbar     { gap: 7px; padding: 8px 12px; }
+/* ── Mobile-Elemente: standardmäßig versteckt (überschrieben durch Media Queries) ── */
+.mobile-toolbar     { display: none; }
+.mobile-bottom-nav  { display: none; }
+.mobile-more-panel  { display: none; }
+.mobile-seed-display { display: none; }
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE — Desktop (> 900px)
+   Alle mobilen Elemente explizit ausblenden
+   ══════════════════════════════════════════════════════════════════ */
+@media (min-width: 900px) {
+    .mobile-toolbar     { display: none !important; }
+    .mobile-bottom-nav  { display: none !important; }
+    .mobile-more-panel  { display: none !important; }
+    .mobile-seed-display { display: none !important; }
+    .app-container { padding-bottom: 0 !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet (601px – 900px)
+   Toolbar bleibt oben, wird aber kompakter. Kein Bottom Nav.
+   ══════════════════════════════════════════════════════════════════ */
+@media (min-width: 601px) and (max-width: 899px) {
+    .app-container {
+        border-left: none;
+        border-right: none;
+    }
+
+    header {
+        padding: 8px 16px 7px;
+        gap: 12px;
+    }
+
+    header h1 { font-size: 1.6em; letter-spacing: 5px; }
+    .subtitle { font-size: 0.7em; letter-spacing: 2px; }
+
+    .toolbar {
+        padding: 8px 14px 7px;
+    }
+
+    .toolbar-grid {
+        grid-template-columns: max-content 18px max-content 18px auto;
+        row-gap: 8px;
+    }
+
+    .toolbar-actions { gap: 7px; padding-top: 10px; }
+    .toolbar-icons   { gap: 4px; }
+    .toolbar-controls { gap: 10px; }
+
+    .control-group label,
+    .control-label-row label { font-size: 0.7em; }
+
+    .custom-select-btn { font-size: 0.82em; padding: 4px 7px; }
+    .btn-primary       { font-size: 0.82em; padding: 5px 10px; }
+    .btn-ghost         { font-size: 0.82em; padding: 5px 10px; }
+    .btn-pencil        { width: 28px; height: 28px; font-size: 0.82em; }
+
+    #seed-input { font-size: 0.75em; width: 100px; }
+    #btn-load-seed { width: 26px; }
+
+    /* Footer auf Tablet kleiner */
+    .footer { font-size: 0.72em; padding: 5px 14px; }
+
+    /* Mobile-spezifische Elemente ausblenden */
+    .mobile-bottom-nav  { display: none !important; }
+    .mobile-more-panel  { display: none !important; }
+    .mobile-toolbar     { display: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile (≤ 600px)
+   Kompakte Top-Toolbar + Bottom Nav, Desktop-Toolbar ausgeblendet
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+    /* App-Container: Ränder weg, footer weg */
+    .app-container {
+        border-left: none;
+        border-right: none;
+    }
+
+    /* Header: kompakter */
+    header {
+        padding: 9px 12px 8px;
+        gap: 8px;
+    }
+
+    header h1       { font-size: 1.35em; letter-spacing: 4px; }
+    .subtitle       { display: none; }
+
+    /* Header-Icons kleiner */
+    .btn-settings   { width: 30px; height: 30px; }
+    .btn-settings svg { width: 15px; height: 15px; }
+
+    /* Desktop-Toolbar: komplett ausblenden */
+    .toolbar        { display: none; }
+
+    /* ── Mobile Compact Toolbar ────────────────────────────────────── */
+    .mobile-toolbar {
+        display: block;
+        flex-shrink: 0;
+        background: var(--bg-toolbar);
+        border-bottom: 1px solid var(--border-main);
+        padding: 7px 10px;
+    }
+
+    .mobile-toolbar-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .mobile-select {
+        flex: 1;
+        padding: 7px 5px;
+        border: 1px solid var(--border-input);
+        border-radius: 7px;
+        font-size: 0.78em;
+        background: var(--bg-input);
+        color: var(--text-primary);
+        min-width: 0;
+        -webkit-appearance: none;
+        appearance: none;
+        text-align: center;
+    }
+
+    .mobile-seed-btn {
+        height: 34px;
+        border: 1px solid var(--border-input);
+        background: var(--bg-input);
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: var(--text-muted);
+        cursor: pointer;
+        flex-shrink: 0;
+        padding: 0 10px;
+        font-size: 0.78em;
+        font-family: system-ui, 'Segoe UI', sans-serif;
+    }
+
+    .mobile-btn-new {
+        padding: 7px 18px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: 0.88em;
+        font-family: system-ui, 'Segoe UI', sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-btn-new:active { opacity: 0.8; }
+
+    /* Footer: auf Mobile ausblenden (Tastaturkürzel irrelevant) */
+    .footer         { display: none; }
+
+    /* Käfig-Labels: 40% größer auf Mobile, bleibt proportional zur Schriftgröße-Einstellung */
+    .cage-label {
+        font-size: calc(var(--cage-label-size) * 1.4) !important;
+    }
+
+    /* Notizen: 40% größer auf Mobile */
+    .note {
+        font-size: calc(var(--note-size) * 1.4) !important;
+    }
+
+    /* Status-Zeile kleiner */
+    #status         { font-size: 0.8em; padding: 4px 12px; min-height: 0; }
+
+    /* Rätsel-ID über dem Board, linksbündig neben Timer */
+    .mobile-seed-display {
+        display: block;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-family: monospace;
+        font-size: 0.72em;
+        letter-spacing: 1px;
+        color: var(--text-primary);
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: 10;
+    }
+        padding: 4px;
+        gap: 0;
+    }
+
+    /* Welcome-Screen Icon ausblenden (zu groß für Mobile) */
+    .welcome-icon-img { display: none; }
+
+    /* Console: Vignette-Overlay auf Mobile deaktivieren */
+    [data-theme="console"] .app-container::after {
+        display: none;
+    }
+
+    /* Musikplayer im Header ausblenden */
+    #music-player { display: none !important; }
+
+    /* ── Mobile More Panel ─────────────────────────────────────────── */
+    .mobile-more-panel {
+        position: fixed;
+        bottom: calc(58px + env(safe-area-inset-bottom));
+        left: 0;
+        right: 0;
+        z-index: 300;
+        background: var(--bg-toolbar);
+        border-top: 1px solid var(--border-main);
+        padding: 8px 12px;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px;
+        box-shadow: 0 -4px 16px rgba(0,0,0,0.12);
+    }
+
+    .mobile-more-btn {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 8px 4px;
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        background: var(--bg-input);
+        color: var(--text-primary);
+        font-size: 0.65em;
+        font-family: system-ui, 'Segoe UI', sans-serif;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .mobile-more-btn svg {
+        flex-shrink: 0;
+    }
+
+    .mobile-more-btn:active {
+        opacity: 0.7;
+    }
+
+    .mobile-more-btn.active {
+        background: var(--select-bg);
+        border-color: var(--select-border);
+        color: var(--select-text);
+    }
+
+    /* ── Mobile Bottom Nav ─────────────────────────────────────────── */
+    .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        justify-content: space-around;
+        align-items: center;
+        background: var(--accent);
+        border-top: 2px solid var(--accent-dark);
+        padding: 6px 0 8px;
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+        z-index: 200;
+    }
+
+    [data-theme="console"] .mobile-bottom-nav {
+        background: #000 !important;
+        border-top: 1px solid #00ff41 !important;
+        z-index: 9999 !important;
+    }
+
+    /* Platz für die fixe Bottom Nav + Android-Leiste */
+    .app-container {
+        padding-bottom: calc(58px + env(safe-area-inset-bottom));
+    }
+
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        color: rgba(255,255,255,0.45);
+        font-size: 0.58em;
+        font-family: system-ui, 'Segoe UI', sans-serif;
+        letter-spacing: 0.3px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 8px;
+        min-width: 52px;
+        transition: color 0.12s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-item svg {
+        stroke: currentColor;
+    }
+
+    .mobile-nav-item:active,
+    .mobile-nav-item.active {
+        color: #fff;
+    }
+
+    /* Numpad: auf Mobile immer volle Breite, unten verankert */
+    .numpad-overlay {
+        bottom: calc(58px + env(safe-area-inset-bottom));
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        top: auto !important;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .numpad-overlay .numpad {
+        border-radius: 12px 12px 0 0;
+        width: 100%;
+    }
+
+    .numpad-overlay .numpad-titlebar {
+        display: none; /* kein Drag-Handle auf Mobile */
+    }
+
+    .numpad-overlay .numpad-resize {
+        display: none; /* kein Resize auf Mobile */
+    }
+
+    /* Einzeilig: body als Flex-Zeile, grid + actions nebeneinander */
+    .numpad-overlay .numpad-body {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        padding: 6px;
+        gap: 5px;
+    }
+
+    .numpad-overlay .numpad-grid {
+        display: flex !important;
+        flex-direction: row !important;
+        flex: 1;
+        gap: 5px;
+        grid-template-columns: unset !important;
+    }
+
+    .numpad-overlay .numpad-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        flex-shrink: 0;
+    }
+
+    /* Notiz-Button überflüssig – ist bereits in Bottom Nav */
+    .numpad-overlay .numpad-notes {
+        display: none;
+    }
+
+    /* Löschen-Button: quadratisch wie Zahlen, ⌫ Icon größer */
+    .numpad-overlay .numpad-clear {
+        flex: 1 !important;
+        width: auto !important;
+    }
+
+    .numpad-overlay .numpad-clear svg {
+        display: none;
+    }
+
+    .numpad-overlay .numpad-clear::after {
+        content: '⌫';
+        font-size: 1.2em;
+    }
+
+    .numpad-overlay .numpad-btn {
+        width: auto !important;
+        flex: 1;
+        height: 48px;
+        font-size: 1.15em;
+        padding: 0 4px;
+    }
+
+    [data-theme="console"] .mobile-nav-item {
+        color: #00aa22 !important;
+    }
+
+    [data-theme="console"] .mobile-nav-item:active,
+    [data-theme="console"] .mobile-nav-item.active {
+        color: #00ff41 !important;
+        text-shadow: 0 0 6px rgba(0,255,65,0.5);
+    }
+
+    [data-theme="console"] .mobile-btn-new {
+        background: #001a07 !important;
+        border: 1px solid #00ff41 !important;
+        color: #00ff41 !important;
+    }
+}
+
+/* ── Console-Theme Mobile-Anpassungen ───────────────────────────── */
+@media (max-width: 600px) {
+    [data-theme="console"] .mobile-nav-item {
+        color: #00aa22 !important;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.52em;
+        text-transform: lowercase;
+    }
+
+    [data-theme="console"] .mobile-nav-item:active,
+    [data-theme="console"] .mobile-nav-item.active {
+        color: #00ff41 !important;
+        text-shadow: 0 0 6px rgba(0,255,65,0.5);
+    }
+
+    [data-theme="console"] .mobile-more-panel {
+        background: #000;
+        border-top: 1px solid #003300;
+    }
+
+    [data-theme="console"] .mobile-more-btn {
+        border-color: #003300;
+        background: #000;
+        color: #00cc33;
+        font-family: 'Share Tech Mono', monospace;
+        text-transform: lowercase;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    [data-theme="console"] .mobile-toolbar {
+        background: #000;
+        border-bottom: 1px solid #003300;
+    }
+
+    [data-theme="console"] .mobile-select,
+    [data-theme="console"] .mobile-seed-input,
+    [data-theme="console"] .mobile-seed-btn {
+        background: #000;
+        border-color: #003300;
+        color: #00cc33;
+        font-family: 'Share Tech Mono', monospace;
+    }
+
+    [data-theme="console"] .mobile-btn-new {
+        background: #001a07;
+        border: 1px solid #00ff41;
+        color: #00ff41;
+        font-family: 'Share Tech Mono', monospace;
+        text-transform: lowercase;
+    }
+}
+
+/* ── Dark-Theme Mobile-Anpassungen ─────────────────────────────── */
+@media (max-width: 600px) {
+    [data-theme="dark"] .mobile-bottom-nav {
+        background: #1a2332;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    [data-theme="dark"] .mobile-nav-item {
+        color: rgba(255,255,255,0.3);
+    }
+
+    [data-theme="dark"] .mobile-nav-item:active,
+    [data-theme="dark"] .mobile-nav-item.active {
+        color: #7ec8c0;
+    }
+
+    [data-theme="dark"] .mobile-toolbar {
+        background: #1a2332;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    [data-theme="dark"] .mobile-btn-new {
+        background: #3d6b8c;
+    }
 }
 
 /* ── Toolbar Icons ───────────────────────────────────────────────── */
@@ -1816,7 +2286,7 @@ header {
 [data-theme="dark"] .cage-label {
     font-family: var(--font-modern);
     font-weight: 400;
-    font-size: clamp(0.48rem, 1.6vw, 0.75rem);
+    font-size: var(--cage-label-size, clamp(0.48rem, 1.6vw, 0.75rem));
     opacity: 0.7;
 }
 

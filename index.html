@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>NUMORI</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -103,25 +103,25 @@
                     <div class="diff-info-block">
                       <strong>Leicht</strong>
                       <ul>
-                        <li>Einsteigerfreundlich</li>
-                        <li>Kleine Käfige, nur Addition</li>
-                        <li>Logik durch Ausschluss reicht meist aus</li>
+                        <li>2 bis 3 Zellen pro Käfig</li>
+                        <li>Nur Addition</li>
+                        <li>Für Einsteiger</li>
                       </ul>
                     </div>
                     <div class="diff-info-block">
                       <strong>Mittel</strong>
                       <ul>
-                        <li>Etwas kniffliger</li>
-                        <li>Größere Käfige, mehr Rechenarten</li>
-                        <li>Kombinationen müssen durchdacht werden</li>
+                        <li>3 bis 4 Zellen pro Käfig</li>
+                        <li>Addition, Subtraktion, Multiplikation</li>
+                        <li>Für Geübte</li>
                       </ul>
                     </div>
                     <div class="diff-info-block">
                       <strong>Schwer</strong>
                       <ul>
+                        <li>Bis zu 5 Zellen pro Käfig</li>
+                        <li>Alle Rechenarten inkl. Division</li>
                         <li>Für Profis</li>
-                        <li>Große Käfige, alle Rechenarten</li>
-                        <li>Erfordert systematisches Vorgehen</li>
                       </ul>
                     </div>
                   </div>
@@ -230,7 +230,31 @@
       </div>
     </div>
 
-    <div id="status" class="status"></div>
+    <!-- Mobile Compact Toolbar (nur sichtbar auf ≤600px) -->
+    <div class="mobile-toolbar" id="mobile-toolbar">
+      <div class="mobile-toolbar-row">
+        <select class="mobile-select" id="mobile-size">
+          <option value="3">3×3</option>
+          <option value="4" selected>4×4</option>
+          <option value="5">5×5</option>
+          <option value="6">6×6</option>
+          <option value="7">7×7</option>
+        </select>
+        <select class="mobile-select" id="mobile-difficulty">
+          <option value="easy">Leicht</option>
+          <option value="medium" selected>Mittel</option>
+          <option value="hard">Schwer</option>
+        </select>
+        <button class="mobile-seed-btn mobile-seed-open" id="mobile-seed-open" onclick="openSeedModal()" title="Rätsel-ID laden">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          ID
+        </button>
+        <button class="mobile-seed-btn" onclick="document.getElementById('btn-daily').click()" title="Tägliches Rätsel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </button>
+        <button class="mobile-btn-new" id="mobile-btn-new">Neu</button>
+      </div>
+    </div>
 
     <div id="pdf-info" style="display:none">
       <div class="pdf-info-inner">
@@ -241,6 +265,7 @@
 
     <div id="board-container">
       <span id="timer-display-header" class="timer-display-header"></span>
+      <span id="mobile-seed-display" class="mobile-seed-display"></span>
       <div id="welcome-screen" class="welcome-screen">
         <div class="welcome-inner">
           <img src="assets/icons/png/numori-1024.png" alt="Numori" class="welcome-icon-img" id="welcome-icon">
@@ -251,6 +276,50 @@
       </div>
       <div id="board"></div>
     </div>
+
+    <!-- Mobile More Panel (··· Drawer) -->
+    <div id="mobile-more-panel" class="mobile-more-panel" style="display:none">
+      <button class="mobile-more-btn" onclick="document.getElementById('btn-solve').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Lösung
+      </button>
+      <button class="mobile-more-btn" onclick="document.getElementById('btn-reset').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        Reset
+      </button>
+      <button class="mobile-more-btn" onclick="document.getElementById('btn-timer').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        Timer
+      </button>
+      <button class="mobile-more-btn" onclick="document.getElementById('btn-validate').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Validierung
+      </button>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav id="mobile-bottom-nav" class="mobile-bottom-nav">
+      <button class="mobile-nav-item" id="mobile-btn-notes" onclick="document.getElementById('btn-notes').click()" title="Notizen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+        <span>Notizen</span>
+      </button>
+      <button class="mobile-nav-item" id="mobile-btn-hint" onclick="document.getElementById('btn-hint').click()" title="Tipp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+        <span>Tipp</span>
+      </button>
+      <button class="mobile-nav-item" id="mobile-btn-undo" onclick="document.getElementById('undoBtn').click()" title="Undo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+        <span>Undo</span>
+      </button>
+      <button class="mobile-nav-item" id="mobile-btn-redo" onclick="document.getElementById('redoBtn').click()" title="Redo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+        <span>Redo</span>
+      </button>
+      <button class="mobile-nav-item" id="mobile-btn-more" onclick="toggleMobileMore()" title="Mehr">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        <span>Mehr</span>
+      </button>
+    </nav>
 
     <div class="footer">
       Pfeiltasten: Navigation &nbsp;·&nbsp;
@@ -395,9 +464,6 @@
         <div class="settings-label">Debug</div>
         <button id="btn-debug-clear" class="btn btn-ghost">LocalStorage leeren</button>
         <button id="btn-debug-state" class="btn btn-ghost">State in Konsole loggen</button>
-        <button id="btn-debug-update-available" class="btn btn-ghost">Updater: Update verfügbar</button>
-        <button id="btn-debug-update-downloaded" class="btn btn-ghost">Updater: Download abgeschlossen</button>
-        <button id="btn-debug-update-progress" class="btn btn-ghost">Updater: Download simulieren</button>
       </div>
       <div class="modal-buttons">
         <button id="settings-close" class="btn btn-primary">Schließen</button>
@@ -465,6 +531,25 @@
   <script src="app.js"></script>
 
   <!-- Zahlenpad (frei beweglich, direkt im body) -->
+  <!-- Mobile Seed-Modal -->
+  <div id="mobile-seed-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <p style="margin-bottom:6px">Rätsel-ID eingeben</p>
+      <div id="mobile-seed-current" style="display:none;font-family:monospace;font-size:0.85em;color:var(--text-muted);background:var(--bg-input);border:1px solid var(--border-light);border-radius:6px;padding:6px 10px;margin-bottom:12px;letter-spacing:1px;text-align:center"></div>
+      <input id="mobile-seed-modal-input"
+             type="text"
+             maxlength="12"
+             spellcheck="false"
+             autocomplete="off"
+             placeholder="z.B. 5M-JLLNTD"
+             style="width:100%;padding:8px 10px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-family:monospace;font-size:1em;text-transform:uppercase;box-sizing:border-box;margin-bottom:14px">
+      <div class="modal-buttons">
+        <button id="mobile-seed-modal-confirm" class="btn btn-primary">Laden</button>
+        <button id="mobile-seed-modal-cancel"  class="btn btn-ghost">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
   <div id="numpad-overlay" class="numpad-overlay" style="display:none">
     <div id="numpad" class="numpad">
       <div class="numpad-titlebar" id="numpad-titlebar">
@@ -485,5 +570,177 @@
       <div class="numpad-resize" id="numpad-resize"></div>
     </div>
   </div>
+
+  <script>
+    // ── Mobile More Panel Toggle ──────────────────────────────────────
+    function toggleMobileMore() {
+      const panel = document.getElementById('mobile-more-panel');
+      const btn   = document.getElementById('mobile-btn-more');
+      const open  = panel.style.display !== 'none' && panel.style.display !== '';
+      panel.style.display = open ? 'none' : 'flex';
+      btn.classList.toggle('active', !open);
+    }
+
+    // Schließen wenn außerhalb geklickt
+    document.addEventListener('click', function(e) {
+      const panel = document.getElementById('mobile-more-panel');
+      const btn   = document.getElementById('mobile-btn-more');
+      if (panel && !panel.contains(e.target) && !btn.contains(e.target)) {
+        panel.style.display = 'none';
+        btn.classList.remove('active');
+      }
+    });
+
+    // ── Mobile Seed Modal ─────────────────────────────────────────────
+    function openSeedModal() {
+      const modal   = document.getElementById('mobile-seed-modal');
+      const input   = document.getElementById('mobile-seed-modal-input');
+      const current = document.getElementById('mobile-seed-current');
+      const dSeed   = document.getElementById('seed-input');
+      if (dSeed && dSeed.value.trim()) {
+        current.textContent = 'Aktuell: ' + dSeed.value.trim();
+        current.style.display = 'block';
+      } else {
+        current.style.display = 'none';
+      }
+      modal.style.display = 'flex';
+      setTimeout(() => input.focus(), 50);
+    }
+
+    document.getElementById('mobile-seed-modal-confirm').addEventListener('click', () => {
+      const input = document.getElementById('mobile-seed-modal-input');
+      const dSeed = document.getElementById('seed-input');
+      const dLoad = document.getElementById('btn-load-seed');
+      if (input.value.trim()) {
+        dSeed.value = input.value.trim();
+        dLoad.click();
+      }
+      document.getElementById('mobile-seed-modal').style.display = 'none';
+      input.value = '';
+    });
+
+    document.getElementById('mobile-seed-modal-cancel').addEventListener('click', () => {
+      document.getElementById('mobile-seed-modal').style.display = 'none';
+      document.getElementById('mobile-seed-modal-input').value = '';
+    });
+
+    // Enter bestätigt
+    document.getElementById('mobile-seed-modal-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('mobile-seed-modal-confirm').click();
+      if (e.key === 'Escape') document.getElementById('mobile-seed-modal-cancel').click();
+    });
+    (function() {
+      const mSize = document.getElementById('mobile-size');
+      const mDiff = document.getElementById('mobile-difficulty');
+      const mNew  = document.getElementById('mobile-btn-new');
+
+      const dSize = document.getElementById('size');
+      const dDiff = document.getElementById('difficulty');
+      const dNew  = document.getElementById('btn-new');
+
+      if (!mSize || !dSize) return;
+
+      mSize.addEventListener('change', () => {
+        dSize.value = mSize.value;
+        dSize.dispatchEvent(new Event('change'));
+      });
+      mDiff.addEventListener('change', () => {
+        dDiff.value = mDiff.value;
+        dDiff.dispatchEvent(new Event('change'));
+      });
+      mNew.addEventListener('click', () => { dNew.click(); });
+
+      // Desktop → Mobile sync
+      dSize.addEventListener('change', () => { mSize.value = dSize.value; });
+      dDiff.addEventListener('change', () => { mDiff.value = dDiff.value; });
+
+      // Mobile Difficulty-Optionen spiegeln wenn Desktop sie ein-/ausblendet
+      const dDiffEl = document.getElementById('difficulty');
+      if (dDiffEl) {
+        new MutationObserver(() => {
+          Array.from(dDiffEl.options).forEach(opt => {
+            const mOpt = mDiff.querySelector(`option[value="${opt.value}"]`);
+            if (mOpt) {
+              mOpt.disabled = opt.disabled;
+              mOpt.hidden   = opt.hidden;
+            }
+          });
+          // Falls aktuelle Auswahl nicht mehr erlaubt → mitsynchronisieren
+          if (mDiff.value !== dDiffEl.value) mDiff.value = dDiffEl.value;
+        }).observe(dDiffEl, { subtree: true, attributeFilter: ['disabled', 'hidden'], childList: false, attributes: true });
+      }
+    })();
+
+    // Mobile Notizen-Button: active-State spiegeln
+    const notesOrig = document.getElementById('btn-notes');
+    const mobileNotes = document.getElementById('mobile-btn-notes');
+    if (notesOrig && mobileNotes) {
+      new MutationObserver(() => {
+        mobileNotes.classList.toggle('active', notesOrig.dataset.active === 'true');
+      }).observe(notesOrig, { attributes: true, attributeFilter: ['data-active'] });
+    }
+
+    // Mobile Validierungs-Button: active-State spiegeln
+    const validateOrig = document.getElementById('btn-validate');
+    const mobileValidate = document.querySelector('.mobile-more-btn[onclick*="btn-validate"]');
+    if (validateOrig && mobileValidate) {
+      new MutationObserver(() => {
+        mobileValidate.classList.toggle('active', validateOrig.dataset.active === 'true');
+      }).observe(validateOrig, { attributes: true, attributeFilter: ['data-active'] });
+    }
+
+    // Mobile: Zahlenpad automatisch aktivieren
+    (function() {
+      if (window.innerWidth > 600) return;
+      const btn = document.getElementById('btn-numpad');
+      if (!btn) return;
+      // Sofort aktivieren falls noch nicht aktiv
+      if (btn.dataset.active !== 'true') btn.click();
+      // Auch nach jedem neuen Rätsel sicherstellen
+      const observer = new MutationObserver(() => {
+        if (btn.dataset.active !== 'true') btn.click();
+      });
+      const board = document.getElementById('board');
+      if (board) observer.observe(board, { childList: true });
+    })();
+    (function() {
+      const display = document.getElementById('mobile-seed-display');
+      const dSeed   = document.getElementById('seed-input');
+      if (!display || !dSeed) return;
+      function update() {
+        display.textContent = dSeed.value.trim() || '';
+      }
+      update();
+      dSeed.addEventListener('input', update);
+      new MutationObserver(update).observe(dSeed, { attributes: true, attributeFilter: ['value'] });
+      // Auch nach Puzzle-Generierung aktualisieren
+      document.addEventListener('puzzleReady', update);
+      // Polling als Fallback (app.js setzt value direkt)
+      setInterval(update, 500);
+    })();
+    (function() {
+      const numpadOverlay = document.getElementById('numpad-overlay');
+      const boardContainer = document.getElementById('board-container');
+      if (!numpadOverlay || !boardContainer) return;
+
+      function updateBoardPadding() {
+        if (window.innerWidth > 600) return;
+        const visible = numpadOverlay.style.display === 'block';
+        if (visible) {
+          const h = numpadOverlay.offsetHeight;
+          boardContainer.style.overflowY = 'auto';
+          boardContainer.style.paddingBottom = (h + 16) + 'px';
+        } else {
+          boardContainer.style.overflowY = '';
+          boardContainer.style.paddingBottom = '';
+        }
+      }
+
+      new MutationObserver(updateBoardPadding)
+        .observe(numpadOverlay, { attributes: true, attributeFilter: ['style'] });
+
+      window.addEventListener('resize', updateBoardPadding);
+    })();
+  </script>
 </body>
 </html>

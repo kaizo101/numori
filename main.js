@@ -40,6 +40,8 @@ function createWindow() {
     const win = new BrowserWindow({
         width: 900,
         height: 700,
+        minWidth: 900,
+        minHeight: 600,
         title: 'Numori',
         icon: path.join(__dirname, 'assets/icons/png/numori-48.png'),
         webPreferences: {

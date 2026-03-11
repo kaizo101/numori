@@ -1053,8 +1053,16 @@ function startMatrixRain() {
     const rows = Math.floor(canvas.height / FS);
     // Phases
     const RAIN=0, FLASH=1, FLY=2, TYPEWRITE=3, IDLE=4;
-    let phase=RAIN, ticks=0;
-    const RAIN_TICKS=400, FLASH_TICKS=90, FLY_TICKS=110;
+    let phase=RAIN;
+    // Zeit-basiertes Timing (statt tick-basiert) – läuft auf allen Geräten gleich schnell
+    const MS_PER_TICK = 1000/60; // Ziel: 60fps-Äquivalent
+    let elapsed = 0, lastTime = performance.now();
+    function ticks() { return elapsed / MS_PER_TICK; }
+    const isMobile = window.innerWidth <= 600;
+    const RAIN_TICKS  = isMobile ? 180 : 400;
+    const FLASH_TICKS = isMobile ?  50 :  90;
+    const FLY_TICKS   = isMobile ?  60 : 110;
+    const TYPE_SPEED  = isMobile ?   2 :   5; // Ticks pro Zeichen (zeit-basiert → gleich auf allen fps)
     const drops = Array.from({length:cols}, ()=>Math.floor(Math.random()*-rows));
     // Win data
     const d = _matrixWinData||{};
@@ -1086,11 +1094,38 @@ function startMatrixRain() {
     const INPUT_Y = STATS_START_Y + statLines.length*STAT_LINE_H + FS*1.8;
     const INPUT_X = canvas.width/2 - 180;
     let flashAlpha=0, flashScale=1, titleY=TITLE_START_Y;
-    let typeLineIdx=0, typeCharIdx=0, typeTick=0;
-    const TYPE_SPEED=5;
+    let typeLineIdx=0, typeCharIdx=0, typeElapsed=0;
+    const TYPE_MS = TYPE_SPEED * MS_PER_TICK;
     let inputActive=false, inputValue='', inputBlink=true, inputBlinkTick=0;
+
+    // Mobile: Touch-Buttons statt Texteingabe
+    let mobileButtons = null;
+    function createMobileButtons() {
+        if (mobileButtons) return;
+        mobileButtons = document.createElement('div');
+        mobileButtons.style.cssText = 'position:fixed;bottom:80px;left:0;right:0;z-index:100000;display:flex;justify-content:center;gap:16px;padding:0 24px;';
+        const btnStyle = 'padding:14px 28px;border:1px solid '+ACCENT+';background:#000;color:'+ACCENT+';font-family:Share Tech Mono,monospace;font-size:0.95em;border-radius:4px;cursor:pointer;letter-spacing:1px;';
+        if (!denied) {
+            const btnNew = document.createElement('button');
+            btnNew.textContent = '> neues rätsel';
+            btnNew.style.cssText = btnStyle;
+            btnNew.addEventListener('click', () => { stopMatrixRain(); hideWinBanner(); document.getElementById('btn-new')?.click(); removeMobileButtons(); });
+            mobileButtons.appendChild(btnNew);
+        }
+        const btnExit = document.createElement('button');
+        btnExit.textContent = denied ? '> schließen' : '> beenden';
+        btnExit.style.cssText = btnStyle;
+        btnExit.addEventListener('click', () => { stopMatrixRain(); hideWinBanner(); removeMobileButtons(); });
+        mobileButtons.appendChild(btnExit);
+        document.body.appendChild(mobileButtons);
+    }
+    function removeMobileButtons() {
+        if (mobileButtons) { mobileButtons.remove(); mobileButtons = null; }
+    }
+
     function activateInput() {
         if (inputActive) return; inputActive=true;
+        if (isMobile) { createMobileButtons(); return; }
         if (_matrixKeyHandler) document.removeEventListener('keydown',_matrixKeyHandler);
         _matrixKeyHandler=(e)=>{
             if (!inputActive) return;
@@ -1139,59 +1174,65 @@ function startMatrixRain() {
         ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.fillStyle=denied?'#aa1010':'#00aa2a';
         ctx.fillText('> '+inputValue+(inputBlink?'_':' '),INPUT_X,INPUT_Y);
     }
-    function draw(){
-        ticks++;
+    function draw(now){
+        const dt = Math.min(now - lastTime, 50);
+        lastTime = now;
+        elapsed += dt;
+        const t = ticks();
         if(phase===RAIN){
             ctx.fillStyle="rgba(0,0,0,0.14)"; ctx.fillRect(0,0,canvas.width,canvas.height);
             ctx.font=FS+"px Share Tech Mono,monospace"; ctx.textAlign="left"; ctx.textBaseline="alphabetic";
             for(let c=0;c<cols;c++){
-                const pool="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#%&!?/|^~+-*=<>.:;{}[]()";const y=drops[c],ch=pool[Math.floor(Math.random()*pool.length)];
-                if(y>=0&&y<rows){const t=denied?Math.min(1,ticks/RAIN_TICKS):0;const r=Math.round(t*255),g=Math.round((1-t)*255);const dropColor=y<2?"#ffffff":"rgb("+r+","+g+",0)";ctx.fillStyle=dropColor;ctx.fillText(ch,c*FS,y*FS+FS);}
+                const pool="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#%&!?/|^~+-*=<>.:;{}[]()" ;const y=drops[c],ch=pool[Math.floor(Math.random()*pool.length)];
+                if(y>=0&&y<rows){const tr=denied?Math.min(1,t/RAIN_TICKS):0;const r=Math.round(tr*255),g=Math.round((1-tr)*255);const dropColor=y<2?"#ffffff":"rgb("+r+","+g+",0)";ctx.fillStyle=dropColor;ctx.fillText(ch,c*FS,y*FS+FS);}
                 if(Math.random()<0.55)drops[c]++;if(drops[c]>rows+12)drops[c]=Math.floor(Math.random()*-70);
             }
-            if(ticks>RAIN_TICKS){phase=FLASH;ticks=0;}
+            if(t>RAIN_TICKS){phase=FLASH;elapsed=0;}
         }else if(phase===FLASH){
             ctx.fillStyle="rgba(0,0,0,0.18)";ctx.fillRect(0,0,canvas.width,canvas.height);
-            const pr=ticks/FLASH_TICKS;
+            const pr=t/FLASH_TICKS;
             if(pr<0.35){flashAlpha=pr/0.35;flashScale=1+(1-flashAlpha)*0.25;}else{flashAlpha=1;flashScale=1;}
             drawTitle(TITLE_START_Y,flashAlpha,flashScale);
-            if(ticks>=FLASH_TICKS){phase=FLY;ticks=0;titleY=TITLE_START_Y;}
+            if(t>=FLASH_TICKS){phase=FLY;elapsed=0;titleY=TITLE_START_Y;}
         }else if(phase===FLY){
             ctx.fillStyle="rgba(0,0,0,0.12)";ctx.fillRect(0,0,canvas.width,canvas.height);
-            const ease=1-Math.pow(1-(ticks/FLY_TICKS),3);
+            const ease=1-Math.pow(1-(t/FLY_TICKS),3);
             titleY=TITLE_START_Y+(TITLE_FINAL_Y-TITLE_START_Y)*ease;
             drawTitle(titleY,1,1);
-            if(ticks>=FLY_TICKS){phase=TYPEWRITE;ticks=0;typeLineIdx=0;typeCharIdx=0;typeTick=0;}
+            if(t>=FLY_TICKS){phase=TYPEWRITE;elapsed=0;typeLineIdx=0;typeCharIdx=0;typeElapsed=0;}
         }else if(phase===TYPEWRITE){
             ctx.fillStyle="rgba(0,0,0,0.88)";ctx.fillRect(0,0,canvas.width,canvas.height);
             drawTitle(TITLE_FINAL_Y,1,1);
-            typeTick++;
-            if(typeTick%TYPE_SPEED===0){
+            typeElapsed += dt;
+            while(typeElapsed >= TYPE_MS){
+                typeElapsed -= TYPE_MS;
                 const cur=statLines[typeLineIdx]||"";
                 if(typeCharIdx<cur.length){typeCharIdx++;}
                 else if(typeLineIdx<statLines.length-1){typeLineIdx++;typeCharIdx=0;}
-                else{phase=IDLE;activateInput();}
+                else{phase=IDLE;activateInput();break;}
             }
             drawStats(typeLineIdx,typeCharIdx);
-            if(Math.floor(ticks/22)%2===0){
+            if(Math.floor(t/22)%2===0){
                 ctx.fillStyle=ACCENT;ctx.textBaseline="alphabetic";
                 const tw=ctx.measureText((statLines[typeLineIdx]||"").slice(0,typeCharIdx)).width;
-                const sX2=canvas.width/2-90;const isCent=typeLineIdx===0||statLines[typeLineIdx].startsWith(">") || statLines[typeLineIdx].startsWith("ERROR");const cX=isCent?canvas.width/2+tw/2+3:sX2+tw+3;ctx.fillRect(cX,STATS_START_Y+typeLineIdx*STAT_LINE_H-FS*0.9,2,FS);
+                const sX2=canvas.width/2-90;const isCent=typeLineIdx===0||statLines[typeLineIdx].startsWith(">")||statLines[typeLineIdx].startsWith("ERROR");const cX=isCent?canvas.width/2+tw/2+3:sX2+tw+3;ctx.fillRect(cX,STATS_START_Y+typeLineIdx*STAT_LINE_H-FS*0.9,2,FS);
             }
         }else{
             ctx.fillStyle="rgba(0,0,0,0.88)";ctx.fillRect(0,0,canvas.width,canvas.height);
             drawTitle(TITLE_FINAL_Y,1,1);
             drawStats(statLines.length,0);
-            drawInput();
+            if(!isMobile) drawInput();
         }
         _matrixAnimFrame=requestAnimationFrame(draw);
     }
-    draw();
+    draw(performance.now());
 }
 
 function stopMatrixRain(){
     if(_matrixAnimFrame){cancelAnimationFrame(_matrixAnimFrame);_matrixAnimFrame=null;}
     if(_matrixKeyHandler){document.removeEventListener("keydown",_matrixKeyHandler);_matrixKeyHandler=null;}
+    // Mobile Touch-Buttons entfernen falls vorhanden
+    document.querySelectorAll('#matrix-mobile-btns').forEach(el => el.remove());
     const c=document.getElementById("matrix-canvas");
     if(c){c.style.display="none";c.getContext("2d").clearRect(0,0,c.width,c.height);}
 }

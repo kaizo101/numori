@@ -12,7 +12,7 @@ Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enth
 Numori ist auch als Webversion verfügbar:
 👉 [kaizo101.github.io/numori](https://kaizo101.github.io/numori)
 
-Optimiert für Desktop-Browser. Mobile-Unterstützung folgt in v1.0.
+Optimiert für Desktop-Browser. Mobile-Unterstützung ab v0.9.1 als Preview – Feedback willkommen!
 
 ---
 
@@ -24,12 +24,13 @@ Optimiert für Desktop-Browser. Mobile-Unterstützung folgt in v1.0.
 
 ---
 
-## Features (v0.9.0)
+## Features (v0.9.1)
 
 - Prozedural generierte Rätsel – unbegrenzte einzigartige Puzzles
 - Rastergrößen: 3×3 bis 7×7
 - 3 Schwierigkeitsgrade (Leicht, Mittel, Schwer)
 - Rätsel-IDs – Puzzles teilen und wiederholen
+- **Mobile-Unterstützung** *(Preview)* – optimiertes Layout für Smartphones mit Touch-Bedienung
 - PDF-Export – Rätsel als leeres A4-PDF speichern und ausdrucken
 - Theme-System – Klassisch, Numori Dark, Console
 - Wettkampf-Modus mit Timer und 3-2-1 Countdown *(in Entwicklung)*

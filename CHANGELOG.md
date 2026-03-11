@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.9.1 — 2026-03-11
+
+### Neu
+- **Mobile-Layout** *(Preview)* — optimiertes Layout für Smartphones (≤ 600px): kompakte Top-Toolbar mit Größe, Schwierigkeit, Rätsel-ID und Täglichem Rätsel; fixe Bottom-Nav mit Notizen, Tipp, Undo, Redo und Mehr-Menü
+- **Seed-Modal** — Rätsel-ID-Eingabe auf Mobile als Modal statt Textfeld; zeigt die aktuelle Rätsel-ID an
+- **Rätsel-ID über dem Board** — aktuelle ID wird auf Mobile oben links eingeblendet
+- **Zahlenpad automatisch aktiv** — öffnet sich auf Mobile beim Start eines Rätsels automatisch
+- **Matrix-Winscreen Mobile** — Touch-Buttons statt Tastatureingabe; Animation läuft jetzt zeit-basiert (gleichmäßig auf allen Geräten und Framerates)
+
+### Verbesserungen
+- Käfig-Labels und Notizen auf Mobile 40% größer
+- Schwierigkeits-Dropdown auf Mobile passt sich bei Größenwechsel korrekt an
+- Mindestfenstergröße im Electron-Fenster auf 900×600 gesetzt (verhindert versehentliches Einblenden des Mobile-Layouts)
+
+### Bugfixes
+- Mobile Bottom-Nav im Console-Theme hatte grünen Hintergrund statt schwarz
+- Console-Theme Vignette-Overlay überlagerte Mobile-Elemente
+
+---
+
 ## v0.9.0 — 2026-03-10
 
 ### Neu
