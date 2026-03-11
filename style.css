@@ -796,6 +796,8 @@ border-color: #ddd;
     .mobile-more-panel  { display: none !important; }
     .mobile-seed-display { display: none !important; }
     .app-container { padding-bottom: 0 !important; }
+
+    /* Mobile Numpad-Styles werden per JS in show() zurückgesetzt, kein CSS-Reset nötig */
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -1087,80 +1089,8 @@ border-color: #ddd;
         color: #fff;
     }
 
-    /* Numpad: auf Mobile immer volle Breite, unten verankert */
-    .numpad-overlay {
-        bottom: calc(58px + env(safe-area-inset-bottom));
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        top: auto !important;
-        border-radius: 12px 12px 0 0;
-    }
-
-    .numpad-overlay .numpad {
-        border-radius: 12px 12px 0 0;
-        width: 100%;
-    }
-
-    .numpad-overlay .numpad-titlebar {
-        display: none; /* kein Drag-Handle auf Mobile */
-    }
-
-    .numpad-overlay .numpad-resize {
-        display: none; /* kein Resize auf Mobile */
-    }
-
-    /* Einzeilig: body als Flex-Zeile, grid + actions nebeneinander */
-    .numpad-overlay .numpad-body {
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-        padding: 6px;
-        gap: 5px;
-    }
-
-    .numpad-overlay .numpad-grid {
-        display: flex !important;
-        flex-direction: row !important;
-        flex: 1;
-        gap: 5px;
-        grid-template-columns: unset !important;
-    }
-
-    .numpad-overlay .numpad-actions {
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
-        flex-shrink: 0;
-    }
-
-    /* Notiz-Button überflüssig – ist bereits in Bottom Nav */
-    .numpad-overlay .numpad-notes {
-        display: none;
-    }
-
-    /* Löschen-Button: quadratisch wie Zahlen, ⌫ Icon größer */
-    .numpad-overlay .numpad-clear {
-        flex: 1 !important;
-        width: auto !important;
-    }
-
-    .numpad-overlay .numpad-clear svg {
-        display: none;
-    }
-
-    .numpad-overlay .numpad-clear::after {
-        content: '⌫';
-        font-size: 1.2em;
-    }
-
-    .numpad-overlay .numpad-btn {
-        width: auto !important;
-        flex: 1;
-        height: 48px;
-        font-size: 1.15em;
-        padding: 0 4px;
-    }
+    /* Numpad-Styles wurden in klassenbasierte Regeln ausgelagert (.numpad-overlay--mobile),
+       da CSS-Viewport in Electron/HiDPI nicht mit window.innerWidth übereinstimmt. */
 
     [data-theme="console"] .mobile-nav-item {
         color: #00aa22 !important;
@@ -4101,6 +4031,82 @@ header {
     background: #1a0000;
     color: #ff4444;
     border-color: #ff444488;
+}
+
+/* ── Numpad Mobile-Modus (per JS-Klasse, unabhängig von CSS-Viewport) ── */
+/* Wird in app.js per overlay.classList.add('numpad-overlay--mobile') gesetzt,
+   damit HiDPI/Electron-Viewport-Abweichungen keine Rolle spielen.           */
+
+.numpad-overlay--mobile {
+    position: fixed;
+    bottom: calc(58px + env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    width: 100%;
+    top: auto;
+    border-radius: 12px 12px 0 0;
+}
+
+.numpad-overlay--mobile .numpad {
+    border-radius: 12px 12px 0 0;
+    width: 100%;
+}
+
+.numpad-overlay--mobile .numpad-titlebar {
+    display: none;
+}
+
+.numpad-overlay--mobile .numpad-resize {
+    display: none;
+}
+
+.numpad-overlay--mobile .numpad-body {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 6px;
+    gap: 5px;
+}
+
+.numpad-overlay--mobile .numpad-grid {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    gap: 5px;
+    grid-template-columns: unset;
+}
+
+.numpad-overlay--mobile .numpad-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.numpad-overlay--mobile .numpad-notes {
+    display: none;
+}
+
+.numpad-overlay--mobile .numpad-clear {
+    flex: 1;
+    width: auto;
+}
+
+.numpad-overlay--mobile .numpad-clear svg {
+    display: none;
+}
+
+.numpad-overlay--mobile .numpad-clear::after {
+    content: '⌫';
+    font-size: 1.2em;
+}
+
+.numpad-overlay--mobile .numpad-btn {
+    width: auto;
+    flex: 1;
+    height: 48px;
+    font-size: 1.15em;
+    padding: 0 4px;
 }
 
 

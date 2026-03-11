@@ -2895,7 +2895,22 @@ const numpadModule = (() => {
         }
     }
 
-    let enabled = localStorage.getItem('numori-numpad') === 'true';
+    function _numpadKey() {
+        return window.matchMedia('(max-width: 600px)').matches
+            ? 'numori-numpad-mobile'
+            : 'numori-numpad-desktop';
+    }
+    // Migration: war der Key bisher unter dem jeweils anderen Schlüssel gespeichert
+    // (passiert wenn die App erstmals mit dem korrigierten Key-Splitting geöffnet wird),
+    // wird der Wert einmalig übernommen und unter dem neuen Key gespeichert.
+    (function migrateNumpadKey() {
+        const key = _numpadKey();
+        if (localStorage.getItem(key) !== null) return; // bereits gesetzt, nichts tun
+        const otherKey = key === 'numori-numpad-desktop' ? 'numori-numpad-mobile' : 'numori-numpad-desktop';
+        const otherVal = localStorage.getItem(otherKey);
+        if (otherVal !== null) localStorage.setItem(key, otherVal);
+    })();
+    let enabled = localStorage.getItem(_numpadKey()) === 'true';
 
     function syncNotesBtn() {
         const notesBtn = document.getElementById('numpad-notes');
@@ -2938,8 +2953,22 @@ const numpadModule = (() => {
             pad.style.transformOrigin = 'top left';
         }
 
+        const isMobile = window.matchMedia('(max-width: 600px)').matches;
+        overlay.classList.toggle('numpad-overlay--mobile', isMobile);
+
         overlay.style.display = 'block';
-        _applyPosition();
+
+        if (isMobile) {
+            // Mobile: CSS-Klasse übernimmt Layout – JS-Inline-Styles leeren
+            overlay.style.left   = '';
+            overlay.style.top    = '';
+            overlay.style.right  = '';
+            overlay.style.bottom = '';
+            overlay.style.width  = '';
+        } else {
+            // Desktop: frei positionierbares Overlay via JS
+            _applyPosition();
+        }
     }
 
     function hide() {
@@ -2948,7 +2977,7 @@ const numpadModule = (() => {
 
     function toggle() {
         enabled = !enabled;
-        localStorage.setItem('numori-numpad', String(enabled));
+        localStorage.setItem(_numpadKey(), String(enabled));
         if (enabled && currentPuzzle) {
             show(currentPuzzle.solution.length);
         } else if (!enabled) {
@@ -2961,6 +2990,7 @@ const numpadModule = (() => {
 
     function reposition() {
         if (!overlay || overlay.style.display === 'none') return;
+        if (window.matchMedia('(max-width: 600px)').matches) return; // Mobile: CSS übernimmt
         if (overlay._leftPct === undefined) return;
         let left = overlay._leftPct * window.innerWidth;
         let top  = overlay._topPct  * window.innerHeight;
