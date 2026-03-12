@@ -6,9 +6,11 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
-    "update-tracks": "node scripts/update-tracks.js"
+    "update-tracks": "node scripts/update-tracks.js",
+    "sync-www": "cp app.js www/app.js && cp index.html www/index.html && cp style.css www/style.css"
   },
   "dependencies": {
+    "@capacitor/status-bar": "^8.0.1",
     "electron-updater": "^6.3.0"
   },
   "devDependencies": {

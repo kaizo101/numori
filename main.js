@@ -36,10 +36,32 @@ ipcMain.on('update-start-download', () => {
     autoUpdater.downloadUpdate().catch(() => {});
 });
 
+// ── Fenstergröße persistieren ─────────────────────────────────────
+const WINDOW_STATE_PATH = path.join(app.getPath('userData'), 'window-state.json');
+
+function loadWindowState() {
+    try {
+        const raw = fs.readFileSync(WINDOW_STATE_PATH, 'utf8');
+        const s = JSON.parse(raw);
+        if (s.width >= 900 && s.height >= 600) return s;
+    } catch (_) {}
+    return { width: 900, height: 700 };
+}
+
+function saveWindowState(win) {
+    try {
+        if (win.isMaximized() || win.isMinimized()) return;
+        const [width, height] = win.getSize();
+        fs.writeFileSync(WINDOW_STATE_PATH, JSON.stringify({ width, height }));
+    } catch (_) {}
+}
+
 function createWindow() {
+    const { width, height } = loadWindowState();
+
     const win = new BrowserWindow({
-        width: 900,
-        height: 700,
+        width,
+        height,
         minWidth: 900,
         minHeight: 600,
         title: 'Numori',
@@ -54,9 +76,13 @@ function createWindow() {
     win.setAspectRatio(900 / 700); // Proportionales Resizen
     win.setMenuBarVisibility(false);
 
+    // Größe bei jedem Resize speichern
+    win.on('resize', () => saveWindowState(win));
+
     let closeConfirmed = false;
 
     win.on('close', (e) => {
+        saveWindowState(win);
         if (closeConfirmed) return; // bereits bestätigt, normal schließen
         e.preventDefault();
 

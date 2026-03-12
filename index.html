@@ -50,6 +50,9 @@
           <div id="music-playlist" class="music-playlist" style="display:none"></div>
         </div>
       </div>
+            <button id="btn-music-mobile" class="btn-settings" title="Musik" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </button>
             <button id="btn-theme" class="btn-settings" title="Design">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
       </button>
@@ -61,6 +64,32 @@
       </button>
       </div>
     </header>
+
+    <!-- Musik-Panel (Mobile + Console-Theme) -->
+    <div id="music-mobile-panel" class="music-mobile-panel" style="display:none">
+      <div class="music-mobile-panel-inner">
+        <div class="music-mobile-track">
+          <span id="music-mobile-author">–</span>
+          <span class="music-mobile-sep"> · </span>
+          <span id="music-mobile-title">–</span>
+        </div>
+        <div class="music-mobile-row">
+          <button id="music-mobile-prev" class="music-btn" title="Zurück">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
+          <button id="music-mobile-play" class="music-btn" title="Play/Pause">
+            <svg id="music-mobile-play-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button id="music-mobile-next" class="music-btn" title="Weiter">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
+          <div id="music-mobile-vol-track" class="music-seek-track music-vol-track music-mobile-vol-track">
+            <div id="music-mobile-vol-fill" class="music-seek-fill"></div>
+            <div id="music-mobile-vol-thumb" class="music-seek-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="toolbar">
       <div class="toolbar-grid">
@@ -328,7 +357,7 @@
       Entf: Löschen &nbsp;·&nbsp;
       Strg+Z/Y: Undo/Redo &nbsp;·&nbsp;
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg> Wettkampf-Modus
-      <span class="footer-version">v0.9.0</span>
+      <span class="footer-version">v0.9.2</span>
 
     </div>
 
@@ -464,6 +493,9 @@
         <div class="settings-label">Debug</div>
         <button id="btn-debug-clear" class="btn btn-ghost">LocalStorage leeren</button>
         <button id="btn-debug-state" class="btn btn-ghost">State in Konsole loggen</button>
+        <button id="btn-debug-update-available"  class="btn btn-ghost">Debug: Update verfügbar</button>
+        <button id="btn-debug-update-downloaded" class="btn btn-ghost">Debug: Update heruntergeladen</button>
+        <button id="btn-debug-update-progress"   class="btn btn-ghost">Debug: Download-Fortschritt</button>
       </div>
       <div class="modal-buttons">
         <button id="settings-close" class="btn btn-primary">Schließen</button>
@@ -576,7 +608,11 @@
     function toggleMobileMore() {
       const panel = document.getElementById('mobile-more-panel');
       const btn   = document.getElementById('mobile-btn-more');
+      const nav   = document.getElementById('mobile-bottom-nav');
       const open  = panel.style.display !== 'none' && panel.style.display !== '';
+      if (!open && nav) {
+        panel.style.bottom = nav.getBoundingClientRect().height + 'px';
+      }
       panel.style.display = open ? 'none' : 'flex';
       btn.classList.toggle('active', !open);
     }
@@ -691,7 +727,7 @@
 
     // Mobile: Zahlenpad automatisch aktivieren
     (function() {
-      if (window.innerWidth > 600) return;
+      if (!window.matchMedia('(max-width: 600px)').matches) return;
       const btn = document.getElementById('btn-numpad');
       if (!btn) return;
       // Sofort aktivieren falls noch nicht aktiv

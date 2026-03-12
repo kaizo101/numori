@@ -13,6 +13,7 @@
 }
 
 :root {
+    --mobile-nav-height: 64px;
     /* Hintergrund */
     --bg-body:        #ddd9d0;
     --bg-app:         #f7f5f0;
@@ -147,6 +148,9 @@ header {
     background: var(--accent);
     color: #fff;
     padding: clamp(11px, 1.57vh, 20px) clamp(22px, 2.44vw, 40px) clamp(9px, 1.29vh, 18px);
+    padding-top: calc(clamp(11px, 1.57vh, 20px) + env(safe-area-inset-top));
+    padding-left: calc(clamp(22px, 2.44vw, 40px) + env(safe-area-inset-left));
+    padding-right: calc(clamp(22px, 2.44vw, 40px) + env(safe-area-inset-right));
     border-bottom: 3px solid var(--accent-dark);
     display: flex;
     align-items: center;
@@ -581,6 +585,7 @@ border-color: #ddd;
 .footer {
     flex-shrink: 0;
     padding: clamp(5px, 0.7vh, 10px) clamp(20px, 2vw, 30px);
+    padding-bottom: calc(clamp(5px, 0.7vh, 10px) + env(safe-area-inset-bottom));
     font-size: clamp(0.62em, 1vw, 0.9em);
     color: var(--text-faint);
     background: var(--bg-cell);
@@ -778,6 +783,7 @@ border-color: #ddd;
     display: flex;
     gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 /* ── Mobile-Elemente: standardmäßig versteckt (überschrieben durch Media Queries) ── */
@@ -862,9 +868,15 @@ border-color: #ddd;
         border-right: none;
     }
 
+    /* Body-Hintergrund auf accent damit kein beiger Streifen bei Navigationsleiste */
+    body {
+        background: var(--accent);
+    }
+
     /* Header: kompakter */
     header {
         padding: 9px 12px 8px;
+        padding-top: calc(9px + env(safe-area-inset-top));
         gap: 8px;
     }
 
@@ -975,27 +987,27 @@ border-color: #ddd;
         gap: 0;
     }
 
-    /* Welcome-Screen Icon ausblenden (zu groß für Mobile) */
-    .welcome-icon-img { display: none; }
+
 
     /* Console: Vignette-Overlay auf Mobile deaktivieren */
     [data-theme="console"] .app-container::after {
         display: none;
     }
 
-    /* Musikplayer im Header ausblenden */
-    #music-player { display: none !important; }
+    /* Musikplayer im Header ausblenden (wird per JS gesteuert) */
+    #music-player { display: none; }
 
     /* ── Mobile More Panel ─────────────────────────────────────────── */
     .mobile-more-panel {
         position: fixed;
-        bottom: calc(58px + env(safe-area-inset-bottom));
+        bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
         left: 0;
         right: 0;
-        z-index: 300;
+        z-index: 250;
         background: var(--bg-toolbar);
         border-top: 1px solid var(--border-main);
-        padding: 8px 12px;
+        border-radius: 12px 12px 0 0;
+        padding: 12px 12px;
         display: flex;
         flex-wrap: nowrap;
         gap: 8px;
@@ -1045,8 +1057,8 @@ border-color: #ddd;
         align-items: center;
         background: var(--accent);
         border-top: 2px solid var(--accent-dark);
-        padding: 6px 0 8px;
-        padding-bottom: max(8px, env(safe-area-inset-bottom));
+        padding: 10px 0 12px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
         z-index: 200;
     }
 
@@ -1058,24 +1070,25 @@ border-color: #ddd;
 
     /* Platz für die fixe Bottom Nav + Android-Leiste */
     .app-container {
-        padding-bottom: calc(58px + env(safe-area-inset-bottom));
+        padding-bottom: calc(68px + env(safe-area-inset-bottom));
+        background: var(--accent);
     }
 
     .mobile-nav-item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 2px;
+        gap: 4px;
         color: rgba(255,255,255,0.45);
-        font-size: 0.58em;
+        font-size: 0.65em;
         font-family: system-ui, 'Segoe UI', sans-serif;
         letter-spacing: 0.3px;
         background: none;
         border: none;
         cursor: pointer;
-        padding: 4px 8px;
+        padding: 6px 10px;
         border-radius: 8px;
-        min-width: 52px;
+        min-width: 56px;
         transition: color 0.12s;
         -webkit-tap-highlight-color: transparent;
     }
@@ -2737,6 +2750,7 @@ header {
 /* Fonts */
 [data-theme="console"] body {
     font-family: 'Share Tech Mono', monospace;
+    background: #000;
 }
 
 /* CRT-Effekt auf dem App-Container */
@@ -2774,6 +2788,7 @@ header {
     background: #000;
     border-bottom: 1px solid #00aa2a;
     padding: 8px 10px 7px;
+    padding-top: calc(8px + env(safe-area-inset-top));
 }
 
 [data-theme="console"] .header-right {
@@ -3525,6 +3540,45 @@ header {
 }
 
 /* ── Music Player (Console-Theme only) ──────────────────────────── */
+.music-mobile-panel {
+    background: var(--accent-mid);
+    border-bottom: 1px solid var(--accent-dark);
+    padding: 8px 16px 10px;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.music-mobile-panel-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.music-mobile-track {
+    font-size: 0.78em;
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-mobile-sep {
+    opacity: 0.4;
+}
+
+.music-mobile-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.music-mobile-vol-track {
+    flex: 1;
+    pointer-events: auto !important;
+    padding: 12px 0;
+    margin: -12px 0;
+    cursor: pointer;
+}
+
 .music-player {
     display: flex;
     align-items: center;
@@ -4039,7 +4093,7 @@ header {
 
 .numpad-overlay--mobile {
     position: fixed;
-    bottom: calc(58px + env(safe-area-inset-bottom));
+    bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
@@ -4064,22 +4118,22 @@ header {
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    padding: 6px;
-    gap: 5px;
+    padding: 8px;
+    gap: 6px;
 }
 
 .numpad-overlay--mobile .numpad-grid {
     display: flex;
     flex-direction: row;
     flex: 1;
-    gap: 5px;
+    gap: 6px;
     grid-template-columns: unset;
 }
 
 .numpad-overlay--mobile .numpad-actions {
     display: flex;
     flex-direction: row;
-    gap: 5px;
+    gap: 6px;
     flex-shrink: 0;
 }
 
@@ -4104,8 +4158,8 @@ header {
 .numpad-overlay--mobile .numpad-btn {
     width: auto;
     flex: 1;
-    height: 48px;
-    font-size: 1.15em;
+    height: 58px;
+    font-size: 1.25em;
     padding: 0 4px;
 }
 

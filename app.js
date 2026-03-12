@@ -606,6 +606,8 @@ function restoreGameState(s) {
             syncCustomSelect('size', String(n));
             updateDifficultyOptions(n);
         }
+        // Seed-ID wiederherstellen
+        if (currentPuzzle.seed) setSeedTypewriter(currentPuzzle.seed);
     });
 }
 
@@ -789,14 +791,22 @@ const musicPlayer = {
         const thumb = document.getElementById('music-vol-thumb');
         if (fill)  fill.style.width  = `${pct}%`;
         if (thumb) thumb.style.left  = `${pct}%`;
+        // Mobile-Panel-Vol mitziehen
+        const mFill  = document.getElementById('music-mobile-vol-fill');
+        const mThumb = document.getElementById('music-mobile-vol-thumb');
+        if (mFill)  mFill.style.width = `${pct}%`;
+        if (mThumb) mThumb.style.left = `${pct}%`;
     },
 
     _updatePlayIcon() {
         const icon = document.getElementById('music-play-icon');
         if (!icon) return;
-        icon.innerHTML = this.playing
-            ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
-            : '<polygon points="5 3 19 12 5 21 5 3"/>';
+        const pauseSVG = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+        const playSVG  = '<polygon points="5 3 19 12 5 21 5 3"/>';
+        icon.innerHTML = this.playing ? pauseSVG : playSVG;
+        // Mobile-Panel-Icon mitziehen
+        const mIcon = document.getElementById('music-mobile-play-icon');
+        if (mIcon) mIcon.innerHTML = this.playing ? pauseSVG : playSVG;
     },
 
     _buildPlaylist(container) {
@@ -920,15 +930,28 @@ const musicPlayer = {
 
         this._updatePlaylistHighlight();
         this._updateVolUI();
+
+        // Mobile-Panel-Titelanzeige mitziehen
+        const mAuthor = document.getElementById('music-mobile-author');
+        const mTitle  = document.getElementById('music-mobile-title');
+        if (mAuthor) mAuthor.textContent = author;
+        if (mTitle)  mTitle.textContent  = title;
     },
 };
 
 function initMusicPlayer() {
     const isConsole = document.documentElement.getAttribute('data-theme') === 'console';
+    const isMobile  = window.innerWidth <= 600;
     const playerEl  = document.getElementById('music-player');
     if (!playerEl) return;
 
-    if (isConsole) {
+    // Mobile Musik-Button: nur auf Mobile + Console-Theme
+    const mobileMusicBtn = document.getElementById('btn-music-mobile');
+    if (mobileMusicBtn) {
+        mobileMusicBtn.style.display = (isConsole && isMobile) ? 'flex' : 'none';
+    }
+
+    if (isConsole && !isMobile) {
         playerEl.style.display = 'flex';
         // Play-Icon-Zustand synchronisieren
         musicPlayer._updatePlayIcon();
@@ -965,6 +988,42 @@ function initMusicPlayer() {
     const pl = document.getElementById('music-playlist');
     if (pl) { pl.style.display = 'none'; pl.style.flexDirection = ''; }
 }
+
+// ── Mobile-Musikplayer Panel verdrahten ───────────────────────────
+function initSettingsMusicPlayer() {
+    // ── Mobile-Panel Buttons ──────────────────────────────────────
+    const mBtn      = document.getElementById('btn-music-mobile');
+    const mPanel    = document.getElementById('music-mobile-panel');
+    const mPrev     = document.getElementById('music-mobile-prev');
+    const mPlay     = document.getElementById('music-mobile-play');
+    const mNext     = document.getElementById('music-mobile-next');
+    const mVolTrack = document.getElementById('music-mobile-vol-track');
+
+    if (mBtn && mPanel) {
+        mBtn.addEventListener('click', () => {
+            const open = mPanel.style.display === 'block';
+            mPanel.style.display = open ? 'none' : 'block';
+        });
+    }
+    if (mPrev) mPrev.addEventListener('click', () => document.getElementById('music-prev')?.click());
+    if (mNext) mNext.addEventListener('click', () => document.getElementById('music-next')?.click());
+    if (mPlay) mPlay.addEventListener('click', () => document.getElementById('music-play')?.click());
+
+    if (mVolTrack) {
+        const getMEventX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
+        mVolTrack.addEventListener('click',      (e) => { if (musicPlayer.audio) musicPlayer._setVol(e, mVolTrack); });
+        mVolTrack.addEventListener('touchstart', (e) => { if (musicPlayer.audio) musicPlayer._setVol({ clientX: getMEventX(e) }, mVolTrack); }, { passive: true });
+        mVolTrack.addEventListener('touchmove',  (e) => { if (musicPlayer.audio) musicPlayer._setVol({ clientX: getMEventX(e) }, mVolTrack); }, { passive: true });
+        mVolTrack.addEventListener('mousedown',  (e) => {
+            if (!musicPlayer.audio) return;
+            const onMove = (ev) => musicPlayer._setVol(ev, mVolTrack);
+            const onUp   = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup',   onUp);
+        });
+    }
+}
+
 function formatTime(secs) {
     const m = String(Math.floor(secs / 60)).padStart(2, '0');
     const s = String(secs % 60).padStart(2, '0');
@@ -1291,7 +1350,12 @@ function getBoardPx() {
         h = window.innerHeight - headerH - toolbarH - statusH - footerH - 28;
     }
     if (w < 0) w = window.innerWidth - 56;
-    // Max 78% des kleinsten Viewport-Maßes für Proportionen
+    // Auf Mobile: kein künstliches Maximum, Board nutzt verfügbaren Platz
+    const isMobile = window.innerWidth <= 600;
+    if (isMobile) {
+        return Math.floor(Math.min(w, h));
+    }
+    // Desktop: Max 78% des kleinsten Viewport-Maßes für Proportionen
     const maxDim = Math.min(window.innerWidth, window.innerHeight) * 0.78;
     return Math.floor(Math.min(w, h, maxDim));
 }
@@ -2093,6 +2157,16 @@ function giveHint() {
 
 // 15. INITIALISIERUNG
 window.addEventListener('DOMContentLoaded', () => {
+    // Statusleiste auf Android ausblenden
+    if (window.Capacitor?.isNativePlatform()) {
+        window.Capacitor.Plugins.StatusBar?.hide();
+    }
+
+    // Mobile: body-Hintergrund auf accent setzen damit kein
+    // beiger Streifen hinter der Android-Navigationsleiste sichtbar ist
+    if (window.matchMedia('(max-width: 600px)').matches) {
+        document.body.style.background = 'var(--accent)';
+    }
     const sizeEl = document.getElementById('size');
     const diffEl = document.getElementById('difficulty');
     const btnNew = document.getElementById('btn-new');
@@ -2127,7 +2201,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 rawSeed = parsed.raw;
                 sizeEl.value = String(n);
                 diffEl.value = diff;
+                sizeEl.dispatchEvent(new Event('change'));
+                diffEl.dispatchEvent(new Event('change'));
                 syncCustomSelect('size', String(n));
+                updateDifficultyOptions(n);
                 syncCustomSelect('difficulty', diff);
             } else {
                 // Legacy oder reiner Seed ohne Präfix
@@ -2288,6 +2365,7 @@ window.addEventListener('DOMContentLoaded', () => {
     prewarmDailyPuzzle(); // Tagesrätsel im Hintergrund vorausberechnen
     tutorialModule.init();
     musicPlayer.init(); // Musik-Player initialisieren (DOM ist hier garantiert bereit)
+    initSettingsMusicPlayer(); // Settings-Musiksteuerung verdrahten
 
     // Gespeicherten Spielstand automatisch laden (falls vorhanden)
     const saved = loadGameState();
@@ -2425,6 +2503,17 @@ window.addEventListener('DOMContentLoaded', () => {
                     'install',
                     version
                 );
+            });
+        }
+
+        // ── AUTO-SAVE beim Schließen (Webversion) ─────────────────────
+        // In Electron übernimmt main.js den Speicher-Dialog.
+        // Im Browser gibt es kein asynchrones beforeunload – daher
+        // wird der Stand still gespeichert damit er beim nächsten
+        // Öffnen automatisch wiederhergestellt wird.
+        if (!window.electronAPI) {
+            window.addEventListener('beforeunload', () => {
+                if (window._isDirty) saveGameState();
             });
         }
 });
@@ -2965,6 +3054,19 @@ const numpadModule = (() => {
             overlay.style.right  = '';
             overlay.style.bottom = '';
             overlay.style.width  = '';
+
+            // Bottom Nav auf gleiche Höhe wie Numpad setzen
+            requestAnimationFrame(() => {
+                const numpadH = overlay.offsetHeight;
+                const bottomNav = document.querySelector('.mobile-bottom-nav');
+                if (bottomNav && numpadH > 0) {
+                    const safeBottom = parseInt(getComputedStyle(document.documentElement)
+                        .getPropertyValue('--sab') || '0') || 0;
+                    bottomNav.style.height = `${numpadH}px`;
+                    // Numpad direkt über Bottom Nav positionieren
+                    overlay.style.bottom = `${numpadH}px`;
+                }
+            });
         } else {
             // Desktop: frei positionierbares Overlay via JS
             _applyPosition();
@@ -2973,6 +3075,8 @@ const numpadModule = (() => {
 
     function hide() {
         if (overlay) overlay.style.display = 'none';
+        const bottomNav = document.querySelector('.mobile-bottom-nav');
+        if (bottomNav) bottomNav.style.height = '';
     }
 
     function toggle() {
