@@ -1,15 +1,16 @@
 {
   "name": "numori",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Numori – Logik-Rätsel",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
     "update-tracks": "node scripts/update-tracks.js",
-    "sync-www": "cp app.js www/app.js && cp index.html www/index.html && cp style.css www/style.css"
+    "sync-www": "cp app.js www/app.js && cp index.html www/index.html && cp style.css www/style.css && cp worker.js www/worker.js && cp -r music www/"
   },
   "dependencies": {
+    "@capacitor/app": "^8.0.1",
     "@capacitor/status-bar": "^8.0.1",
     "electron-updater": "^6.3.0"
   },
@@ -49,6 +50,10 @@
     },
     "files": [
       "**/*",
+      "!dist/**",
+      "!android/**",
+      "!www/**",
+      "!resources/**",
       "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
       "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
       "!**/node_modules/*.d.ts",

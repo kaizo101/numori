@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NUMORI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <header>
+      <canvas id="flipper-dmd" aria-hidden="true"></canvas>
+      <div class="header-inner">
+        <h1>NUMORI</h1>
+        <span class="subtitle" data-i18n="subtitle">Logik-Rätsel</span>
+      </div>
+      <div class="header-right">
+      <!-- Musik-Player (nur Console-Theme) -->
+      <div id="music-player" class="music-player" style="display:none">
+        <span class="music-sep">//</span>
+        <div class="music-marquee-wrap">
+          <span class="music-marquee-inner" id="music-marquee-inner">
+            <span id="music-author" class="music-author">–</span><span class="music-sep-inline"> · </span><span id="music-title" class="music-title">–</span>
+            <span class="music-marquee-gap"></span>
+            <span class="music-author music-author-dup" aria-hidden="true">–</span><span class="music-sep-inline"> · </span><span class="music-title music-title-dup" aria-hidden="true">–</span>
+          </span>
+        </div>
+        <div class="music-controls">
+          <button id="music-prev" class="music-btn" title="Zurück">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
+          <button id="music-play" class="music-btn" title="Play/Pause">
+            <svg id="music-play-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button id="music-next" class="music-btn" title="Weiter">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
+          <div class="music-vol-wrap" title="Lautstärke">
+            <div id="music-vol-track" class="music-seek-track music-vol-track">
+              <div id="music-vol-fill" class="music-seek-fill"></div>
+              <div id="music-vol-thumb" class="music-seek-thumb"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Playlist-Toggle (Noten-Icon) -->
+        <div class="music-playlist-wrap">
+          <button id="music-playlist-btn" class="music-btn music-toggle-btn" title="Playlist">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </button>
+          <div id="music-playlist" class="music-playlist" style="display:none"></div>
+        </div>
+      </div>
+            <button id="btn-music-mobile" class="btn-settings" title="Musik" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </button>
+            <button id="btn-theme" class="btn-settings" title="Design">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+      </button>
+      <button id="btn-stats" class="btn-settings" title="Statistiken">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </button>
+      <button id="btn-settings" class="btn-settings" title="Einstellungen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      </div>
+      <div id="flipper-ticker-wrap">
+        <div id="flipper-ticker"></div>
+      </div>
+    </header>
+
+    <!-- Musik-Panel (Mobile + Console-Theme) -->
+    <div id="music-mobile-panel" class="music-mobile-panel" style="display:none">
+      <div class="music-mobile-panel-inner">
+        <div class="music-mobile-track">
+          <span id="music-mobile-author">–</span>
+          <span class="music-mobile-sep"> · </span>
+          <span id="music-mobile-title">–</span>
+        </div>
+        <div class="music-mobile-row">
+          <button id="music-mobile-prev" class="music-btn" title="Zurück">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
+          <button id="music-mobile-play" class="music-btn" title="Play/Pause">
+            <svg id="music-mobile-play-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button id="music-mobile-next" class="music-btn" title="Weiter">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </button>
+          <div id="music-mobile-vol-track" class="music-seek-track music-vol-track music-mobile-vol-track">
+            <div id="music-mobile-vol-fill" class="music-seek-fill"></div>
+            <div id="music-mobile-vol-thumb" class="music-seek-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="toolbar-grid">
+
+        <!-- Zeile 1, Spalte 1: Controls -->
+        <div class="toolbar-controls">
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="size"><span class="label-upper" data-i18n="size-upper">GRÖẞE</span><span class="label-title" data-i18n="size-label">Größe</span></label>
+            </div>
+            <select id="size">
+              <option value="3">3×3</option>
+              <option value="4" selected>4×4</option>
+              <option value="5">5×5</option>
+              <option value="6">6×6</option>
+              <option value="7">7×7</option>
+            </select>
+            <div class="custom-select" id="custom-size" data-target="size">
+              <button class="custom-select-btn" type="button">
+                <span class="custom-select-label">4×4</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-dropdown">
+                <div class="custom-select-option" data-value="3">3×3</div>
+                <div class="custom-select-option" data-value="4" data-selected>4×4</div>
+                <div class="custom-select-option" data-value="5">5×5</div>
+                <div class="custom-select-option" data-value="6">6×6</div>
+                <div class="custom-select-option" data-value="7">7×7</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="difficulty" data-i18n="difficulty-label">Schwierigkeit</label>
+              <div class="info-wrap">
+                <button class="info-btn" tabindex="-1">?</button>
+                <div class="info-popup">
+                  <div class="diff-info">
+                    <div class="diff-info-block">
+                      <strong data-i18n="diff-easy-name">Leicht</strong>
+                      <ul>
+                        <li data-i18n="diff-easy-1">2 bis 3 Zellen pro Käfig</li>
+                        <li data-i18n="diff-easy-2">Nur Addition</li>
+                        <li data-i18n="diff-easy-3">Für Einsteiger</li>
+                      </ul>
+                    </div>
+                    <div class="diff-info-block">
+                      <strong data-i18n="diff-medium-name">Mittel</strong>
+                      <ul>
+                        <li data-i18n="diff-medium-1">3 bis 4 Zellen pro Käfig</li>
+                        <li data-i18n="diff-medium-2">Addition, Subtraktion, Multiplikation</li>
+                        <li data-i18n="diff-medium-3">Für Geübte</li>
+                      </ul>
+                    </div>
+                    <div class="diff-info-block">
+                      <strong data-i18n="diff-hard-name">Schwer</strong>
+                      <ul>
+                        <li data-i18n="diff-hard-1">Bis zu 5 Zellen pro Käfig</li>
+                        <li data-i18n="diff-hard-2">Alle Rechenarten inkl. Division</li>
+                        <li data-i18n="diff-hard-3">Für Profis</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <select id="difficulty">
+              <option value="easy" data-i18n="diff-easy">Leicht</option>
+              <option value="medium" selected data-i18n="diff-medium">Mittel</option>
+              <option value="hard" data-i18n="diff-hard">Schwer</option>
+            </select>
+            <div class="custom-select" id="custom-difficulty" data-target="difficulty">
+              <button class="custom-select-btn" type="button">
+                <span class="custom-select-label">Mittel</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="custom-select-dropdown">
+                <div class="custom-select-option" data-value="easy" data-i18n="diff-easy">Leicht</div>
+                <div class="custom-select-option" data-value="medium" data-selected data-i18n="diff-medium">Mittel</div>
+                <div class="custom-select-option" data-value="hard" data-i18n="diff-hard">Schwer</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label-row">
+              <div class="control-label-row"><label for="seed-input" data-i18n="seed-label">Rätsel-ID</label></div>
+            </div>
+            <div class="seed-input-row">
+              <input id="seed-input"
+                     type="text"
+                     maxlength="12"
+                     spellcheck="false"
+                     autocomplete="off"
+                     >
+              <button id="btn-load-seed" class="btn btn-ghost" title="Rätsel mit dieser ID laden"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zeile 1+2, Spalte 2: Trenner (überspannt beide Zeilen) -->
+        <div class="toolbar-sep-vertical toolbar-sep-main"></div>
+
+        <!-- Zeile 1, Spalte 3: Aktions-Buttons -->
+        <div class="toolbar-actions">
+          <button id="btn-new"   class="btn btn-primary" data-i18n="btn-new">Neues Rätsel</button>
+          <button id="btn-solve" class="btn btn-ghost" data-i18n="btn-solve">Lösung</button>
+          <button id="btn-reset" class="btn btn-ghost" data-i18n="btn-reset">Reset</button>
+        </div>
+
+        <!-- Zeile 2, Spalte 1: Icon-Buttons -->
+        <div class="toolbar-icons">
+          <button id="btn-notes"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  data-i18n-title="title-notes"
+                  title="Notiz-Modus (N)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
+          <button id="btn-validate"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  data-i18n-title="title-validate"
+                  title="Sofort-Validierung ein/aus"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+          <div class="toolbar-sep"></div>
+          <button id="btn-hint"
+                  class="btn btn-pencil"
+                  data-i18n-title="title-hint"
+                  title="Tipp anzeigen"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></button>
+          <button id="undoBtn"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  data-i18n-title="title-undo"
+                  title="Undo (Strg+Z)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg></button>
+          <button id="redoBtn"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  data-i18n-title="title-redo"
+                  title="Redo (Strg+Y)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg></button>
+          <div class="toolbar-sep"></div>
+          <button id="btn-pdf"
+                  class="btn btn-pencil"
+                  data-i18n-title="title-pdf"
+                  title="Als PDF speichern"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg></button>
+          <button id="btn-daily"
+                  class="btn btn-pencil"
+                  data-i18n-title="title-daily"
+                  title="Tägliches Rätsel"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button>
+          <button id="btn-timer"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  data-i18n-title="title-timer"
+                  title="Timer anzeigen/ausblenden"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></button>
+          <button id="btn-numpad"
+                  class="btn btn-pencil"
+                  data-active="false"
+                  data-i18n-title="title-numpad"
+                  title="Zahlenpad ein/aus"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="16" y1="18" x2="16" y2="18"/></svg></button>
+          <span id="timer-display" class="timer-display hidden" style="display:none"></span>
+        </div>
+
+        <!-- Zeile 2, Spalte 3: Fortschrittsbalken -->
+        <div class="progress-wrap">
+          <div class="progress-label"><span data-i18n="progress-label">Fortschritt</span> <span id="progress-text">0%</span></div>
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Züge-Kärtchen: überspannt beide Zeilen, ganz rechts -->
+        <div class="toolbar-sep-vertical"></div>
+        <div class="move-card">
+          <div class="move-card-label" data-i18n="move-label">Züge</div>
+          <div id="move-count" class="move-card-value">0</div>
+        </div>
+
+        <!-- Coin Slot (nur Flipper-Theme) -->
+        <div class="coinslot" aria-hidden="true">
+          <div class="coinslot-door">
+            <div class="coinslot-bar"></div>
+            <div class="coinslot-content">
+              <div class="coinslot-price">25¢</div>
+              <div class="coinslot-insert">INSERT<br>COIN TO<br>PLAY</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Compact Toolbar (nur sichtbar auf ≤600px) -->
+    <div class="mobile-toolbar" id="mobile-toolbar">
+      <div class="mobile-toolbar-row">
+        <select class="mobile-select" id="mobile-size">
+          <option value="3">3×3</option>
+          <option value="4" selected>4×4</option>
+          <option value="5">5×5</option>
+          <option value="6">6×6</option>
+          <option value="7">7×7</option>
+        </select>
+        <select class="mobile-select" id="mobile-difficulty">
+          <option value="easy" data-i18n="diff-easy">Leicht</option>
+          <option value="medium" selected data-i18n="diff-medium">Mittel</option>
+          <option value="hard" data-i18n="diff-hard">Schwer</option>
+        </select>
+        <button class="mobile-seed-btn mobile-seed-open" id="mobile-seed-open" onclick="openSeedModal()" title="Rätsel-ID laden">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          ID
+        </button>
+        <button class="mobile-seed-btn" onclick="document.getElementById('btn-daily').click()" title="Tägliches Rätsel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </button>
+        <button class="mobile-btn-new" id="mobile-btn-new">Neu</button>
+        <button class="flipper-hamburger" id="flipper-hamburger" onclick="toggleFlipperMenu()" aria-label="Menü">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Flipper Mobile Menu -->
+    <div id="flipper-mobile-menu" class="flipper-mobile-menu">
+      <div class="flipper-mobile-menu-inner">
+        <button onclick="toggleFlipperMenu(); document.getElementById('btn-stats').click()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span data-i18n="flipper-menu-scores">SCORES</span>
+        </button>
+        <button onclick="toggleFlipperMenu(); document.getElementById('btn-theme').click()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <span data-i18n="flipper-menu-theme">THEME</span>
+        </button>
+        <button onclick="toggleFlipperMenu(); document.getElementById('btn-settings').click()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span data-i18n="flipper-menu-settings">SETTINGS</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="pdf-info" style="display:none">
+      <div class="pdf-info-inner">
+        <span class="pdf-logo">NUMORI</span>
+        <span class="pdf-meta" id="pdf-meta"></span>
+      </div>
+    </div>
+
+    <div id="board-container">
+      <span id="timer-display-header" class="timer-display-header"></span>
+      <div id="mobile-seed-display" class="mobile-seed-display">
+        <span id="mobile-seed-text"></span>
+        <span class="mobile-seed-sep"> · </span>
+        <span id="mobile-move-display">0</span>&nbsp;<span data-i18n="lb-moves">Züge</span>
+        <button id="mobile-seed-copy" class="mobile-seed-copy-btn" title="ID kopieren">
+          <svg id="mobile-copy-icon" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <div id="welcome-screen" class="welcome-screen">
+        <div class="welcome-inner">
+          <img src="assets/icons/png/numori-1024.png" alt="Numori" class="welcome-icon-img" id="welcome-icon">
+          <h2 data-i18n="welcome-title">Willkommen bei NUMORI</h2>
+          <p data-i18n="welcome-text">Wähle Größe und Schwierigkeit,<br>dann klicke <strong>Neues Rätsel</strong>.</p>
+          <p class="welcome-hint" data-i18n="welcome-hint">Oder gib eine Rätsel-ID ein, um ein bekanntes Rätsel zu laden.</p>
+        </div>
+      </div>
+      <div id="board"></div>
+    </div>
+
+    <!-- Mobile More Panel (··· Drawer) -->
+    <div id="mobile-more-panel" class="mobile-more-panel" style="display:none">
+      <button class="mobile-more-btn" onclick="document.getElementById('btn-solve').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span data-i18n="more-solve">Lösung</span>
+      </button>
+      <button class="mobile-more-btn" onclick="document.getElementById('btn-reset').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        <span data-i18n="more-reset">Reset</span>
+      </button>
+      <button class="mobile-more-btn" onclick="document.getElementById('btn-timer').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+        <span data-i18n="more-timer">Timer</span>
+      </button>
+      <button class="mobile-more-btn" onclick="document.getElementById('btn-validate').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        <span data-i18n="more-validate">Validierung</span>
+      </button>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav id="mobile-bottom-nav" class="mobile-bottom-nav">
+      <button class="mobile-nav-item" id="mobile-btn-notes" onclick="document.getElementById('btn-notes').click()" title="Notizen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+        <span data-i18n="nav-notes">Notizen</span>
+      </button>
+      <button class="mobile-nav-item" id="mobile-btn-hint" onclick="document.getElementById('btn-hint').click()" title="Tipp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+        <span data-i18n="nav-hint">Tipp</span>
+      </button>
+      <button class="mobile-nav-item" id="mobile-btn-undo" onclick="document.getElementById('undoBtn').click()" title="Undo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+        <span data-i18n="nav-undo">Undo</span>
+      </button>
+      <button class="mobile-nav-item" id="mobile-btn-redo" onclick="document.getElementById('redoBtn').click()" title="Redo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+        <span data-i18n="nav-redo">Redo</span>
+      </button>
+      <button class="mobile-nav-item" id="mobile-btn-more" onclick="toggleMobileMore()" title="Mehr">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        <span data-i18n="nav-more">Mehr</span>
+      </button>
+    </nav>
+
+    <div class="footer">
+      <span data-i18n="footer-shortcuts">Pfeiltasten: Navigation&nbsp;&nbsp;·&nbsp;&nbsp;N: Notizen&nbsp;&nbsp;·&nbsp;&nbsp;V: Validierung&nbsp;&nbsp;·&nbsp;&nbsp;Entf: Löschen&nbsp;&nbsp;·&nbsp;&nbsp;Strg+Z/Y: Undo/Redo</span>
+      <span class="footer-timer-wrap">&nbsp;&nbsp;·&nbsp;&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>&nbsp;<span data-i18n="footer-timer-label">Timer starten</span></span>
+      <span class="footer-version">v1.0.0</span>
+    </div>
+
+  </div>
+
+  <!-- Reset-Modal -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal">
+      <p data-i18n="modal-reset-text">Alle Eingaben des aktuellen Rätsels löschen?</p>
+      <div class="modal-buttons">
+        <button id="modal-confirm" class="btn btn-primary" data-i18n="modal-confirm">Ja, löschen</button>
+        <button id="modal-cancel"  class="btn btn-ghost" data-i18n="modal-cancel">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Falsche-Zahlen-löschen-Modal -->
+  <div id="clear-invalid-overlay" class="modal-overlay">
+    <div class="modal">
+      <p id="clear-invalid-msg">Falsche Zahlen löschen?</p>
+      <div class="modal-buttons">
+        <button id="clear-invalid-confirm" class="btn btn-primary" data-i18n="modal-confirm">Ja, löschen</button>
+        <button id="clear-invalid-cancel"  class="btn btn-ghost" data-i18n="modal-cancel">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gewinn-Banner -->
+  <div id="win-banner" class="win-banner">
+    <canvas id="matrix-canvas" class="matrix-canvas"></canvas>
+    <div class="win-banner-inner">
+      <div class="win-trophy">
+        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+          <path d="M4 22h16"/>
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+        </svg>
+      </div>
+      <div class="win-divider"></div>
+      <div class="win-text">
+        <strong id="win-title" data-i18n="win-title">Perfekt gelöst!</strong>
+        <span id="win-best" style="display:none"></span>
+        <div class="win-stats">
+          <div class="win-stat">
+            <span class="win-stat-label" data-i18n="win-stat-size">Größe</span>
+            <span class="win-stat-value" id="win-stat-size">—</span>
+          </div>
+          <div class="win-stat-sep"></div>
+          <div class="win-stat">
+            <span class="win-stat-label" data-i18n="win-stat-diff">Schwierigkeit</span>
+            <span class="win-stat-value" id="win-stat-diff">—</span>
+          </div>
+          <div class="win-stat-sep"></div>
+          <div class="win-stat">
+            <span class="win-stat-label" data-i18n="win-stat-time">Zeit</span>
+            <span class="win-stat-value" id="win-stat-time">—</span>
+          </div>
+          <div class="win-stat-sep"></div>
+          <div class="win-stat">
+            <span class="win-stat-label" data-i18n="win-stat-moves">Züge</span>
+            <span class="win-stat-value" id="win-stat-moves">—</span>
+          </div>
+        </div>
+        <div class="win-seed-row">
+          <span class="win-stat-label" data-i18n="win-stat-seed-label">Rätsel-ID</span>
+          <span class="win-stat-seed" id="win-stat-seed">—</span>
+        </div>
+        <span id="win-details" style="display:none"></span>
+      </div>
+      <div class="win-buttons">
+        <button id="win-new"   class="btn btn-primary" data-i18n="win-new">Neues Rätsel</button>
+        <button id="win-close" class="btn btn-ghost" data-i18n="win-close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiken-Modal -->
+  <div id="stats-overlay" class="modal-overlay">
+    <div class="modal settings-modal stats-modal">
+      <div class="stats-tabs">
+        <button class="stats-tab active" data-tab="stats" data-i18n="stats-tab-stats">Statistiken</button>
+        <button class="stats-tab" data-tab="leaderboard" data-i18n="stats-tab-leaderboard">Bestenliste</button>
+      </div>
+      <div id="stats-content" class="stats-content"></div>
+      <div class="modal-buttons">
+        <button id="stats-reset" class="btn btn-ghost" data-i18n="stats-reset-btn">Zurücksetzen</button>
+        <button id="stats-close" class="btn btn-primary" data-i18n="stats-close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard-Namenseingabe -->
+  <div id="leaderboard-entry-overlay" class="modal-overlay">
+    <div class="modal settings-modal lb-entry-modal">
+      <div id="lb-entry-medal" class="lb-entry-medal">🏅</div>
+      <h2 id="lb-entry-title" class="settings-title lb-entry-title">Platz 1 erreicht!</h2>
+      <div id="lb-entry-info" class="lb-entry-info"></div>
+      <input id="lb-entry-name" type="text" class="lb-entry-input" maxlength="16" autocomplete="off" placeholder="Dein Name" />
+      <div class="modal-buttons">
+        <button id="lb-entry-cancel" class="btn btn-ghost" data-i18n="lb-cancel">Überspringen</button>
+        <button id="lb-entry-confirm" class="btn btn-primary" data-i18n="lb-confirm">Eintragen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme-Modal -->
+  <div id="theme-overlay" class="modal-overlay">
+    <div class="modal settings-modal">
+      <h2 class="settings-title" data-i18n="theme-title">Design</h2>
+      <div class="settings-themes">
+        <button class="theme-btn" data-theme="default">
+          <span class="theme-preview theme-preview-default"></span>
+          <span data-i18n="theme-classic">Klassisch</span>
+        </button>
+        <button class="theme-btn" data-theme="dark">
+          <span class="theme-preview theme-preview-dark"></span>
+          <span>Numori Dark</span>
+        </button>
+        <button class="theme-btn" data-theme="console">
+          <span class="theme-preview theme-preview-console"></span>
+          <span data-i18n="theme-console">Konsole</span>
+        </button>
+        <button class="theme-btn" data-theme="flipper">
+          <span class="theme-preview theme-preview-flipper"></span>
+          <span data-i18n="theme-flipper">Flipper</span>
+        </button>
+      </div>
+      <div class="modal-buttons">
+        <button id="theme-close" class="btn btn-primary" data-i18n="theme-close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Einstellungs-Modal -->
+  <div id="settings-overlay" class="modal-overlay">
+    <div class="modal settings-modal">
+      <h2 class="settings-title" data-i18n="settings-title">Einstellungen</h2>
+      <div class="settings-section">
+        <div class="settings-label" data-i18n="settings-fontsize">Schriftgröße</div>
+        <div class="font-scale-btns">
+          <button class="font-scale-btn" data-scale="0.85" data-i18n="settings-font-small">Klein</button>
+          <button class="font-scale-btn" data-scale="1.0" data-i18n="settings-font-normal">Normal</button>
+          <button class="font-scale-btn" data-scale="1.2" data-i18n="settings-font-large">Groß</button>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label" data-i18n="settings-lang">Sprache</div>
+        <div class="lang-btns">
+          <button class="lang-btn" data-lang="de" title="Deutsch">🇩🇪</button>
+          <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label" data-i18n="settings-help">Hilfe</div>
+        <button id="btn-tutorial" class="btn btn-ghost settings-tutorial-btn" data-i18n="settings-tutorial">Tutorial starten</button>
+      </div>
+      <div class="settings-section settings-about-section">
+        <button id="btn-about" class="btn btn-ghost settings-tutorial-btn" data-i18n="settings-about-title">Über Numori</button>
+      </div>
+      <div id="debug-section" style="display:none" class="settings-section">
+        <div class="settings-label">Debug</div>
+        <button id="btn-debug-clear" class="btn btn-ghost">LocalStorage leeren</button>
+        <button id="btn-debug-state" class="btn btn-ghost">State in Konsole loggen</button>
+        <button id="btn-debug-update-available"  class="btn btn-ghost">Debug: Update verfügbar</button>
+        <button id="btn-debug-update-downloaded" class="btn btn-ghost">Debug: Update heruntergeladen</button>
+        <button id="btn-debug-update-progress"   class="btn btn-ghost">Debug: Download-Fortschritt</button>
+      </div>
+      <div class="modal-buttons">
+        <button id="settings-close" class="btn btn-primary" data-i18n="settings-close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Über Numori / Impressum -->
+  <div id="about-overlay" class="modal-overlay">
+    <div class="modal settings-modal">
+      <h2 class="settings-title" data-i18n="settings-about-title">Über Numori</h2>
+      <div class="settings-section">
+        <p class="settings-about-privacy" data-i18n="settings-about-privacy">Alle Spielstände werden ausschließlich lokal auf deinem Gerät gespeichert. Es werden keine personenbezogenen Daten übertragen oder gespeichert.</p>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label" data-i18n="settings-about-imprint">Impressum</div>
+        <address class="settings-imprint-address">
+          Lukas Schäfer<br>
+          Starenweg 10<br>
+          55122 Mainz<br><br>
+          <span data-i18n="settings-about-contact">Bei Fragen, Problemen oder Anregungen erreichst du mich unter:</span><br>
+          <a href="mailto:numori.puzzle@gmail.com">numori.puzzle@gmail.com</a>
+        </address>
+      </div>
+      <div class="modal-buttons">
+        <button id="about-close" class="btn btn-primary" data-i18n="settings-close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial Welcome -->
+  <div id="tut-welcome" class="modal-overlay">
+    <div class="modal">
+      <h2 class="settings-title" data-i18n="tut-welcome-title">Willkommen bei Numori</h2>
+      <p data-i18n="tut-welcome-text">Bist du mit dem Rätselprinzip vertraut?</p>
+      <div class="modal-buttons">
+        <button id="tut-w-yes" class="btn btn-primary" data-i18n="tut-w-yes">Ja, direkt loslegen</button>
+        <button id="tut-w-no"  class="btn btn-ghost" data-i18n="tut-w-no">Nein, Tutorial starten</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial Overlay -->
+  <div id="tut-overlay" class="modal-overlay">
+    <div class="tut-modal">
+
+      <!-- Phase 1: Slides -->
+      <div id="tut-slides" class="tut-phase">
+        <div class="tut-dots">
+          <span class="tut-dot"></span>
+          <span class="tut-dot"></span>
+          <span class="tut-dot"></span>
+        </div>
+        <h2 id="tut-stitle" class="tut-title"></h2>
+        <div id="tut-sbody" class="tut-body"></div>
+        <div class="tut-nav">
+          <button id="tut-back" class="btn btn-ghost" data-i18n="tut-back">← Zurück</button>
+          <button class="tut-skip btn btn-ghost" data-i18n="tut-skip">Überspringen</button>
+          <button id="tut-next" class="btn btn-primary" data-i18n="tut-next">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- Phase 2: Puzzle -->
+      <div id="tut-puzzle" class="tut-phase" style="display:none">
+        <h2 class="tut-title" data-i18n="tut-puzzle-title">Versuch's selbst!</h2>
+        <p class="tut-hint" data-i18n="tut-puzzle-hint">3×3-Rätsel – Zahlen 1 bis 3, jede einmal pro Zeile und Spalte.</p>
+        <div id="tut-board" class="tut-board"></div>
+        <div id="tut-numpad" class="tut-numpad">
+          <button class="tnpb" data-v="1">1</button>
+          <button class="tnpb" data-v="2">2</button>
+          <button class="tnpb" data-v="3">3</button>
+          <button class="tnpb tnpb-del" data-v="0">⌫</button>
+        </div>
+        <button class="tut-skip btn btn-ghost" data-i18n="tut-skip">Überspringen</button>
+      </div>
+
+      <!-- Phase 3: Erfolg -->
+      <div id="tut-success" class="tut-phase tut-success-phase" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <h2 class="tut-title" data-i18n="tut-success-title">Super gemacht!</h2>
+        <p data-i18n="tut-success-text">Du kennst jetzt alles was du für Numori brauchst. Viel Spaß!</p>
+        <button id="tut-finish" class="btn btn-primary" data-i18n="tut-finish">Los geht's</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+
+  <!-- Zahlenpad (frei beweglich, direkt im body) -->
+  <!-- Mobile Seed-Modal -->
+  <div id="mobile-seed-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <p style="margin-bottom:6px" data-i18n="seed-modal-title">Rätsel-ID eingeben</p>
+      <div id="mobile-seed-current" style="display:none;font-family:monospace;font-size:0.85em;color:var(--text-muted);background:var(--bg-input);border:1px solid var(--border-light);border-radius:6px;padding:6px 10px;margin-bottom:12px;letter-spacing:1px;text-align:center"></div>
+      <input id="mobile-seed-modal-input"
+             type="text"
+             maxlength="12"
+             spellcheck="false"
+             autocomplete="off"
+             data-i18n-placeholder="seed-modal-placeholder"
+             placeholder="z.B. 5M-JLLNTD"
+             style="width:100%;padding:8px 10px;border:1px solid var(--border-input);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-family:monospace;font-size:1em;text-transform:uppercase;box-sizing:border-box;margin-bottom:14px">
+      <div class="modal-buttons">
+        <button id="mobile-seed-modal-confirm" class="btn btn-primary" data-i18n="seed-modal-confirm">Laden</button>
+        <button id="mobile-seed-modal-cancel"  class="btn btn-ghost" data-i18n="seed-modal-cancel">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="numpad-overlay" class="numpad-overlay" style="display:none">
+    <div id="numpad" class="numpad">
+      <div class="numpad-titlebar" id="numpad-titlebar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="numpad-drag-icon"><circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="6" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>
+        <span class="numpad-title-text" data-i18n="numpad-title">Zahlenpad</span>
+        <span class="numpad-title-console">▌zahlenpad</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="numpad-drag-icon"><circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="6" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>
+      </div>
+      <div class="numpad-body">
+        <div class="numpad-grid" id="numpad-grid"></div>
+        <div class="numpad-actions">
+          <button class="numpad-btn numpad-notes" id="numpad-notes" title="Notiz-Modus">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          </button>
+          <button class="numpad-btn numpad-clear" id="numpad-clear" title="Löschen"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+        </div>
+      </div>
+      <div class="numpad-resize" id="numpad-resize"></div>
+    </div>
+  </div>
+
+  <script>
+    // ── Flipper Mobile Menu Toggle ────────────────────────────────────
+    function toggleFlipperMenu() {
+      const menu = document.getElementById('flipper-mobile-menu');
+      if (menu) menu.classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('flipper-mobile-menu');
+      if (menu && menu.classList.contains('open') &&
+          !menu.querySelector('.flipper-mobile-menu-inner').contains(e.target) &&
+          !document.getElementById('flipper-hamburger').contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
+
+    // ── Mobile More Panel Toggle ──────────────────────────────────────
+    function toggleMobileMore() {
+      const panel = document.getElementById('mobile-more-panel');
+      const btn   = document.getElementById('mobile-btn-more');
+      const nav   = document.getElementById('mobile-bottom-nav');
+      const open  = panel.style.display !== 'none' && panel.style.display !== '';
+      if (!open && nav) {
+        panel.style.bottom = nav.getBoundingClientRect().height + 'px';
+      }
+      panel.style.display = open ? 'none' : 'flex';
+      btn.classList.toggle('active', !open);
+    }
+
+    // Schließen wenn außerhalb geklickt
+    document.addEventListener('click', function(e) {
+      const panel = document.getElementById('mobile-more-panel');
+      const btn   = document.getElementById('mobile-btn-more');
+      if (panel && !panel.contains(e.target) && !btn.contains(e.target)) {
+        panel.style.display = 'none';
+        btn.classList.remove('active');
+      }
+    });
+
+    // ── Mobile Seed Modal ─────────────────────────────────────────────
+    function openSeedModal() {
+      const modal   = document.getElementById('mobile-seed-modal');
+      const input   = document.getElementById('mobile-seed-modal-input');
+      const current = document.getElementById('mobile-seed-current');
+      const dSeed   = document.getElementById('seed-input');
+      if (dSeed && dSeed.value.trim()) {
+        current.textContent = 'Aktuell: ' + dSeed.value.trim();
+        current.style.display = 'block';
+      } else {
+        current.style.display = 'none';
+      }
+      modal.style.display = 'flex';
+      setTimeout(() => input.focus(), 50);
+    }
+
+    document.getElementById('mobile-seed-modal-confirm').addEventListener('click', () => {
+      const input = document.getElementById('mobile-seed-modal-input');
+      const dSeed = document.getElementById('seed-input');
+      const dLoad = document.getElementById('btn-load-seed');
+      if (input.value.trim()) {
+        dSeed.value = input.value.trim();
+        dLoad.click();
+      }
+      document.getElementById('mobile-seed-modal').style.display = 'none';
+      input.value = '';
+    });
+
+    document.getElementById('mobile-seed-modal-cancel').addEventListener('click', () => {
+      document.getElementById('mobile-seed-modal').style.display = 'none';
+      document.getElementById('mobile-seed-modal-input').value = '';
+    });
+
+    // Enter bestätigt
+    document.getElementById('mobile-seed-modal-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('mobile-seed-modal-confirm').click();
+      if (e.key === 'Escape') document.getElementById('mobile-seed-modal-cancel').click();
+    });
+    (function() {
+      const mSize = document.getElementById('mobile-size');
+      const mDiff = document.getElementById('mobile-difficulty');
+      const mNew  = document.getElementById('mobile-btn-new');
+
+      const dSize = document.getElementById('size');
+      const dDiff = document.getElementById('difficulty');
+      const dNew  = document.getElementById('btn-new');
+
+      if (!mSize || !dSize) return;
+
+      mSize.addEventListener('change', () => {
+        dSize.value = mSize.value;
+        dSize.dispatchEvent(new Event('change'));
+      });
+      mDiff.addEventListener('change', () => {
+        dDiff.value = mDiff.value;
+        dDiff.dispatchEvent(new Event('change'));
+      });
+      mNew.addEventListener('click', () => { dNew.click(); });
+
+      // Desktop → Mobile sync
+      dSize.addEventListener('change', () => { mSize.value = dSize.value; });
+      dDiff.addEventListener('change', () => { mDiff.value = dDiff.value; });
+
+      // Mobile Difficulty-Optionen spiegeln wenn Desktop sie ein-/ausblendet
+      const dDiffEl = document.getElementById('difficulty');
+      if (dDiffEl) {
+        new MutationObserver(() => {
+          Array.from(dDiffEl.options).forEach(opt => {
+            const mOpt = mDiff.querySelector(`option[value="${opt.value}"]`);
+            if (mOpt) {
+              mOpt.disabled = opt.disabled;
+              mOpt.hidden   = opt.hidden;
+            }
+          });
+          // Falls aktuelle Auswahl nicht mehr erlaubt → mitsynchronisieren
+          if (mDiff.value !== dDiffEl.value) mDiff.value = dDiffEl.value;
+        }).observe(dDiffEl, { subtree: true, attributeFilter: ['disabled', 'hidden'], childList: false, attributes: true });
+      }
+    })();
+
+    // Mobile Notizen-Button: active-State spiegeln
+    const notesOrig = document.getElementById('btn-notes');
+    const mobileNotes = document.getElementById('mobile-btn-notes');
+    if (notesOrig && mobileNotes) {
+      new MutationObserver(() => {
+        mobileNotes.classList.toggle('active', notesOrig.dataset.active === 'true');
+      }).observe(notesOrig, { attributes: true, attributeFilter: ['data-active'] });
+    }
+
+    // Mobile Validierungs-Button: active-State spiegeln
+    const validateOrig = document.getElementById('btn-validate');
+    const mobileValidate = document.querySelector('.mobile-more-btn[onclick*="btn-validate"]');
+    if (validateOrig && mobileValidate) {
+      new MutationObserver(() => {
+        mobileValidate.classList.toggle('active', validateOrig.dataset.active === 'true');
+      }).observe(validateOrig, { attributes: true, attributeFilter: ['data-active'] });
+    }
+
+    // Mobile: Zahlenpad automatisch aktivieren
+    (function() {
+      if (!window.matchMedia('(max-width: 600px)').matches) return;
+      const btn = document.getElementById('btn-numpad');
+      if (!btn) return;
+      // Sofort aktivieren falls noch nicht aktiv
+      if (btn.dataset.active !== 'true') btn.click();
+      // Auch nach jedem neuen Rätsel sicherstellen
+      const observer = new MutationObserver(() => {
+        if (btn.dataset.active !== 'true') btn.click();
+      });
+      const board = document.getElementById('board');
+      if (board) observer.observe(board, { childList: true });
+    })();
+    (function() {
+      const seedText = document.getElementById('mobile-seed-text');
+      const dSeed    = document.getElementById('seed-input');
+      if (!seedText || !dSeed) return;
+      function update() {
+        seedText.textContent = dSeed.value.trim() || '';
+      }
+      update();
+      dSeed.addEventListener('input', update);
+      new MutationObserver(update).observe(dSeed, { attributes: true, attributeFilter: ['value'] });
+      document.addEventListener('puzzleReady', update);
+      setInterval(update, 500);
+
+      // Copy-Button
+      const copyBtn = document.getElementById('mobile-seed-copy');
+      const copyIcon = document.getElementById('mobile-copy-icon');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const seed = dSeed.value.trim();
+          if (!seed) return;
+          navigator.clipboard?.writeText(seed).then(() => {
+            copyIcon.innerHTML = '<polyline points="20 6 9 17 4 12" stroke-width="2.5"/>';
+            setTimeout(() => {
+              copyIcon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+            }, 1500);
+          });
+        });
+      }
+    })();
+    (function() {
+      const numpadOverlay = document.getElementById('numpad-overlay');
+      const boardContainer = document.getElementById('board-container');
+      if (!numpadOverlay || !boardContainer) return;
+
+      function updateBoardPadding() {
+        if (window.innerWidth > 600) return;
+        const visible = numpadOverlay.style.display === 'block';
+        if (visible) {
+          const h = numpadOverlay.offsetHeight;
+          boardContainer.style.overflowY = 'auto';
+          boardContainer.style.paddingBottom = (h + 16) + 'px';
+        } else {
+          boardContainer.style.overflowY = '';
+          boardContainer.style.paddingBottom = '';
+        }
+      }
+
+      new MutationObserver(updateBoardPadding)
+        .observe(numpadOverlay, { attributes: true, attributeFilter: ['style'] });
+
+      window.addEventListener('resize', updateBoardPadding);
+    })();
+  </script>
+
+</body>
+</html>

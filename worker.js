@@ -69,24 +69,25 @@ function generateSolution(n) {
 // ══ 3. SCHWIERIGKEITSKONFIGURATION ══════════════════════════════
 
 function getDiffConfig(diff, n) {
+    // Schwierigkeit wird über Käfiggröße & Single-Ratio gesteuert.
+    // Operationen sind davon entkoppelt. Easy lässt ÷ weg (Onboarding),
+    // Medium und Hard haben alle vier Ops – nur die Gewichte unterscheiden sich.
     const map = {
         easy: {
             maxSize:        n <= 4 ? 2 : 3,
-            maxSingleRatio: 0.20,
-            ops:            ['+'],
-            opWeights:      { '+': 1 },
+            maxSingleRatio: 0.22,
+            ops:            ['+', '-', '*'],
+            opWeights:      { '+': 5, '-': 3, '*': 1 },
         },
         medium: {
             maxSize:        n <= 4 ? 3 : 4,
-            maxSingleRatio: 0.15,
-            ops:            ['+', '-', '*'],
-            opWeights:      { '+': 3, '-': 3, '*': 1 },  // 2-Zeller
-            opWeightsLarge: { '+': 1 },                   // 3+-Zeller: nur Addition
-            multMaxCells:   2,                            // * nur für 2-Zeller
+            maxSingleRatio: 0.12,
+            ops:            ['+', '-', '*', '/'],
+            opWeights:      { '+': 3, '-': 3, '*': 2, '/': 1 },
         },
         hard: {
             maxSize:        Math.min(n, 5),
-            maxSingleRatio: 0.00,
+            maxSingleRatio: 0.04,
             ops:            ['+', '-', '*', '/'],
             opWeights:      { '+': 2, '-': 2, '*': 2, '/': 1 },
         },
@@ -102,13 +103,10 @@ function assignOp(cells, solution, cfg) {
     if (cells.length === 1) return { op: '=', target: vals[0] };
 
     let allowed = [...cfg.ops];
+    // -/÷ sind semantisch nur für 2-Zeller sinnvoll
     if (cells.length > 2) allowed = allowed.filter(o => o === '+' || o === '*');
 
-    // Medium: * nur für 2-Zeller erlaubt
-    if (cfg.multMaxCells && cells.length > cfg.multMaxCells) {
-        allowed = allowed.filter(o => o !== '*');
-    }
-
+    // ÷ nur wenn ganzzahlig teilbar
     allowed = allowed.filter(o => {
         if (o !== '/') return true;
         if (cells.length !== 2) return false;
@@ -119,12 +117,7 @@ function assignOp(cells, solution, cfg) {
 
     if (allowed.length === 0) allowed = ['+'];
 
-    // Size-abhängige Gewichte: 3+-Zeller bekommen opWeightsLarge falls definiert
-    const weights = (cfg.opWeightsLarge && cells.length > 2)
-        ? cfg.opWeightsLarge
-        : cfg.opWeights;
-
-    const op = pickOp(allowed, weights);
+    const op = pickOp(allowed, cfg.opWeights);
     let target;
     switch (op) {
         case '+': target = vals.reduce((s, v) => s + v, 0); break;
@@ -166,7 +159,8 @@ function generateCages(solution, diff) {
         cageIdx[start.r][start.c] = idx;
         cages.push(cage);
 
-        const want = 1 + Math.floor(rng() * cfg.maxSize);
+        const minSize = cfg.maxSingleRatio < 0.15 ? 2 : 1; // Medium/Hard: mind. 2-Zeller anstreben
+        const want = minSize + Math.floor(rng() * (cfg.maxSize - minSize + 1));
 
         while (cage.cells.length < want) {
             const frontier = [];
@@ -252,6 +246,7 @@ function getCageValidValues(cage, n) {
             return;
         }
         for (const v of values) {
+            if (chosen.includes(v)) continue; // keine doppelten Werte im Käfig
             const next = cage.op === '+' ? acc + v : acc * v;
             if (cage.op === '+' && next > cage.target) break;
             if (cage.op === '*' && cage.target % next !== 0) continue;
@@ -402,26 +397,40 @@ function hasUniqueSolution(n, cages) {
 
 function buildFallback(n, diff) {
     const solution = generateSolution(n);
-    const cages    = [];
-    const used     = Array.from({ length: n }, () => Array(n).fill(false));
     const cfg      = getDiffConfig(diff, n);
+    const cageIdx  = Array.from({ length: n }, () => Array(n).fill(-1));
+    const cages    = [];
 
-    for (let r = 0; r < n; r++) {
-        for (let c = 0; c < n; c++) {
-            if (used[r][c]) continue;
-            const nbs = getNeighbors(r, c, n).filter(p => !used[p.r][p.c]);
-            if (nbs.length > 0) {
-                const nb = nbs[0];
-                used[r][c] = used[nb.r][nb.c] = true;
-                const { op, target } = assignOp([{ r, c }, nb], solution, cfg);
-                cages.push({ cells: [{ r, c }, nb], op, target });
-            } else {
-                used[r][c] = true;
-                cages.push({ cells: [{ r, c }], op: '=', target: solution[r][c] });
-            }
+    // Greedy: Käfige mit bis zu cfg.maxSize Zellen bauen
+    const order = shuffle(Array.from({ length: n * n }, (_, i) => ({ r: Math.floor(i / n), c: i % n })));
+    for (const start of order) {
+        if (cageIdx[start.r][start.c] !== -1) continue;
+        const idx  = cages.length;
+        const cage = { cells: [start] };
+        cageIdx[start.r][start.c] = idx;
+        cages.push(cage);
+
+        const want = 2 + Math.floor(rng() * (cfg.maxSize - 1));
+        while (cage.cells.length < want) {
+            const frontier = cage.cells.flatMap(p =>
+                getNeighbors(p.r, p.c, n).filter(nb => cageIdx[nb.r][nb.c] === -1)
+            ).filter((p, i, a) => a.findIndex(q => q.r === p.r && q.c === p.c) === i);
+            if (frontier.length === 0) break;
+            const pick = frontier[Math.floor(rng() * frontier.length)];
+            cageIdx[pick.r][pick.c] = idx;
+            cage.cells.push(pick);
         }
     }
-    return { solution, cages };
+
+    return {
+        solution,
+        cages: cages
+            .filter(cage => cage.cells.length > 0)
+            .map(cage => {
+                const { op, target } = assignOp(cage.cells, solution, cfg);
+                return { cells: cage.cells, op, target };
+            }),
+    };
 }
 
 

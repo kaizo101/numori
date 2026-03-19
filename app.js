@@ -1,16 +1,433 @@
 "use strict";
 
+// ── I18N ──────────────────────────────────────────────────────────
+const TRANSLATIONS = {
+    de: {
+        'subtitle': 'Logik-Rätsel',
+        'size-upper': 'GRÖẞE',
+        'size-label': 'Größe',
+        'difficulty-label': 'Schwierigkeit',
+        'diff-easy': 'Leicht',
+        'diff-medium': 'Mittel',
+        'diff-hard': 'Schwer',
+        'seed-label': 'Rätsel-ID',
+        'btn-new': 'Neues Rätsel',
+        'btn-solve': 'Lösung',
+        'btn-reset': 'Reset',
+        'progress-label': 'Fortschritt',
+        'move-label': 'Züge',
+        'title-notes': 'Notiz-Modus (N)',
+        'title-validate': 'Sofort-Validierung ein/aus',
+        'title-hint': 'Tipp anzeigen',
+        'title-undo': 'Undo (Strg+Z)',
+        'title-redo': 'Redo (Strg+Y)',
+        'title-pdf': 'Als PDF speichern',
+        'title-daily': 'Tägliches Rätsel',
+        'title-timer': 'Timer – nur Läufe ohne Hilfe & Validierung kommen in die Bestenliste',
+        'title-numpad': 'Zahlenpad ein/aus',
+        'title-timer-blocked': 'Lauf nicht gewertet – Hilfe oder Validierung wurde genutzt',
+        'welcome-title': 'Willkommen bei NUMORI',
+        'welcome-text': 'Wähle Größe und Schwierigkeit,\ndann klicke Neues Rätsel.',
+        'welcome-hint': 'Oder gib eine Rätsel-ID ein, um ein bekanntes Rätsel zu laden.',
+        'more-solve': 'Lösung',
+        'more-reset': 'Reset',
+        'more-timer': 'Timer',
+        'more-validate': 'Validierung',
+        'nav-notes': 'Notizen',
+        'nav-hint': 'Tipp',
+        'nav-undo': 'Undo',
+        'nav-redo': 'Redo',
+        'nav-more': 'Mehr',
+        'footer-shortcuts': 'Pfeiltasten: Navigation\u00a0\u00a0·\u00a0\u00a0N: Notizen\u00a0\u00a0·\u00a0\u00a0V: Validierung\u00a0\u00a0·\u00a0\u00a0T: Timer\u00a0\u00a0·\u00a0\u00a0H: Tipp\u00a0\u00a0·\u00a0\u00a0Entf: Löschen\u00a0\u00a0·\u00a0\u00a0Strg+Z/Y: Undo/Redo',
+        'footer-timer-label': 'Timer starten',
+        'flipper-menu-scores': 'BESTENLISTE',
+        'flipper-menu-theme': 'DESIGN',
+        'flipper-menu-settings': 'EINSTELLUNGEN',
+        'modal-reset-text': 'Alle Eingaben des aktuellen Rätsels löschen?',
+        'modal-confirm': 'Ja, löschen',
+        'modal-cancel': 'Abbrechen',
+        'win-title': 'Perfekt gelöst!',
+        'win-stat-size': 'Größe',
+        'win-stat-diff': 'Schwierigkeit',
+        'win-stat-time': 'Zeit',
+        'win-stat-moves': 'Züge',
+        'win-stat-seed-label': 'Rätsel-ID',
+        'win-new': 'Neues Rätsel',
+        'win-close': 'Schließen',
+        'win-new-best': '★ Neue Bestzeit!',
+        'stats-title': 'Statistiken',
+        'stats-reset-btn': 'Zurücksetzen',
+        'stats-close': 'Schließen',
+        'stats-total-label': 'Gesamt gelöst',
+        'stats-empty': 'Noch keine Rätsel gelöst.',
+        'stats-col-size': 'Größe',
+        'stats-col-diff': 'Schwierigkeit',
+        'stats-col-solved': 'Gelöst',
+        'stats-col-best': 'Bestzeit',
+        'stats-col-avg': 'Ø Zeit',
+        'stats-col-moves': 'Beste Züge',
+        'theme-title': 'Design',
+        'theme-classic': 'Klassisch',
+        'theme-console': 'Konsole',
+        'theme-flipper': 'Flipper',
+        'theme-close': 'Schließen',
+        'settings-title': 'Einstellungen',
+        'settings-fontsize': 'Schriftgröße',
+        'settings-font-small': 'Klein',
+        'settings-font-normal': 'Normal',
+        'settings-font-large': 'Groß',
+        'settings-help': 'Hilfe',
+        'settings-tutorial': 'Tutorial starten',
+        'settings-lang': 'Sprache',
+        'settings-close': 'Schließen',
+        'settings-about-title': 'Über Numori',
+        'settings-about-privacy': 'Alle Spielstände werden ausschließlich lokal auf deinem Gerät gespeichert. Es werden keine personenbezogenen Daten übertragen oder gespeichert.',
+        'settings-about-imprint': 'Impressum',
+        'settings-about-contact': 'Bei Fragen, Problemen oder Anregungen erreichst du mich unter:',
+        'tut-welcome-title': 'Willkommen bei Numori',
+        'tut-welcome-text': 'Bist du mit dem Rätselprinzip vertraut?',
+        'tut-w-yes': 'Ja, direkt loslegen',
+        'tut-w-no': 'Nein, Tutorial starten',
+        'tut-puzzle-title': 'Versuch\'s selbst!',
+        'tut-puzzle-hint': '3×3-Rätsel – Zahlen 1 bis 3, jede einmal pro Zeile und Spalte.',
+        'tut-skip': 'Überspringen',
+        'tut-success-title': 'Super gemacht!',
+        'tut-success-text': 'Du kennst jetzt alles was du für Numori brauchst. Viel Spaß!',
+        'tut-finish': 'Los geht\'s',
+        'tut-back': '← Zurück',
+        'tut-next': 'Weiter →',
+        'tut-next-last': 'Los geht\'s →',
+        'seed-modal-title': 'Rätsel-ID eingeben',
+        'seed-modal-confirm': 'Laden',
+        'seed-modal-cancel': 'Abbrechen',
+        'seed-modal-placeholder': 'z.B. 5M-JLLNTD',
+        'numpad-title': 'Zahlenpad',
+        'btn-generating': 'Generiere...',
+        'status-loaded': '{n}×{n} {diff}',
+        'status-solved': '{n}×{n} gelöst!',
+        'status-solve-shown': 'Lösung angezeigt. Zeit gestoppt.',
+        'status-error': 'Fehler beim Generieren – bitte erneut klicken.',
+        'status-reset': 'Rätsel zurückgesetzt.',
+        'status-pdf': 'PDF gespeichert.',
+        'status-generating': 'Generiere {n}x{n}-Rätsel {diff}…',
+        'status-cleared-1': '1 falsche Zahl gelöscht.',
+        'status-cleared-n': '{n} falsche Zahlen gelöscht.',
+        'clear-invalid-1': '1 falsche Zahl gefunden. Löschen?',
+        'clear-invalid-n': '{n} falsche Zahlen gefunden. Löschen?',
+        'daily-solved-title': 'Tägliches Rätsel – heute bereits gelöst ({time})',
+        'error-title-dark': 'Nicht ganz richtig.',
+        'error-sub-dark': 'Noch nicht alle Zellen stimmen.',
+        'error-title-default': 'Nicht korrekt.',
+        'error-sub-default': 'Es sind noch Fehler vorhanden.',
+        'diff-easy-name': 'Leicht',
+        'diff-easy-1': '2 bis 3 Zellen pro Käfig',
+        'diff-easy-2': '+  −  ×  (kein ÷)',
+        'diff-easy-3': 'Für Einsteiger',
+        'diff-medium-name': 'Mittel',
+        'diff-medium-1': '3 bis 4 Zellen pro Käfig',
+        'diff-medium-2': '+  −  ×  ÷',
+        'diff-medium-3': 'Für Geübte',
+        'diff-hard-name': 'Schwer',
+        'diff-hard-1': 'Bis zu 5 Zellen pro Käfig',
+        'diff-hard-2': '+  −  ×  ÷',
+        'diff-hard-3': 'Für Profis',
+        'stats-reset-confirm': 'Alle Statistiken zurücksetzen?',
+        'stats-tab-stats': 'Statistiken',
+        'stats-tab-leaderboard': 'Bestenliste',
+        'lb-info': 'Zeiten landen automatisch in der Bestenliste – solange keine Hilfe oder Sofort-Validierung genutzt wurde.',
+        'lb-empty': 'Noch keine Einträge vorhanden.',
+        'lb-moves': 'Züge',
+        'lb-name-placeholder': 'Dein Name',
+        'lb-confirm': 'Eintragen',
+        'lb-cancel': 'Überspringen',
+        'lb-entry-title': 'Platz {rank} erreicht!',
+        'lb-anon': 'Anonym',
+        'lb-reset-confirm': 'Bestenliste wirklich zurücksetzen?',
+        'tut-slide1-title': 'Das Spielprinzip',
+        'tut-slide1-body': `<p>Numori ist ein Logik-Rätsel auf einem <strong>n×n-Gitter</strong>. Fülle jede Zeile und jede Spalte mit den Zahlen <strong>1 bis n</strong> – jede Zahl genau einmal pro Zeile und Spalte.</p>
+<div class="tut-latin-wrap">
+  <div class="tut-latin">
+    <div class="tut-latin-row"><span>1</span><span>2</span><span>3</span></div>
+    <div class="tut-latin-row"><span>2</span><span>3</span><span>1</span></div>
+    <div class="tut-latin-row"><span>3</span><span>1</span><span>2</span></div>
+  </div>
+  <p class="tut-hint">↑ Jede Zahl kommt in jeder Zeile und Spalte genau einmal vor.</p>
+</div>`,
+        'tut-slide2-title': 'Käfige & Operationen',
+        'tut-slide2-body': `<p>Das Gitter ist in farbige <strong>Käfige</strong> unterteilt. Jeder Käfig zeigt oben links eine Zahl mit einer Rechenoperation – die Zahlen im Käfig müssen zusammen das Ergebnis ergeben.</p>
+<ul class="tut-ops">
+  <li><strong>6+</strong><span>Summe ist 6 <em>(z.B. 1+2+3)</em></span></li>
+  <li><strong>2−</strong><span>Differenz ist 2 <em>(z.B. 3−1)</em></span></li>
+  <li><strong>12×</strong><span>Produkt ist 12 <em>(z.B. 3×4)</em></span></li>
+  <li><strong>3:</strong><span>Quotient ist 3 <em>(z.B. 6:2)</em></span></li>
+  <li><strong>4=</strong><span>Zelle enthält genau die 4</span></li>
+</ul>`,
+        'tut-slide3-title': 'Nützliche Funktionen',
+        'tut-slide3-body': `<div class="tut-features">
+  <div class="tut-feat">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+    <div><strong>Sofort-Validierung</strong><span>Markiert Fehler sofort beim Eingeben. Gut zum Üben – sperrt aber den Wettkampf-Modus.</span></div>
+  </div>
+  <div class="tut-feat">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+    <div><strong>Bestenliste</strong><span>Zeiten landen automatisch in der Bestenliste – solange keine Hilfe oder Sofort-Validierung genutzt wurde.</span></div>
+  </div>
+  <div class="tut-feat">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+    <div><strong>Rätsel-ID</strong><span>Jedes Rätsel hat eine eindeutige ID. Eingeben um ein bekanntes Rätsel erneut zu laden oder mit anderen zu teilen.</span></div>
+  </div>
+</div>`,
+    },
+    en: {
+        'subtitle': 'Logic Puzzle',
+        'size-upper': 'SIZE',
+        'size-label': 'Size',
+        'difficulty-label': 'Difficulty',
+        'diff-easy': 'Easy',
+        'diff-medium': 'Medium',
+        'diff-hard': 'Hard',
+        'seed-label': 'Puzzle ID',
+        'btn-new': 'New Puzzle',
+        'btn-solve': 'Solve',
+        'btn-reset': 'Reset',
+        'progress-label': 'Progress',
+        'move-label': 'Moves',
+        'title-notes': 'Note Mode (N)',
+        'title-validate': 'Instant Validation on/off',
+        'title-hint': 'Show Hint',
+        'title-undo': 'Undo (Ctrl+Z)',
+        'title-redo': 'Redo (Ctrl+Y)',
+        'title-pdf': 'Save as PDF',
+        'title-daily': 'Daily Puzzle',
+        'title-timer': 'Timer – only runs without hints & validation qualify for the leaderboard',
+        'title-numpad': 'Numpad on/off',
+        'title-timer-blocked': 'Run not counted – hints or validation were used',
+        'welcome-title': 'Welcome to NUMORI',
+        'welcome-text': 'Choose size and difficulty,\nthen click New Puzzle.',
+        'welcome-hint': 'Or enter a Puzzle ID to load a known puzzle.',
+        'more-solve': 'Solve',
+        'more-reset': 'Reset',
+        'more-timer': 'Timer',
+        'more-validate': 'Validate',
+        'nav-notes': 'Notes',
+        'nav-hint': 'Hint',
+        'nav-undo': 'Undo',
+        'nav-redo': 'Redo',
+        'nav-more': 'More',
+        'footer-shortcuts': 'Arrow keys: Navigate\u00a0\u00a0·\u00a0\u00a0N: Notes\u00a0\u00a0·\u00a0\u00a0V: Validate\u00a0\u00a0·\u00a0\u00a0T: Timer\u00a0\u00a0·\u00a0\u00a0H: Hint\u00a0\u00a0·\u00a0\u00a0Del: Clear\u00a0\u00a0·\u00a0\u00a0Ctrl+Z/Y: Undo/Redo',
+        'footer-timer-label': 'Start Timer',
+        'flipper-menu-scores': 'SCORES',
+        'flipper-menu-theme': 'THEME',
+        'flipper-menu-settings': 'SETTINGS',
+        'modal-reset-text': 'Delete all entries of the current puzzle?',
+        'modal-confirm': 'Yes, delete',
+        'modal-cancel': 'Cancel',
+        'win-title': 'Perfectly solved!',
+        'win-stat-size': 'Size',
+        'win-stat-diff': 'Difficulty',
+        'win-stat-time': 'Time',
+        'win-stat-moves': 'Moves',
+        'win-stat-seed-label': 'Puzzle ID',
+        'win-new': 'New Puzzle',
+        'win-close': 'Close',
+        'win-new-best': '★ New Best Time!',
+        'stats-title': 'Statistics',
+        'stats-reset-btn': 'Reset',
+        'stats-close': 'Close',
+        'stats-total-label': 'Total Solved',
+        'stats-empty': 'No puzzles solved yet.',
+        'stats-col-size': 'Size',
+        'stats-col-diff': 'Difficulty',
+        'stats-col-solved': 'Solved',
+        'stats-col-best': 'Best Time',
+        'stats-col-avg': 'Avg Time',
+        'stats-col-moves': 'Best Moves',
+        'theme-title': 'Theme',
+        'theme-classic': 'Classic',
+        'theme-console': 'Console',
+        'theme-flipper': 'Flipper',
+        'theme-close': 'Close',
+        'settings-title': 'Settings',
+        'settings-fontsize': 'Font Size',
+        'settings-font-small': 'Small',
+        'settings-font-normal': 'Normal',
+        'settings-font-large': 'Large',
+        'settings-help': 'Help',
+        'settings-tutorial': 'Start Tutorial',
+        'settings-lang': 'Language',
+        'settings-close': 'Close',
+        'settings-about-title': 'About Numori',
+        'settings-about-privacy': 'All progress is stored exclusively on your device. No personal data is transmitted or collected.',
+        'settings-about-imprint': 'Legal Notice',
+        'settings-about-contact': 'For questions, issues or suggestions, feel free to reach out:',
+        'tut-welcome-title': 'Welcome to Numori',
+        'tut-welcome-text': 'Are you familiar with the puzzle rules?',
+        'tut-w-yes': 'Yes, let\'s go',
+        'tut-w-no': 'No, show tutorial',
+        'tut-puzzle-title': 'Try it yourself!',
+        'tut-puzzle-hint': '3×3 puzzle – numbers 1 to 3, each once per row and column.',
+        'tut-skip': 'Skip',
+        'tut-success-title': 'Well done!',
+        'tut-success-text': 'You now know everything you need for Numori. Have fun!',
+        'tut-finish': 'Let\'s go',
+        'tut-back': '← Back',
+        'tut-next': 'Next →',
+        'tut-next-last': 'Let\'s go →',
+        'seed-modal-title': 'Enter Puzzle ID',
+        'seed-modal-confirm': 'Load',
+        'seed-modal-cancel': 'Cancel',
+        'seed-modal-placeholder': 'e.g. 5M-JLLNTD',
+        'numpad-title': 'Numpad',
+        'btn-generating': 'Generating...',
+        'status-loaded': '{n}×{n} {diff}',
+        'status-solved': '{n}×{n} solved!',
+        'status-solve-shown': 'Solution shown. Timer stopped.',
+        'status-error': 'Error generating – please try again.',
+        'status-reset': 'Puzzle reset.',
+        'status-pdf': 'PDF saved.',
+        'status-generating': 'Generating {n}x{n} puzzle {diff}…',
+        'status-cleared-1': '1 wrong number deleted.',
+        'status-cleared-n': '{n} wrong numbers deleted.',
+        'clear-invalid-1': '1 wrong number found. Delete?',
+        'clear-invalid-n': '{n} wrong numbers found. Delete?',
+        'daily-solved-title': 'Daily Puzzle – already solved today ({time})',
+        'error-title-dark': 'Not quite right.',
+        'error-sub-dark': 'Not all cells are correct yet.',
+        'error-title-default': 'Incorrect.',
+        'error-sub-default': 'There are still errors.',
+        'diff-easy-name': 'Easy',
+        'diff-easy-1': '2 to 3 cells per cage',
+        'diff-easy-2': '+  −  ×  (no ÷)',
+        'diff-easy-3': 'For beginners',
+        'diff-medium-name': 'Medium',
+        'diff-medium-1': '3 to 4 cells per cage',
+        'diff-medium-2': '+  −  ×  ÷',
+        'diff-medium-3': 'For experienced players',
+        'diff-hard-name': 'Hard',
+        'diff-hard-1': 'Up to 5 cells per cage',
+        'diff-hard-2': '+  −  ×  ÷',
+        'diff-hard-3': 'For experts',
+        'stats-reset-confirm': 'Reset all statistics?',
+        'stats-tab-stats': 'Statistics',
+        'stats-tab-leaderboard': 'Leaderboard',
+        'lb-info': 'Times are automatically added to the leaderboard – as long as no hints or instant validation were used.',
+        'lb-empty': 'No entries yet.',
+        'lb-moves': 'moves',
+        'lb-name-placeholder': 'Your name',
+        'lb-confirm': 'Submit',
+        'lb-cancel': 'Skip',
+        'lb-entry-title': 'Rank {rank} achieved!',
+        'lb-anon': 'Anonymous',
+        'lb-reset-confirm': 'Really reset the leaderboard?',
+        'tut-slide1-title': 'The Rules',
+        'tut-slide1-body': `<p>Numori is a logic puzzle on an <strong>n×n grid</strong>. Fill every row and column with the numbers <strong>1 to n</strong> – each number exactly once per row and column.</p>
+<div class="tut-latin-wrap">
+  <div class="tut-latin">
+    <div class="tut-latin-row"><span>1</span><span>2</span><span>3</span></div>
+    <div class="tut-latin-row"><span>2</span><span>3</span><span>1</span></div>
+    <div class="tut-latin-row"><span>3</span><span>1</span><span>2</span></div>
+  </div>
+  <p class="tut-hint">↑ Each number appears exactly once in every row and column.</p>
+</div>`,
+        'tut-slide2-title': 'Cages & Operations',
+        'tut-slide2-body': `<p>The grid is divided into coloured <strong>cages</strong>. Each cage shows a number with an operation in the top-left – the numbers in the cage must produce that result.</p>
+<ul class="tut-ops">
+  <li><strong>6+</strong><span>Sum is 6 <em>(e.g. 1+2+3)</em></span></li>
+  <li><strong>2−</strong><span>Difference is 2 <em>(e.g. 3−1)</em></span></li>
+  <li><strong>12×</strong><span>Product is 12 <em>(e.g. 3×4)</em></span></li>
+  <li><strong>3:</strong><span>Quotient is 3 <em>(e.g. 6:2)</em></span></li>
+  <li><strong>4=</strong><span>Cell contains exactly 4</span></li>
+</ul>`,
+        'tut-slide3-title': 'Useful Features',
+        'tut-slide3-body': `<div class="tut-features">
+  <div class="tut-feat">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+    <div><strong>Instant Validation</strong><span>Highlights mistakes as you enter numbers. Great for practice – but locks Competitive Mode.</span></div>
+  </div>
+  <div class="tut-feat">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+    <div><strong>Competitive Mode</strong><span>Starts the timer for the leaderboard. Activate before your first move – hints and validation lock it.</span></div>
+  </div>
+  <div class="tut-feat">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+    <div><strong>Puzzle ID</strong><span>Every puzzle has a unique ID. Enter it to reload a known puzzle or share it with others.</span></div>
+  </div>
+</div>`,
+    }
+};
+
+function getLang() {
+    return localStorage.getItem('numori-lang') || 'de';
+}
+
+function t(key) {
+    const lang = getLang();
+    return TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.de[key] ?? key;
+}
+
+function applyLanguage(lang) {
+    localStorage.setItem('numori-lang', lang);
+    document.documentElement.lang = lang;
+    // Text content
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        const text = TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.de[key];
+        if (text !== undefined) el.textContent = text;
+    });
+    // HTML content
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.dataset.i18nHtml;
+        const text = TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.de[key];
+        if (text !== undefined) el.innerHTML = text;
+    });
+    // title attributes
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.dataset.i18nTitle;
+        const text = TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.de[key];
+        if (text !== undefined) el.title = text;
+    });
+    // placeholder attributes
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        const text = TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.de[key];
+        if (text !== undefined) el.placeholder = text;
+    });
+    // Language toggle button states
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    // Resync custom selects so the label shows the translated text
+    const sizeEl = document.getElementById('size');
+    const diffEl = document.getElementById('difficulty');
+    if (sizeEl) syncCustomSelect('size', sizeEl.value);
+    if (diffEl) syncCustomSelect('difficulty', diffEl.value);
+    // Also update native select option texts
+    document.querySelectorAll('select option[data-i18n]').forEach(opt => {
+        const key = opt.dataset.i18n;
+        const text = TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.de[key];
+        if (text !== undefined) opt.textContent = text;
+    });
+}
+
+function initLanguage() {
+    applyLanguage(getLang());
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
+    });
+}
+
 // 0. THEME
 function applyTheme(theme) {
-    const validThemes = ['dark', 'console'];
+    const validThemes = ['dark', 'console', 'flipper'];
     document.documentElement.setAttribute('data-theme', validThemes.includes(theme) ? theme : '');
     localStorage.setItem('numori-theme', theme);
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.theme === theme);
     });
     // Inputs übernehmen font-family nicht per CSS-Vererbung in Chromium
-    const font = theme === 'dark' ? "'Poppins', system-ui, sans-serif"
+    const font = theme === 'dark'    ? "'Poppins', system-ui, sans-serif"
                : theme === 'console' ? "'Share Tech Mono', monospace"
+               : theme === 'flipper' ? "'Bitcount Grid Single', monospace"
                : "";
     const seedInput = document.getElementById('seed-input');
     if (seedInput) seedInput.style.fontFamily = font;
@@ -19,10 +436,67 @@ function applyTheme(theme) {
     if (welcomeIcon) {
         welcomeIcon.src = theme === 'console'
             ? 'assets/icons/numori_console.png'
+            : theme === 'flipper'
+            ? 'assets/icons/numori_flipper.png'
             : 'assets/icons/png/numori-1024.png';
     }
     initConsoleStatus();
     initMusicPlayer();
+    if (theme === 'flipper') {
+        flipperDMD.start();
+    } else {
+        flipperDMD.stop();
+    }
+    // Ensure header-right stays in header (restore if previously moved)
+    const _hr = document.querySelector('.header-right');
+    const _hd = document.querySelector('header');
+    if (_hr && _hd && _hr.parentElement !== _hd) _hd.appendChild(_hr);
+    buildFlipperTicker();
+    if (currentPuzzle) requestAnimationFrame(() => resizeBoard());
+}
+
+function buildFlipperTicker() {
+    const el = document.getElementById('flipper-ticker');
+    if (!el) return;
+
+    // Attract-Mode: kein Rätsel geladen
+    if (!currentPuzzle) {
+        const n    = parseInt(document.getElementById('size')?.value ?? '4', 10);
+        const diff = document.getElementById('difficulty')?.value ?? 'medium';
+        const diffLabelsAttract = { easy: 'EASY', medium: 'MEDIUM', hard: 'HARD' };
+        const config  = `${n}×${n}  ${diffLabelsAttract[diff] ?? diff.toUpperCase()}`;
+        const segment = `★ INSERT COIN ★   ${config}   ·   PRESS START   ·   NUMORI`;
+        el.textContent = `${segment}   ·   ${segment}   ·   ${segment}`;
+        return;
+    }
+
+    // Rätsel aktiv: High Scores
+    const lb = loadLeaderboard();
+    const sizeLabels = { 3: '3×3', 4: '4×4', 5: '5×5', 6: '6×6', 7: '7×7', 8: '8×8' };
+    const diffLabels = { easy: 'EASY', medium: 'MEDIUM', hard: 'HARD' };
+    const parts = [];
+    for (const size of [4, 5, 6, 7, 8, 3]) {
+        for (const diff of ['easy', 'medium', 'hard']) {
+            const entries = lb[size]?.[diff];
+            if (!entries || entries.length === 0) continue;
+            const top = entries[0];
+            const mins = Math.floor(top.time / 60);
+            const secs = String(top.time % 60).padStart(2, '0');
+            const timeStr = mins > 0 ? `${mins}:${secs}` : `0:${secs}`;
+            parts.push(`${sizeLabels[size] ?? size} ${diffLabels[diff] ?? diff}: ${top.name.toUpperCase()}  ${timeStr}`);
+        }
+    }
+    const joined = parts.length > 0 ? parts.join('   ·   ') : 'NOCH KEINE EINTRÄGE';
+    el.textContent = `★ HIGH SCORES ★   ${joined}   ·   ★ HIGH SCORES ★   ${joined}`;
+    // DMD update (desktop only)
+    if (document.documentElement.getAttribute('data-theme') === 'flipper' && window.innerWidth > 600) {
+        if (currentPuzzle) {
+            const _p = parseFullSeed(currentPuzzle.seed);
+            flipperDMD.setState('playing', { size: _p ? _p.n : currentPuzzle.solution.length, diff: _p ? _p.diff : 'medium', seed: currentPuzzle.seed });
+        } else {
+            flipperDMD.setState('attract');
+        }
+    }
 }
 
 // ── SCHRIFTGRÖSSE ─────────────────────────────────────────────────
@@ -388,29 +862,34 @@ function recordSolve(n, diff, seconds, moves) {
     return isNewBestTime;
 }
 
-function renderStatsModal() {
+let statsActiveTab = 'stats';
+let _newLeaderboardEntry = null; // { size, difficulty, idx } — für Highlight nach Eintrag
+let lbActiveFilter = null; // 'size-diff' z.B. '4-medium'
+
+function renderStatsContent() {
     const stats = loadStats();
     const isConsole = document.documentElement.getAttribute('data-theme') === 'console';
-    const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
+    const diffLabels = { easy: t('diff-easy'), medium: t('diff-medium'), hard: t('diff-hard') };
     const sizes = [3, 4, 5, 6, 7];
 
+    const lc = (s) => isConsole ? s.toLowerCase() : s;
     let html = `<div class="stats-total">
-        <span class="stats-total-label">${isConsole ? 'gesamt gelöst' : 'Gesamt gelöst'}</span>
+        <span class="stats-total-label">${lc(t('stats-total-label'))}</span>
         <span class="stats-total-value">${stats.totalSolved}</span>
     </div>`;
 
     const hasSomeData = Object.keys(stats.bySize).length > 0;
     if (!hasSomeData) {
-        html += `<p class="stats-empty">${isConsole ? 'noch keine rätsel gelöst.' : 'Noch keine Rätsel gelöst.'}</p>`;
+        html += `<p class="stats-empty">${lc(t('stats-empty'))}</p>`;
     } else {
         html += `<div class="stats-table-wrap"><table class="stats-table">
             <thead><tr>
-                <th>${isConsole ? 'größe' : 'Größe'}</th>
-                <th>${isConsole ? 'schwierigkeit' : 'Schwierigkeit'}</th>
-                <th>${isConsole ? 'gelöst' : 'Gelöst'}</th>
-                <th>${isConsole ? 'bestzeit' : 'Bestzeit'}</th>
-                <th>${isConsole ? 'ø zeit' : 'Ø Zeit'}</th>
-                <th>${isConsole ? 'beste züge' : 'Beste Züge'}</th>
+                <th>${lc(t('stats-col-size'))}</th>
+                <th>${lc(t('stats-col-diff'))}</th>
+                <th>${lc(t('stats-col-solved'))}</th>
+                <th>${lc(t('stats-col-best'))}</th>
+                <th>${lc(t('stats-col-avg'))}</th>
+                <th>${lc(t('stats-col-moves'))}</th>
             </tr></thead><tbody>`;
 
         for (const n of sizes) {
@@ -437,6 +916,88 @@ function renderStatsModal() {
     if (container) container.innerHTML = html;
 }
 
+function renderLeaderboard() {
+    const lb = loadLeaderboard();
+    const isConsole = document.documentElement.getAttribute('data-theme') === 'console';
+    const lc = (s) => isConsole ? s.toLowerCase() : s;
+    const diffLabels = { easy: t('diff-easy'), medium: t('diff-medium'), hard: t('diff-hard') };
+    const medals = ['1', '2', '3'];
+    const rankClasses = ['lb-row-gold', 'lb-row-silver', 'lb-row-bronze'];
+    const container = document.getElementById('stats-content');
+    if (!container) return;
+
+    // Verfügbare Kombinationen sammeln
+    const options = [];
+    for (const n of [3, 4, 5, 6, 7]) {
+        for (const diff of ['easy', 'medium', 'hard']) {
+            if (lb[n]?.[diff]?.length > 0) {
+                options.push({ key: `${n}-${diff}`, n, diff });
+            }
+        }
+    }
+
+    if (options.length === 0) {
+        container.innerHTML = `<p class="lb-info">${lc(t('lb-info'))}</p><p class="stats-empty">${lc(t('lb-empty'))}</p>`;
+        return;
+    }
+
+    // Aktiven Filter bestimmen: neuer Eintrag hat Vorrang, sonst letzter Wert, sonst erste Option
+    if (_newLeaderboardEntry) {
+        lbActiveFilter = `${_newLeaderboardEntry.size}-${_newLeaderboardEntry.difficulty}`;
+    }
+    if (!options.find(o => o.key === lbActiveFilter)) {
+        lbActiveFilter = options[0].key;
+    }
+    const active = options.find(o => o.key === lbActiveFilter);
+    const entries = lb[active.n][active.diff];
+
+    // Dropdown
+    const optionsHtml = options.map(o => {
+        const label = lc(`${o.n}×${o.n} · ${diffLabels[o.diff] ?? o.diff}`);
+        return `<option value="${o.key}"${o.key === lbActiveFilter ? ' selected' : ''}>${label}</option>`;
+    }).join('');
+
+    // Tabellenzeilen
+    let rowsHtml = '';
+    entries.forEach((e, i) => {
+        const medal = i < 3 ? medals[i] : `${i + 1}.`;
+        const isNew = _newLeaderboardEntry
+            && _newLeaderboardEntry.size === active.n
+            && _newLeaderboardEntry.difficulty === active.diff
+            && _newLeaderboardEntry.idx === i;
+        const rowClass = ['lb-row', rankClasses[i] ?? '', isNew ? 'lb-row-new' : ''].filter(Boolean).join(' ');
+        rowsHtml += `<tr class="${rowClass}">
+            <td class="lb-rank">${medal}</td>
+            <td class="lb-name">${escapeHtml(e.name)}</td>
+            <td class="lb-time">${formatTime(e.time)}</td>
+            <td class="lb-moves">${e.moves} ${lc(t('lb-moves'))}</td>
+            <td class="lb-date">${e.date}</td>
+        </tr>`;
+    });
+
+    container.innerHTML = `
+        <p class="lb-info">${lc(t('lb-info'))}</p>
+        <select id="lb-filter" class="lb-filter-select">${optionsHtml}</select>
+        <table class="lb-table"><tbody>${rowsHtml}</tbody></table>`;
+
+    container.querySelector('#lb-filter').addEventListener('change', (e) => {
+        lbActiveFilter = e.target.value;
+        _newLeaderboardEntry = null;
+        renderLeaderboard();
+    });
+}
+
+function renderStatsModal() {
+    document.querySelectorAll('.stats-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === statsActiveTab);
+    });
+    if (statsActiveTab === 'leaderboard') {
+        renderLeaderboard();
+    } else {
+        renderStatsContent();
+    }
+}
+
 function initStatsModal() {
     const btnStats     = document.getElementById('btn-stats');
     const statsOverlay = document.getElementById('stats-overlay');
@@ -444,6 +1005,7 @@ function initStatsModal() {
     const statsReset   = document.getElementById('stats-reset');
 
     if (btnStats) btnStats.addEventListener('click', () => {
+        statsActiveTab = 'stats';
         renderStatsModal();
         statsOverlay.classList.add('visible');
     });
@@ -454,9 +1016,20 @@ function initStatsModal() {
         if (e.target === statsOverlay) statsOverlay.classList.remove('visible');
     });
     if (statsReset) statsReset.addEventListener('click', () => {
-        if (!confirm('Alle Statistiken zurücksetzen?')) return;
-        saveStats({ totalSolved: 0, bySize: {} });
+        if (statsActiveTab === 'leaderboard') {
+            if (!confirm(t('lb-reset-confirm'))) return;
+            saveLeaderboardData({});
+        } else {
+            if (!confirm(t('stats-reset-confirm'))) return;
+            saveStats({ totalSolved: 0, bySize: {} });
+        }
         renderStatsModal();
+    });
+    document.querySelectorAll('.stats-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            statsActiveTab = btn.dataset.tab;
+            renderStatsModal();
+        });
     });
 }
 
@@ -539,10 +1112,10 @@ function initDailyButton() {
 
     const { dateKey, fullSeed, n, diff } = getDailyConfig();
     const solvedTime = getDailySolvedTime(dateKey);
-    const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
+    const diffLabels = { easy: t('diff-easy'), medium: t('diff-medium'), hard: t('diff-hard') };
 
     if (solvedTime) {
-        btn.title = `Tägliches Rätsel – heute bereits gelöst (${solvedTime})`;
+        btn.title = t('daily-solved-title').replace('{time}', solvedTime);
         btn.dataset.solved = 'true';
     }
 
@@ -557,7 +1130,7 @@ function initDailyButton() {
             if (seedInput) seedInput.value = fullSeed;
             document.getElementById('btn-new')?.click();
         }
-        if (solvedTime) setStatus(`tägliches rätsel – heute bereits gelöst (${solvedTime})`);
+        if (solvedTime) setStatus(t('daily-solved-title').replace('{time}', solvedTime));
     });
 }
 
@@ -574,6 +1147,8 @@ function restoreGameState(s) {
 
     requestAnimationFrame(() => {
         renderBoard(currentPuzzle);
+        // renderBoard setzt moveCount = 0, daher hier wiederherstellen
+        moveCount = s.moveCount || 0;
         // userBoard/notesBoard/hintBoard nach renderBoard wiederherstellen
         const n = currentPuzzle.solution.length;
         for (let r = 0; r < n; r++) {
@@ -589,16 +1164,20 @@ function restoreGameState(s) {
             }
         }
         if (s.validationActive) validateAll();
-        // Timer wiederherstellen (pausiert)
+        // Timer vom gespeicherten Stand weiterführen
+        if (timerInterval) clearInterval(timerInterval);
         timerStopped = false;
+        timerInterval = setInterval(() => { elapsedSeconds++; updateTimerDisplay(); }, 1000);
         updateTimerDisplay();
         if (s.timerVisible) setTimerVisible(true);
         const moveEl = document.getElementById('move-count');
         if (moveEl) moveEl.textContent = moveCount;
+        const mobileMoveEl = document.getElementById('mobile-move-display');
+        if (mobileMoveEl) mobileMoveEl.textContent = moveCount;
         updateUndoRedoButtons();
         updateProgress();
         setStatus('spielstand wiederhergestellt.');
-        window._isDirty = true;
+        window._isDirty = moveCount > 0;
         // Dropdowns auf wiederhergestellte Größe synchronisieren
         const sizeEl = document.getElementById('size');
         if (sizeEl) {
@@ -609,6 +1188,17 @@ function restoreGameState(s) {
         // Seed-ID wiederherstellen
         if (currentPuzzle.seed) setSeedTypewriter(currentPuzzle.seed);
     });
+    // Flipper DMD nach Board-Render auf playing setzen
+    setTimeout(() => {
+        if (currentPuzzle && typeof flipperDMD !== 'undefined') {
+            const _p = parseFullSeed(currentPuzzle.seed || '');
+            flipperDMD.setState('playing', {
+                size: _p ? _p.n : currentPuzzle.solution.length,
+                diff: _p ? _p.diff : 'medium',
+                seed: currentPuzzle.seed
+            });
+        }
+    }, 200);
 }
 
 // Expose saveState for Electron main process
@@ -984,9 +1574,11 @@ function initMusicPlayer() {
         playerEl.style.display = 'none';
     }
 
-    // Playlist schließen bei Theme-Wechsel
+    // Playlist + mobiles Panel schließen bei Theme-Wechsel
     const pl = document.getElementById('music-playlist');
     if (pl) { pl.style.display = 'none'; pl.style.flexDirection = ''; }
+    const mPanel = document.getElementById('music-mobile-panel');
+    if (mPanel && !isConsole) mPanel.style.display = 'none';
 }
 
 // ── Mobile-Musikplayer Panel verdrahten ───────────────────────────
@@ -1052,6 +1644,16 @@ function stopTimer(cheat = false) {
     if (cheat) solvedByCheat = true;
 }
 
+function resetTimerState() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    elapsedSeconds = 0;
+    timerStopped = false;
+    competitiveBlocked = false;
+    solvedByCheat = false;
+    updateTimerDisplay();
+    updateTimerBtn();
+}
+
 function updateTimerDisplay() {
     if (!timerVisible) return;
     const headerTimer = document.getElementById('timer-display-header');
@@ -1059,8 +1661,8 @@ function updateTimerDisplay() {
 }
 
 // 3b. GEWINN-BANNER
-function showWinBanner(timeStr, size, diff, seed, denied=false, isNewBest=false) {
-    const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
+function showWinBanner(timeStr, size, diff, seed, denied=false, isNewBest=false, leaderboardRank=null) {
+    const diffLabels = { easy: t('diff-easy'), medium: t('diff-medium'), hard: t('diff-hard') };
     const banner = document.getElementById('win-banner');
     if (!banner) return;
     const el = (id) => document.getElementById(id);
@@ -1071,12 +1673,25 @@ function showWinBanner(timeStr, size, diff, seed, denied=false, isNewBest=false)
     if (el('win-stat-seed'))  el('win-stat-seed').textContent  = seed;
     const winBest = el('win-best');
     if (winBest) {
-        winBest.textContent = isNewBest ? '★ Neue Bestzeit!' : '';
+        winBest.textContent = isNewBest ? t('win-new-best') : '';
         winBest.style.display = isNewBest ? '' : 'none';
     }
+    const _isFlipperTheme = document.documentElement.getAttribute('data-theme') === 'flipper';
     banner.classList.add('visible');
     _matrixWinData = { size: size+'x'+size, diff, time: timeStr, seed, moves: moveCount, denied, isNewBest };
     startMatrixRain();
+    if (_isFlipperTheme) {
+        if (denied) flipperSounds.tilt(); else flipperSounds.win();
+        flipperDMD.setState(denied ? 'tilt' : 'win', {
+            size, diff, time: timeStr, seed,
+            moves: moveCount, denied, isNewBest,
+            rank: leaderboardRank,
+            seconds: elapsedSeconds,
+            onNewGame: () => { document.getElementById('btn-new')?.click(); },
+            onExit: () => {}
+        });
+        startFlipperWin();
+    }
     const btnSolve = document.getElementById('btn-solve');
     if (btnSolve) btnSolve.disabled = true;
     numpadModule.hide();
@@ -1087,6 +1702,15 @@ function hideWinBanner() {
     if (!banner) return;
     banner.classList.remove('visible');
     stopMatrixRain();
+    stopFlipperWin();
+    if (document.documentElement.getAttribute('data-theme') === 'flipper' && window.innerWidth > 600) {
+        if (currentPuzzle) {
+            const _p = parseFullSeed(currentPuzzle.seed);
+            flipperDMD.setState('playing', { size: _p ? _p.n : currentPuzzle.solution.length, diff: _p ? _p.diff : 'medium', seed: currentPuzzle.seed });
+        } else {
+            flipperDMD.setState('attract');
+        }
+    }
     // btn-solve bleibt gesperrt bis newPuzzle() aufgerufen wird
     if (currentPuzzle && numpadModule.isEnabled()) {
         numpadModule.show(currentPuzzle.solution.length);
@@ -1297,6 +1921,1212 @@ function stopMatrixRain(){
 }
 
 
+// FLIPPER SOUNDS
+const flipperSounds = (() => {
+    let _ctx = null;
+
+    function ac() {
+        if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (_ctx.state === 'suspended') _ctx.resume();
+        return _ctx;
+    }
+    function active() {
+        return document.documentElement.getAttribute('data-theme') === 'flipper';
+    }
+
+    // Kurzes "Boing" beim Eintragen einer Zahl
+    function bumper() {
+        if (!active()) return;
+        const a = ac(), osc = a.createOscillator(), g = a.createGain();
+        osc.connect(g); g.connect(a.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(380, a.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(90, a.currentTime + 0.07);
+        g.gain.setValueAtTime(0.35, a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.09);
+        osc.start(); osc.stop(a.currentTime + 0.09);
+    }
+
+    // Metallischer Clink beim Coinslot
+    function coin() {
+        if (!active()) return;
+        const a = ac();
+        [1200, 1390].forEach(freq => {
+            const osc = a.createOscillator(), g = a.createGain();
+            osc.connect(g); g.connect(a.destination);
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(0.12, a.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.18);
+            osc.start(); osc.stop(a.currentTime + 0.18);
+        });
+        const buf = a.createBuffer(1, Math.floor(a.sampleRate * 0.03), a.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+        const src = a.createBufferSource(), g = a.createGain();
+        src.buffer = buf; g.gain.value = 0.25;
+        src.connect(g); g.connect(a.destination); src.start();
+    }
+
+    // Aufsteigende Multiball-Fanfare bei Lösung
+    function win() {
+        if (!active()) return;
+        const a = ac();
+        [523, 659, 784, 1047].forEach((freq, i) => {
+            const t = a.currentTime + i * 0.13;
+            const osc = a.createOscillator(), g = a.createGain();
+            osc.connect(g); g.connect(a.destination);
+            osc.type = 'square';
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.12, t + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+            osc.start(t); osc.stop(t + 0.21);
+        });
+    }
+
+    // Absteigende Sirene bei Tilt
+    function tilt() {
+        if (!active()) return;
+        const a = ac(), osc = a.createOscillator(), g = a.createGain();
+        osc.connect(g); g.connect(a.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, a.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(35, a.currentTime + 0.5);
+        g.gain.setValueAtTime(0.3, a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.55);
+        osc.start(); osc.stop(a.currentTime + 0.55);
+    }
+
+    // Kurzer Tick wenn neuer Tally-Posten erscheint
+    function tallyTick(isNegative) {
+        if (!active()) return;
+        const a = ac(), osc = a.createOscillator(), g = a.createGain();
+        osc.connect(g); g.connect(a.destination);
+        osc.type = 'square';
+        osc.frequency.value = isNegative ? 180 : 440;
+        g.gain.setValueAtTime(0.08, a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.06);
+        osc.start(); osc.stop(a.currentTime + 0.06);
+    }
+
+    // Akkord wenn TOTAL erscheint
+    function tallyTotal() {
+        if (!active()) return;
+        const a = ac();
+        [440, 554, 659].forEach((freq, i) => {
+            const t = a.currentTime + i * 0.04;
+            const osc = a.createOscillator(), g = a.createGain();
+            osc.connect(g); g.connect(a.destination);
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(0.1, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            osc.start(t); osc.stop(t + 0.36);
+        });
+    }
+
+    return { bumper, coin, win, tilt, tallyTick, tallyTotal };
+})();
+
+// FLIPPER DMD PANEL
+const flipperDMD = (() => {
+    let canvas = null, ctx = null, gridOvc = null, animFrame = null;
+    let state = 'attract';
+    let stateData = {};
+    let stateElapsed = 0, lastFrameTime = 0;
+    let attractPhase = 0, attractPhaseEl = 0;
+    let hsRain = null;
+    let _coinClicks = 0, _coinTimer = null;
+    let _rickAudio = null;
+
+    function playRickRollChiptune() {
+        if (_rickAudio) { try { _rickAudio.close(); } catch(e){} _rickAudio = null; }
+        if (!window.AudioContext && !window.webkitAudioContext) return;
+        const AC = new (window.AudioContext || window.webkitAudioContext)();
+        _rickAudio = AC;
+
+        const Q = 60 / 113;           // quarter note @ 113 BPM
+        const E = Q / 2;              // eighth note
+        const H = Q * 2;              // half note
+        const D = Q * 1.5;            // dotted quarter
+
+        const Gs4=415.30, A4=440.00, B4=493.88;
+        const Cs5=554.37, D5=587.33, E5=659.25, Fs5=739.99;
+
+        // Verified notes (noobnotes.net):
+        // "Never gonna give you up":  A B ^D B ^F# ^F# ^E
+        // "Never gonna let you down": A B ^D B ^E ^E ^D ^C# B
+        // Line 3 approximated from song
+        const melody = [
+            // "Never gonna give you up"
+            [A4,E],[B4,E],[D5,E],[B4,D],[Fs5,E],[Fs5,E],[E5,H],[null,Q],
+            // "Never gonna let you down"
+            [A4,E],[B4,E],[D5,E],[B4,D],[E5,Q],[D5,E],[Cs5,E],[B4,H],[null,Q],
+            // "Never gonna run around and desert you"
+            [Fs5,E],[Fs5,E],[D5,Q],[B4,E],[A4,Q],[Gs4,E],[A4,E],[B4,Q],[null,Q],
+            // "Never gonna make you cry"
+            [A4,E],[B4,E],[D5,E],[B4,D],[Fs5,E],[Fs5,E],[E5,H],[null,Q],
+            // "Never gonna say goodbye"
+            [A4,E],[B4,E],[D5,E],[B4,D],[E5,Q],[D5,E],[Cs5,E],[B4,H],[null,Q],
+            // "Never gonna tell a lie and hurt you"
+            [Fs5,E],[Fs5,E],[D5,Q],[B4,E],[A4,Q],[Gs4,E],[A4,E],[B4,H],
+        ];
+
+        let t = AC.currentTime + 0.05;
+        for (const [freq, dur] of melody) {
+            if (freq) {
+                const osc = AC.createOscillator();
+                const gain = AC.createGain();
+                osc.connect(gain); gain.connect(AC.destination);
+                osc.type = 'square';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.07, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.82);
+                osc.start(t); osc.stop(t + dur);
+            }
+            t += dur;
+        }
+    }
+
+    function stopRickRollChiptune() {
+        if (_rickAudio) { try { _rickAudio.close(); } catch(e){} _rickAudio = null; }
+    }
+
+    // Rick Astley pixel art — 18×34, four dance frames
+    const RICK_FRAMES = [
+      // Frame 0: neutral standing, arms slightly out, mic on right side, legs apart
+      [ [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0],  // row  0 – pompadour top
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row  1
+        [0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],  // row  2
+        [0,0,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,0],  // row  3 – hair + eyes
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row  4 – face
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row  5 – face lower
+        [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0],  // row  6 – chin
+        [0,0,1,0,1,1,1,1,1,1,1,0,1,0,0,0,0,0],  // row  7 – shoulders/arms
+        [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],  // row  8 – upper torso
+        [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],  // row  9 – chest
+        [0,0,1,0,1,1,1,1,1,1,1,0,1,0,0,0,0,0],  // row 10 – arms out
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row 11 – waist
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row 12 – waist
+        [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],  // row 13 – hips wide
+        [0,0,1,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 14 – upper legs
+        [0,0,1,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 15
+        [0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 16
+        [0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 17
+        [0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 18
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 19 – knee split
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 20
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 21
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 22
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 23 – lower legs
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 24
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 25
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 26
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 27
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 28
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 29
+        [0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0],  // row 30 – feet
+        [0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0],  // row 31
+        [0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,0,0],  // row 32
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],  // row 33
+      ],
+      // Frame 1: slight bob down, right arm forward with mic, legs shifted left
+      [ [0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0],  // row  0
+        [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0],  // row  1
+        [0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0],  // row  2
+        [0,0,0,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0],  // row  3
+        [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0],  // row  4
+        [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0],  // row  5
+        [0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0],  // row  6
+        [0,0,1,0,1,1,1,1,1,1,1,0,0,1,1,1,0,0],  // row  7 – mic arm extends right
+        [0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,0,0,0],  // row  8
+        [0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,0,0],  // row  9
+        [0,0,1,0,1,1,1,1,1,1,1,0,0,0,0,1,0,0],  // row 10 – mic
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row 11
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row 12
+        [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],  // row 13
+        [0,1,1,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 14
+        [0,1,1,1,0,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 15
+        [0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 16
+        [0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 17
+        [0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 18
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 19
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 20
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 21
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 22
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 23
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 24
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 25
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 26
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 27
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 28
+        [0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 29
+        [0,1,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0],  // row 30
+        [0,1,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0],  // row 31
+        [0,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0],  // row 32
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],  // row 33
+      ],
+      // Frame 2: classic arm raise / point gesture, left knee bent
+      [ [0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,1,0],  // row  0 – pompadour + raised hand
+        [0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0],  // row  1
+        [0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,1,0],  // row  2
+        [0,0,0,1,1,0,1,1,1,0,1,0,0,0,0,1,1,0],  // row  3
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,0,0],  // row  4
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,0,0],  // row  5
+        [0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,0,0,0],  // row  6
+        [0,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row  7 – left arm raises up-right
+        [0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],  // row  8
+        [0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],  // row  9
+        [0,0,1,0,1,1,1,1,1,1,1,0,1,0,0,0,0,0],  // row 10
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row 11
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row 12
+        [0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],  // row 13
+        [0,0,1,1,1,0,0,1,1,0,0,1,0,0,0,0,0,0],  // row 14
+        [0,0,1,1,0,0,0,1,1,0,0,1,0,0,0,0,0,0],  // row 15
+        [0,0,1,1,0,0,0,1,1,0,0,0,1,0,0,0,0,0],  // row 16 – right leg bends outward
+        [0,0,1,1,0,0,0,1,1,0,0,0,1,0,0,0,0,0],  // row 17
+        [0,0,1,1,0,0,0,1,1,0,0,0,0,1,0,0,0,0],  // row 18
+        [0,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0],  // row 19 – bent knee
+        [0,0,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0],  // row 20
+        [0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0],  // row 21
+        [0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],  // row 22
+        [0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],  // row 23
+        [0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],  // row 24
+        [0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],  // row 25
+        [0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],  // row 26
+        [0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],  // row 27
+        [0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],  // row 28
+        [0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],  // row 29
+        [0,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0],  // row 30
+        [0,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0],  // row 31
+        [0,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0],  // row 32
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],  // row 33
+      ],
+      // Frame 3: lean/recovery pose, opposite arm out, legs re-centered
+      [ [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0],  // row  0
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row  1
+        [0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row  2
+        [0,0,0,1,1,0,1,1,1,0,1,0,0,0,0,0,0,0],  // row  3
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row  4
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row  5
+        [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0],  // row  6
+        [1,1,1,0,1,1,1,1,1,1,1,0,1,0,0,0,0,0],  // row  7 – left arm extends far left
+        [1,1,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],  // row  8
+        [0,1,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],  // row  9
+        [0,0,0,0,1,1,1,1,1,1,1,0,1,0,0,0,0,0],  // row 10
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row 11
+        [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0],  // row 12
+        [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],  // row 13
+        [0,0,0,1,1,1,0,1,1,0,1,1,1,0,0,0,0,0],  // row 14 – legs together-ish
+        [0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 15
+        [0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 16
+        [0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 17
+        [0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0],  // row 18
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 19
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 20
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 21
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 22
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 23
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 24
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 25
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 26
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 27
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 28
+        [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0],  // row 29
+        [0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0],  // row 30
+        [0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0],  // row 31
+        [0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,0,0],  // row 32
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],  // row 33
+      ],
+    ];
+
+    let tallyItems = [], tallyBuilt = false, winActivated = false;
+    let _lastTallyIdx = -1;
+    let initialsValue = '', initialsKeyHandler = null;
+
+    const DOT  = 3;                          // dot pitch in px
+    const HI   = '#ffaa00';                  // bright amber (phosphor "on")
+    const MED  = '#cc7a00';
+    const LO   = '#8a4800';
+    const OFF  = '#2e1200';
+    const FONT = "'Bitcount Grid Single', monospace";
+    const MONO = "'Share Tech Mono', monospace";
+
+    function buildGrid(w, h) {
+        const oc = document.createElement('canvas');
+        oc.width = w; oc.height = h;
+        const g = oc.getContext('2d');
+        // Mask: dark gaps between dots (draw black grid first)
+        g.fillStyle = '#000000';
+        g.fillRect(0, 0, w, h);
+        // Punch out dot-shaped holes (transparent circles = let canvas beneath show)
+        g.globalCompositeOperation = 'destination-out';
+        for (let y = DOT/2; y < h; y += DOT)
+            for (let x = DOT/2; x < w; x += DOT) {
+                g.beginPath(); g.arc(x, y, DOT * 0.42, 0, Math.PI * 2); g.fill();
+            }
+        g.globalCompositeOperation = 'source-over';
+        // Dim OFF-state: faint amber circles visible in the gaps that were punched
+        // Re-draw smaller ambient dots on top
+        g.fillStyle = 'rgba(120,40,0,0.22)';
+        for (let y = DOT/2; y < h; y += DOT)
+            for (let x = DOT/2; x < w; x += DOT) {
+                g.beginPath(); g.arc(x, y, DOT * 0.42, 0, Math.PI * 2); g.fill();
+            }
+        return oc;
+    }
+
+    function start() {
+        canvas = document.getElementById('flipper-dmd');
+        if (!canvas) return;
+
+        // Easter egg: 10x Coinslot klicken
+        const coinslot = document.querySelector('.coinslot');
+        if (coinslot && !coinslot._rickHandler) {
+            coinslot._rickHandler = () => {
+                flipperSounds.coin();
+                _coinClicks++;
+                clearTimeout(_coinTimer);
+                _coinTimer = setTimeout(() => { _coinClicks = 0; }, 3000);
+                if (_coinClicks >= 10) { _coinClicks = 0; setState('rickroll'); }
+            };
+            coinslot.addEventListener('click', coinslot._rickHandler);
+        }
+        // Klick auf DMD: Blur-Overlay entfernen (Win-Screen)
+        if (!canvas._clickHandler) {
+            canvas._clickHandler = () => {
+                if ((state === 'win' || state === 'tilt' || state === 'highscore') && winActivated) {
+                    hideWinBanner();
+                }
+            };
+            canvas.addEventListener('click', canvas._clickHandler);
+            canvas.style.cursor = 'pointer';
+        }
+
+        const init = () => {
+            const r = canvas.getBoundingClientRect();
+            const w = Math.round(r.width), h = Math.round(r.height);
+            if (!w || !h) { requestAnimationFrame(init); return; }
+            canvas.width = w; canvas.height = h;
+            ctx = canvas.getContext('2d');
+            gridOvc = buildGrid(w, h);
+            if (window.ResizeObserver) new ResizeObserver(() => {
+                const rr = canvas.getBoundingClientRect();
+                canvas.width = Math.round(rr.width); canvas.height = Math.round(rr.height);
+                ctx = canvas.getContext('2d');
+                gridOvc = buildGrid(canvas.width, canvas.height);
+            }).observe(canvas);
+            lastFrameTime = performance.now();
+            loop(lastFrameTime);
+        };
+        requestAnimationFrame(init);
+    }
+
+    function stop() {
+        if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+        removeKey();
+        if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function setState(newState, newData) {
+        state = newState;
+        stateData = newData || {};
+        stateElapsed = 0;
+        tallyBuilt = false; winActivated = false; _lastTallyIdx = -1;
+        if (newState === 'attract') { attractPhase = 0; attractPhaseEl = 0; }
+        if (newState !== 'highscore') hsRain = null;
+        if (newState === 'rickroll') playRickRollChiptune();
+        else stopRickRollChiptune();
+        removeKey();
+        if (newState === 'initials') {
+            initialsValue = localStorage.getItem('numori-player-name') || '';
+            setupKey();
+            // Auf Mobile: Tastatur öffnen via verstecktes Input
+            if (canvas.width < 600) {
+                _flipperWinPhase = 'initials';
+                let inp = document.getElementById('dmd-mobile-input');
+                if (!inp) {
+                    inp = document.createElement('input');
+                    inp.id = 'dmd-mobile-input';
+                    inp.setAttribute('autocomplete', 'off');
+                    inp.setAttribute('autocorrect', 'off');
+                    inp.setAttribute('autocapitalize', 'none');
+                    inp.setAttribute('spellcheck', 'false');
+                    inp.style.cssText = 'position:fixed;top:50%;left:50%;opacity:0;width:1px;height:1px;border:none;outline:none;z-index:99998;';
+                    document.body.appendChild(inp);
+                    inp.addEventListener('paste', (e) => e.preventDefault());
+                    inp.addEventListener('input', () => {
+                        const newVal = inp.value;
+                        const prevLen = initialsValue.length;
+                        if (newVal.length <= prevLen || newVal.length === prevLen + 1) {
+                            initialsValue = newVal.slice(0, 16);
+                        }
+                        inp.value = initialsValue;
+                    });
+                    inp.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const n = initialsValue.trim() || t('lb-anon');
+                            stateData.onConfirm?.(n);
+                        } else if (e.key === 'Escape') {
+                            stateData.onCancel?.();
+                        } else if (e.key === 'Backspace') {
+                            initialsValue = initialsValue.slice(0, -1);
+                            inp.value = initialsValue;
+                            e.preventDefault();
+                        }
+                    });
+                }
+                initialsValue = '';
+                inp.value = '';
+                setTimeout(() => inp.focus(), 80);
+            }
+        }
+        if (newState === 'highscore' && canvas.width < 600) {
+            _flipperWinPhase = 'highscore';
+        }
+    }
+
+    function removeKey() {
+        if (initialsKeyHandler) { document.removeEventListener('keydown', initialsKeyHandler); initialsKeyHandler = null; }
+        document.getElementById('dmd-mobile-input')?.remove();
+    }
+
+    function setupKey() {
+        initialsKeyHandler = (e) => {
+            const a = document.activeElement;
+            if (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA')) return;
+            if (e.key === 'Enter') { e.preventDefault(); const n = initialsValue.trim() || t('lb-anon'); stateData.onConfirm?.(n); }
+            else if (e.key === 'Escape') stateData.onCancel?.();
+            else if (e.key === 'Backspace') { initialsValue = initialsValue.slice(0,-1); e.preventDefault(); }
+            else if (e.key.length === 1 && initialsValue.length < 16) initialsValue += e.key;
+        };
+        document.addEventListener('keydown', initialsKeyHandler);
+    }
+
+    const CX    = () => canvas.width / 2;
+    const Y_TOP = () => canvas.height * 0.16;
+    const Y_MID = () => canvas.height * 0.55;
+    const Y_BOT = () => canvas.height * 0.82;
+
+    function txt(s, x, y, size, color, font, align) {
+        ctx.font = `bold ${size}px ${font||FONT}`;
+        ctx.letterSpacing = font ? '2px' : '5px';
+        ctx.textAlign = align||'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = color;
+        // Layered phosphor glow: outer diffuse + inner bright halo
+        ctx.shadowColor = color;
+        ctx.shadowBlur = size * 0.9;
+        ctx.fillText(s, x, y);
+        ctx.shadowBlur = size * 0.4;
+        ctx.fillText(s, x, y);
+        ctx.shadowBlur = 0;
+        ctx.letterSpacing = '0px';
+    }
+
+    function drawAttract(dt) {
+        attractPhaseEl += dt;
+        if (attractPhase === 0) {
+            txt('N U M O R I', CX(), (Y_TOP() + Y_MID()) / 2, 44, HI);
+            {
+                const n  = parseInt(document.getElementById('size')?.value??'4');
+                const df = document.getElementById('difficulty')?.value??'medium';
+                const dl = {easy:'EASY',medium:'MEDIUM',hard:'HARD'};
+                const line = `INSERT COIN  ·  ${n}×${n}  ${dl[df]||''}  ·  PRESS START`;
+                ctx.save();
+                ctx.font = `18px ${MONO}`; ctx.textBaseline = 'middle';
+                ctx.shadowBlur = 4;
+                const tw = ctx.measureText(line).width;
+                if (tw <= canvas.width) {
+                    // Desktop: blinken
+                    if (Math.floor(attractPhaseEl/600)%2===0) {
+                        ctx.fillStyle = MED; ctx.shadowColor = MED;
+                        ctx.textAlign = 'center';
+                        ctx.fillText(line, CX(), Y_BOT());
+                    }
+                } else {
+                    // Mobile: durchlauf ohne blinken
+                    ctx.fillStyle = MED; ctx.shadowColor = MED;
+                    const offset = ((attractPhaseEl/1000) * 60) % (tw + canvas.width);
+                    ctx.fillText(line, canvas.width - offset, Y_BOT());
+                }
+                ctx.restore();
+            }
+            if (attractPhaseEl >= 5000) { attractPhase=1; attractPhaseEl=0; }
+        } else if (attractPhase === 1) {
+            const lb = loadLeaderboard();
+            const entries = [];
+            const diffLabel = { easy: 'EASY', medium: 'MEDIUM', hard: 'HARD' };
+            const ordinals = ['','1ST','2ND','3RD','4TH','5TH'];
+            for (const sz of [3,4,5,6,7,8]) for (const df of ['easy','medium','hard']) {
+                const top = lb[sz]?.[df]?.[0];
+                if (top) {
+                    const m = Math.floor(top.time/60), s = String(top.time%60).padStart(2,'0');
+                    entries.push({ cat: `${sz}×${sz}  ${diffLabel[df]}`, name: top.name.toUpperCase(), time: `${m}:${s}` });
+                }
+            }
+
+            const blink = Math.floor(attractPhaseEl/500)%2===0;
+            txt('★  HIGH SCORES  ★', CX(), Y_TOP(), 18, blink ? HI : MED);
+
+            if (entries.length === 0) {
+                txt('NO ENTRIES YET', CX(), Y_MID(), 22, LO, MONO);
+            } else {
+                const ENTRY_MS = 2200;
+                const idx = Math.floor(attractPhaseEl / ENTRY_MS) % entries.length;
+                const phaseT = (attractPhaseEl % ENTRY_MS) / ENTRY_MS;
+                const alpha = phaseT < 0.1 ? phaseT / 0.1 : phaseT > 0.85 ? (1 - phaseT) / 0.15 : 1;
+                const e = entries[idx];
+                const CAT_Y  = canvas.height * 0.40;
+                const NAME_Y = canvas.height * 0.64;
+                const TIME_Y = canvas.height * 0.86;
+                ctx.save(); ctx.globalAlpha = alpha;
+                txt(e.cat, CX(), CAT_Y, 12, LO, MONO);
+                ctx.font = `bold 22px ${MONO}`; ctx.textBaseline = 'middle';
+                ctx.shadowBlur = 6;
+                ctx.textAlign = 'center'; ctx.fillStyle = HI; ctx.shadowColor = HI; ctx.fillText(e.name, CX(), NAME_Y);
+                txt(e.time, CX(), TIME_Y, 14, MED, MONO);
+                ctx.restore();
+            }
+            if (attractPhaseEl >= 10000) { attractPhase=0; attractPhaseEl=0; }
+        }
+    }
+
+    function drawRickRoll(dt) {
+        const COLS = 18, ROWS = 34;
+
+        if (stateElapsed < 2500) {
+            // ── Phase 1: blinking "YOU GOT RICK ROLL'D" flash-in ──────────────
+            const flashDur = 400;
+            const alpha = Math.min(1, stateElapsed / flashDur);
+            const blink = Math.floor(stateElapsed / 500) % 2 === 0;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            if (blink) {
+                txt('YOU GOT', CX(), canvas.height * 0.38, 28, HI);
+                txt("RICK ROLL'D", CX(), canvas.height * 0.62, 32, '#ffdd00');
+            } else {
+                txt('YOU GOT', CX(), canvas.height * 0.38, 28, MED);
+                txt("RICK ROLL'D", CX(), canvas.height * 0.62, 28, MED);
+            }
+            ctx.restore();
+        } else {
+            // ── Phase 2: full dancing pixel-art figure ────────────────────────
+
+            // Subtle lattice/window background (dim diagonal crosshatch)
+            ctx.save();
+            ctx.globalAlpha = 0.15;
+            ctx.strokeStyle = LO;
+            ctx.lineWidth = 0.8;
+            const spacing = 12;
+            const dw = canvas.width, dh = canvas.height;
+            for (let i = -dh; i < dw + dh; i += spacing) {
+                ctx.beginPath(); ctx.moveTo(i, 0);        ctx.lineTo(i + dh, dh);  ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(i + dh, 0);   ctx.lineTo(i, dh);       ctx.stroke();
+            }
+            ctx.restore();
+
+            // Dancing figure
+            const figX = Math.round(CX() - (COLS * DOT) / 2);
+            const figY = Math.round((canvas.height - ROWS * DOT) / 2);
+            const frame = RICK_FRAMES[Math.floor((stateElapsed - 2500) / 300) % 4];
+
+            ctx.save();
+            ctx.fillStyle = HI;
+            ctx.shadowColor = HI;
+            ctx.shadowBlur = 4;
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (frame[r][c]) {
+                        ctx.fillRect(figX + c * DOT, figY + r * DOT, DOT - 0.5, DOT - 0.5);
+                    }
+                }
+            }
+            ctx.restore();
+
+            // Scrolling ticker at bottom
+            const scrollTxt = '♪  NEVER GONNA GIVE YOU UP  ·  NEVER GONNA LET YOU DOWN  ♪';
+            ctx.save();
+            ctx.font = `13px ${MONO}`; ctx.textBaseline = 'middle';
+            ctx.fillStyle = MED; ctx.shadowColor = MED; ctx.shadowBlur = 4;
+            const tw = ctx.measureText(scrollTxt).width;
+            const elapsed2 = stateElapsed - 2500;
+            const offset = ((elapsed2 / 1000) * 55) % (tw + canvas.width);
+            ctx.fillText(scrollTxt, canvas.width - offset, Y_BOT());
+            ctx.restore();
+        }
+
+        if (stateElapsed >= 16000) setState('attract');
+    }
+
+    function drawPlaying() {
+        const d = stateData;
+        const dl = {easy:'EASY',medium:'MEDIUM',hard:'HARD'};
+
+        const PL_TOP = canvas.height * 0.28;
+        const PL_MID = canvas.height * 0.65;
+        txt(`${d.size||'?'}×${d.size||'?'}  ${dl[d.diff]||''}  ID: ${(d.seed||'').toUpperCase()}`, CX(), PL_TOP, 18, MED, MONO);
+        if (canvas.width < 600) {
+            txt(`${moveCount} MOVES`, CX(), PL_MID, 40, HI);
+        } else {
+            const timerTxt = typeof formatTime === 'function' ? formatTime(elapsedSeconds) : '00:00';
+            txt(`${timerTxt}  ·  ${moveCount} MOVES`, CX(), PL_MID, 40, HI);
+        }
+    }
+
+    function buildTally(d, denied) {
+        const n   = d.size||4;
+        const sb  = (n-2)*100;
+        const db  = {easy:50,medium:150,hard:300}[d.diff]||100;
+        const tp  = (d.time||'0:00').split(':');
+        const ts  = (parseInt(tp[0])||0)*60+(parseInt(tp[1])||0);
+        const tb  = Math.max(0,500-Math.floor(ts/2));
+        const hp  = denied?-200:0;
+        const tot = sb+db+tb+hp;
+        const fan = d.isNewBest?'★  HIGH SCORE  ★':'★  EXTRA BALL  ★';
+        return denied
+            ? [{l:'PUZZLE BONUS',v:sb},{l:'DIFF BONUS',v:db},{l:'TIME BONUS',v:tb},{l:'HINT PENALTY',v:hp},{l:'TOTAL',v:tot,isTotal:true}]
+            : [{l:'PUZZLE BONUS',v:sb},{l:'DIFF BONUS',v:db},{l:'TIME BONUS',v:tb},{l:fan,v:null,fan:true},{l:'TOTAL',v:tot,isTotal:true}];
+    }
+
+    function drawWin(dt, denied) {
+        if (!tallyBuilt) { tallyItems = buildTally(stateData, denied); tallyBuilt = true; }
+        const FLASH_MS=600, ITEM_MS=600, COUNT_MS=400;
+        const titleTxt = denied ? 'T  I  L  T' : 'PUZZLE COMPLETE';
+        const titleCol = denied ? '#cc3300' : HI;
+
+        // Auf Mobile: Titel statisch halten, Tally läuft im Canvas darunter
+        if (canvas.width < 600) {
+            const CY = canvas.height * 0.5;
+            ctx.save();
+            // Rahmen am DMD-Rand
+            const border = 4;
+            ctx.strokeStyle = titleCol; ctx.lineWidth = 1.5;
+            ctx.shadowColor = titleCol; ctx.shadowBlur = 8;
+            ctx.strokeRect(border, border, canvas.width - border*2, canvas.height - border*2);
+            // Inhalt zentriert und skaliert in den Rahmen
+            const innerW = canvas.width  - border*2 - 16;
+            const innerH = canvas.height - border*2 - 10;
+            ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+            ctx.fillStyle = titleCol; ctx.shadowColor = titleCol; ctx.shadowBlur = 6;
+            if (denied) {
+                // TILT – einzeilig, Schrift so groß wie möglich
+                let fs = 40;
+                ctx.font = `bold ${fs}px ${MONO}`;
+                while (ctx.measureText('T  I  L  T').width > innerW && fs > 10) { fs--; ctx.font = `bold ${fs}px ${MONO}`; }
+                ctx.fillText('T  I  L  T', CX(), CY);
+            } else {
+                // PUZZLE / COMPLETE – zweizeilig, Schrift so groß wie möglich
+                let fs = 40;
+                ctx.font = `bold ${fs}px ${MONO}`;
+                while ((ctx.measureText('COMPLETE').width > innerW || fs * 2.2 > innerH) && fs > 10) { fs--; ctx.font = `bold ${fs}px ${MONO}`; }
+                const gap = fs * 1.1;
+                ctx.fillText('PUZZLE',   CX(), CY - gap / 2);
+                ctx.fillText('COMPLETE', CX(), CY + gap / 2);
+            }
+            ctx.restore();
+            if (!winActivated) {
+                winActivated = true;
+                const d = stateData;
+                if (!denied && d.rank != null) {
+                    setTimeout(() => setState('highscore', {
+                        rank: d.rank, size: d.size, diff: d.diff, seed: d.seed,
+                        seconds: d.seconds, onNewGame: d.onNewGame, onExit: d.onExit
+                    }), 600);
+                }
+            }
+            return;
+        }
+
+        if (stateElapsed < FLASH_MS) {
+            _lastTallyIdx = -1;
+            const a = Math.min(1, stateElapsed/FLASH_MS*2.5);
+            ctx.globalAlpha = a; txt(titleTxt, CX(), canvas.height*0.5, 44, titleCol); ctx.globalAlpha = 1;
+            return;
+        }
+
+        const tEl = stateElapsed - FLASH_MS;
+        const idx = Math.min(Math.floor(tEl/ITEM_MS), tallyItems.length-1);
+        const prog = Math.min((tEl - idx*ITEM_MS)/COUNT_MS, 1);
+        const item = tallyItems[idx];
+
+        if (idx !== _lastTallyIdx) {
+            _lastTallyIdx = idx;
+            if (item.isTotal) flipperSounds.tallyTotal();
+            else if (!item.fan) flipperSounds.tallyTick(item.v < 0);
+        }
+
+        if (item.fan) {
+            txt(item.l, CX(), canvas.height * 0.5, 24, '#ffcc44');
+        } else if (item.isTotal) {
+            const val = Math.round(item.v * prog);
+            txt('TOTAL', CX(), Y_TOP(), 20, MED, MONO);
+            txt(`${val} PTS`, CX(), Y_MID(), 40, HI);
+        } else {
+            const val = Math.round(Math.abs(item.v)*prog);
+            const sign = item.v < 0 ? '-' : '+';
+            txt(item.l, CX(), Y_TOP(), 18, MED, MONO);
+            txt(`${sign}${val} PTS`, CX(), Y_MID(), 38, item.v < 0 ? '#cc3300' : HI);
+        }
+
+        if (idx >= tallyItems.length-1 && prog >= 1 && !winActivated) {
+            winActivated = true;
+            const d = stateData;
+            if (!denied && d.rank != null) {
+                // New leaderboard entry → HS fanfare, then initials
+                setTimeout(() => setState('highscore', {
+                    rank: d.rank, size: d.size, diff: d.diff, seed: d.seed,
+                    seconds: d.seconds, onNewGame: d.onNewGame, onExit: d.onExit
+                }), 600);
+            } else {
+                removeKey();
+                initialsKeyHandler = (e) => {
+                    if (e.key==='Enter'||e.code==='Space') { e.preventDefault(); hideWinBanner(); stateData.onNewGame?.(); }
+                    else if (e.key==='Escape') { hideWinBanner(); stateData.onExit?.(); }
+                };
+                document.addEventListener('keydown', initialsKeyHandler);
+            }
+        }
+
+        if (winActivated && stateData.rank == null) {
+            const pEl = tEl - tallyItems.length*ITEM_MS;
+            if (Math.floor(pEl/600)%2===0)
+                txt(denied?'PRESS START TO CONTINUE':'INSERT COIN  ·  PRESS START', CX(), Y_BOT(), 20, HI);
+        }
+    }
+
+    function drawHighScore(dt) {
+        const d = stateData;
+        const rankColors = ['#ffdd00','#ffaa00','#cc7a00'];
+        const rankCol = rankColors[(d.rank||4)-1] || MED;
+        const blink = Math.floor(stateElapsed/350)%2===0;
+
+        // Lichtregen — nur während Fanfare-Phasen
+        if (stateElapsed < 2800) {
+            if (!hsRain) {
+                hsRain = Array.from({length: 28}, () => ({
+                    x: Math.random() * (canvas.width || 400),
+                    y: Math.random() * (canvas.height || 110),
+                    vy: 45 + Math.random() * 75,
+                    hi: Math.random() > 0.6
+                }));
+            }
+            for (const p of hsRain) {
+                p.y += p.vy * dt / 1000;
+                if (p.y > (canvas.height || 110) + 4) { p.y = -4; p.x = Math.random() * (canvas.width || 400); }
+                ctx.save();
+                ctx.fillStyle = p.hi ? MED : LO;
+                ctx.shadowColor = p.hi ? MED : LO;
+                ctx.shadowBlur = p.hi ? 6 : 2;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.hi ? 2 : 1.2, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        if (stateElapsed < 500) {
+            // Flash in
+            const a = Math.min(1, stateElapsed/250);
+            ctx.globalAlpha = a;
+            txt('★  NEW HIGH SCORE  ★', CX(), Y_MID(), 27, '#ffdd00');
+            ctx.globalAlpha = 1;
+        } else if (stateElapsed < 2800) {
+            txt('★  NEW HIGH SCORE  ★', CX(), Y_TOP(), 22, blink ? '#ffdd00' : '#cc9900');
+            if (d.rank) {
+                const ordinals = ['','1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH','10TH'];
+                txt(ordinals[d.rank]||`#${d.rank}`, CX(), Y_MID(), 44, rankCol);
+                txt('PLACE', CX(), canvas.height * 0.72, 17, MED, MONO);
+            }
+            // Scroll dots as decorative row
+            const dotY = canvas.height * 0.65;
+            const offset = (stateElapsed/8) % (DOT*2);
+            ctx.fillStyle = blink ? HI : MED;
+            for (let x = -DOT*2 + offset; x < canvas.width + DOT*2; x += DOT*2) {
+                ctx.beginPath(); ctx.arc(x, dotY, 1.5, 0, Math.PI*2); ctx.fill();
+            }
+        } else {
+            // Prompt for initials
+            txt('★  NEW HIGH SCORE  ★', CX(), Y_TOP(), 20, '#cc9900');
+            if (blink) txt('ENTER  YOUR  INITIALS', CX(), Y_MID(), 22, HI, MONO);
+        }
+
+        if (stateElapsed > 3200 && !winActivated) {
+            winActivated = true;
+            setState('initials', {
+                rank: d.rank,
+                onConfirm: (name) => {
+                    if (name) localStorage.setItem('numori-player-name', name);
+                    insertLeaderboardEntry(name, d.seconds, moveCount, d.size, d.diff, d.seed);
+                    hideWinBanner();
+                    setState('playing', { size: d.size, diff: d.diff, seed: d.seed });
+                },
+                onCancel: () => { hideWinBanner(); setState('playing', { size: d.size, diff: d.diff, seed: d.seed }); }
+            });
+        }
+    }
+
+    function drawInitials() {
+        const d = stateData;
+        const rankColors = ['','#ffdd00','#aaaaaa','#cc7700'];
+        const rankCol = rankColors[d.rank] || MED;
+        const cursor = Math.floor(stateElapsed/500)%2===0?'_':' ';
+        // Zeile 1: ENTER INITIALS
+        txt('ENTER  INITIALS', CX(), Y_TOP(), 18, MED, MONO);
+        // Zeile 2: #n links, NAME zentriert
+        if (d.rank) {
+            txt(`#${d.rank}`, 12, Y_MID(), 22, rankCol, null, 'left');
+        }
+        txt((initialsValue+cursor).toUpperCase(), CX(), Y_MID(), 32, '#ffcc44');
+        // Zeile 3: Hinweis
+        txt('ENTER: OK  ·  ESC: SKIP', CX(), Y_BOT(), 13, OFF, MONO);
+    }
+
+    function loop(now) {
+        const dt = Math.min(now - lastFrameTime, 50);
+        lastFrameTime = now;
+        if (state !== 'attract') stateElapsed += dt;
+        if (!canvas || !ctx || !canvas.width) { animFrame = requestAnimationFrame(loop); return; }
+        ctx.fillStyle = '#060200';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                switch(state) {
+            case 'attract':   drawAttract(dt);   break;
+            case 'playing':   drawPlaying();     break;
+            case 'win':       drawWin(dt,false); break;
+            case 'tilt':      drawWin(dt,true);  break;
+            case 'highscore': drawHighScore(dt); break;
+            case 'initials':  drawInitials();    break;
+            case 'rickroll':  drawRickRoll(dt);  break;
+        }
+        if (gridOvc) ctx.drawImage(gridOvc, 0, 0);
+        animFrame = requestAnimationFrame(loop);
+    }
+
+    return { start, stop, setState };
+})();
+
+// FLIPPER WIN SCREEN
+let _flipperAnimFrame = null;
+let _flipperKeyHandler = null;
+let _flipperWinPhase = 'tally'; // 'tally' | 'highscore' | 'initials'
+
+function startFlipperWin() {
+    if (document.documentElement.getAttribute('data-theme') !== 'flipper') return;
+    if (window.innerWidth > 600) return; // DMD handles win on desktop
+    const canvas = document.getElementById('matrix-canvas');
+    if (!canvas) return;
+    const banner = document.getElementById('win-banner');
+    _flipperWinPhase = 'tally';
+    const bannerInner = banner?.querySelector('.win-banner-inner');
+    if (bannerInner) bannerInner.style.visibility = 'hidden';
+    const rect = banner ? banner.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+    canvas.width  = Math.round(rect.width);
+    canvas.height = Math.round(rect.height);
+    canvas.style.cssText = 'display:block !important; position:absolute; top:0; left:0; width:100%; height:100%; z-index:99999; pointer-events:none;';
+    const ctx = canvas.getContext('2d');
+
+    const d = _matrixWinData || {};
+    const denied  = d.denied || false;
+    const isMobile = window.innerWidth <= 600;
+
+    // Colors
+    const AMBER       = denied ? '#cc0000' : '#cc8800';
+    const AMBER_BRIGHT= denied ? '#ff2200' : '#ffaa33';
+    const AMBER_DIM   = denied ? '#4a0000' : '#6a3a00';
+    const FONT_MAIN   = "'Bitcount Grid Single', monospace";
+    const FONT_MONO   = "'Share Tech Mono', monospace";
+
+    // Score calculation
+    const sizeN    = parseInt((d.size||'4x4').split('x')[0]) || 4;
+    const sizeBonus= (sizeN - 2) * 100;
+    const diffBonus= { easy: 50, medium: 150, hard: 300 }[d.diff] || 100;
+    const timeParts= (d.time || '0:00').split(':');
+    const timeSec  = (parseInt(timeParts[0]) || 0) * 60 + (parseInt(timeParts[1]) || 0);
+    const timeBonus= Math.max(0, 500 - Math.floor(timeSec / 2));
+    const hintPenalty = denied ? -200 : 0;
+    const total    = sizeBonus + diffBonus + timeBonus + hintPenalty;
+
+    // Tally items
+    const fanfareLabel = d.isNewBest ? '★  HIGH SCORE  ★' : '★  EXTRA BALL  ★';
+    const tallyItems = denied
+        ? [
+            { label: 'PUZZLE BONUS',   value: sizeBonus },
+            { label: 'DIFF BONUS',     value: diffBonus },
+            { label: 'TIME BONUS',     value: timeBonus },
+            { label: 'HINT PENALTY',   value: hintPenalty },
+            { label: 'TOTAL',          value: total, isTotal: true },
+          ]
+        : [
+            { label: 'PUZZLE BONUS',   value: sizeBonus },
+            { label: 'DIFF BONUS',     value: diffBonus },
+            { label: 'TIME BONUS',     value: timeBonus },
+            { label: fanfareLabel,     value: null, isFanfare: true },
+            { label: 'TOTAL',          value: total, isTotal: true },
+          ];
+
+    // Layout
+    const CX           = canvas.width / 2;
+    const TITLE_FS     = isMobile ? 28 : 36;
+    const TITLE_Y      = isMobile ? canvas.height * 0.13 : canvas.height * 0.21;
+    const TALLY_TOP    = isMobile ? canvas.height * 0.10 : TITLE_Y + 72;
+    const LINE_H       = isMobile ? 34 : 42;
+    const TALLY_W      = Math.min(340, canvas.width * 0.82);
+
+    // Phases & timing
+    const FLASH=0, TALLY=1, IDLE=2;
+    let phase = FLASH;
+    let elapsed = 0, lastTime = performance.now();
+    const FLASH_MS        = 700;
+    const TALLY_ITEM_MS   = 550;
+    const COUNT_MS        = 380;
+    let tallyIdx  = 0;
+
+    // Dot-grid overlay (LED panel effect)
+    function drawDotGrid() {
+        ctx.save();
+        ctx.globalAlpha = 0.28;
+        ctx.fillStyle = '#000';
+        for (let y = 0; y < canvas.height; y += 4) ctx.fillRect(0, y + 3, canvas.width, 1);
+        for (let x = 0; x < canvas.width;  x += 4) ctx.fillRect(x + 3, 0, 1, canvas.height);
+        ctx.restore();
+    }
+
+    function drawTitle(alpha) {
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, alpha);
+        ctx.font = `bold ${TITLE_FS}px ${FONT_MAIN}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = AMBER_BRIGHT;
+        ctx.shadowColor = AMBER_BRIGHT;
+        ctx.shadowBlur = 22;
+        if (!denied && isMobile) {
+            // Zweizeilig: PUZZLE / COMPLETE
+            const lineGap = TITLE_FS * 0.9;
+            ctx.fillText('PUZZLE',   CX, TITLE_Y - lineGap / 2);
+            ctx.fillText('COMPLETE', CX, TITLE_Y + lineGap / 2);
+            const tw1 = ctx.measureText('PUZZLE').width;
+            const tw2 = ctx.measureText('COMPLETE').width;
+            const bw = Math.max(tw1, tw2);
+            const pad = 10;
+            ctx.strokeStyle = AMBER; ctx.lineWidth = 2;
+            ctx.shadowColor = AMBER; ctx.shadowBlur = 10;
+            ctx.strokeRect(CX - bw/2 - pad - 4, TITLE_Y - lineGap/2 - TITLE_FS*0.6 - pad, bw + (pad+4)*2, lineGap + TITLE_FS*1.2 + pad*2);
+        } else {
+            const text = denied ? 'T  I  L  T' : 'PUZZLE COMPLETE';
+            ctx.fillText(text, CX, TITLE_Y);
+            const tw = ctx.measureText(text).width;
+            ctx.strokeStyle = AMBER; ctx.lineWidth = 2;
+            ctx.shadowColor = AMBER; ctx.shadowBlur = 10;
+            ctx.strokeRect(CX - tw/2 - 18, TITLE_Y - TITLE_FS*0.72, tw + 36, TITLE_FS*1.44);
+        }
+        ctx.restore();
+    }
+
+    function drawTallyItems(upToIdx, countProg) {
+        for (let i = 0; i <= upToIdx && i < tallyItems.length; i++) {
+            const item = tallyItems[i];
+            const y    = TALLY_TOP + i * LINE_H;
+            const prog = (i === upToIdx) ? countProg : 1;
+            ctx.save();
+
+            if (item.isFanfare) {
+                ctx.font = `bold ${isMobile ? 15 : 18}px ${FONT_MAIN}`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#ffcc44';
+                ctx.shadowColor = '#ffcc44';
+                ctx.shadowBlur = 18;
+                ctx.fillText(item.label, CX, y);
+            } else if (item.isTotal) {
+                // separator line
+                ctx.strokeStyle = AMBER_DIM;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(CX - TALLY_W/2, y - LINE_H/2 + 2);
+                ctx.lineTo(CX + TALLY_W/2, y - LINE_H/2 + 2);
+                ctx.stroke();
+                ctx.font = `bold ${isMobile ? 16 : 20}px ${FONT_MAIN}`;
+                ctx.fillStyle = AMBER_BRIGHT;
+                ctx.shadowColor = AMBER_BRIGHT;
+                ctx.shadowBlur = 14;
+                const val = Math.round(item.value * prog);
+                ctx.textAlign = 'left';  ctx.textBaseline = 'middle';
+                ctx.fillText('TOTAL', CX - TALLY_W/2, y);
+                ctx.textAlign = 'right';
+                ctx.fillText(`${val} PTS`, CX + TALLY_W/2, y);
+            } else {
+                ctx.font = `${isMobile ? 13 : 16}px ${FONT_MAIN}`;
+                ctx.fillStyle = AMBER;
+                ctx.shadowColor = AMBER;
+                ctx.shadowBlur = 6;
+                const val  = Math.round(Math.abs(item.value) * prog);
+                const sign = item.value < 0 ? '-' : '+';
+                ctx.textAlign = 'left';  ctx.textBaseline = 'middle';
+                ctx.fillText(item.label, CX - TALLY_W/2, y);
+                ctx.textAlign = 'right';
+                ctx.fillText(`${sign}${val} PTS`, CX + TALLY_W/2, y);
+            }
+            ctx.restore();
+        }
+    }
+
+    function drawStats() {
+        const diffLabel = { easy: 'EASY', medium: 'MEDIUM', hard: 'HARD' }[d.diff] || '';
+        const statsY = TALLY_TOP + tallyItems.length * LINE_H + (isMobile ? 22 : 30);
+        ctx.font = `${isMobile ? 14 : 13}px ${FONT_MONO}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = isMobile ? AMBER : AMBER_DIM;
+        ctx.shadowColor = isMobile ? AMBER : 'transparent';
+        ctx.shadowBlur = isMobile ? 4 : 0;
+        ctx.fillText(`${d.size||'?'}  ·  ${diffLabel}  ·  ${d.time||'--:--'}  ·  ID: ${(d.seed||'').toUpperCase()}`, CX, statsY);
+    }
+
+    function drawPrompt(elapsed) {
+        const promptY = TALLY_TOP + tallyItems.length * LINE_H + (isMobile ? 64 : 84);
+        const promptText = denied ? 'PRESS START TO CONTINUE' : 'INSERT COIN  ·  PRESS START';
+        ctx.font = `bold ${isMobile ? 22 : 28}px ${FONT_MAIN}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = AMBER_BRIGHT;
+        ctx.shadowColor = AMBER_BRIGHT;
+        ctx.shadowBlur = 16;
+        if (isMobile) {
+            // Scrollender Text ohne Blinken
+            const tw = ctx.measureText(promptText).width;
+            const speed = 45; // px/s
+            const offset = ((elapsed / 1000) * speed) % (tw + canvas.width);
+            ctx.save();
+            ctx.textAlign = 'left';
+            ctx.fillText(promptText, canvas.width - offset, promptY);
+            ctx.restore();
+        } else {
+            if (Math.floor(elapsed / 600) % 2 === 0)
+                ctx.fillText(promptText, CX, promptY);
+        }
+    }
+
+    // Mobile buttons
+    let mobileButtons = null;
+    function createMobileButtons() {
+        if (mobileButtons) return;
+        mobileButtons = document.createElement('div');
+        mobileButtons.setAttribute('data-flipper-btns', '1');
+        mobileButtons.style.cssText = 'position:fixed;bottom:calc(90px + env(safe-area-inset-bottom, 0px));left:0;right:0;z-index:100000;display:flex;justify-content:center;gap:20px;padding:0 24px;';
+        const baseStyle = `font-family:${FONT_MAIN};font-size:1rem;letter-spacing:3px;cursor:pointer;border:none;outline:none;-webkit-tap-highlight-color:transparent;`;
+        const btnInsertCol = denied ? '#882200' : '#b87820';
+        const btnInsertGlow = denied ? '#aa2200' : '#cc8833';
+        const btnNew = document.createElement('button');
+        btnNew.textContent = '▶  INSERT COIN';
+        btnNew.style.cssText = baseStyle + `
+            padding:14px 28px;
+            background:${btnInsertCol};
+            color:${denied ? '#ffaa99' : '#ffe0a0'};
+            box-shadow:0 0 12px ${btnInsertGlow};
+            clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+        `;
+        btnNew.addEventListener('click', () => { stopFlipperWin(); hideWinBanner(); document.getElementById('btn-new')?.click(); });
+        mobileButtons.appendChild(btnNew);
+        const btnExit = document.createElement('button');
+        btnExit.textContent = 'EXIT';
+        btnExit.style.cssText = baseStyle + `
+            padding:14px 22px;
+            background:transparent;
+            color:${AMBER};
+            border:1px solid ${AMBER};
+            box-shadow:0 0 8px rgba(204,136,0,0.3);
+            clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+        `;
+        btnExit.addEventListener('click', () => { stopFlipperWin(); hideWinBanner(); });
+        mobileButtons.appendChild(btnExit);
+        document.body.appendChild(mobileButtons);
+    }
+
+    function activateInput() {
+        if (isMobile) {
+            // Nur Buttons zeigen wenn nicht im Highscore-Flow
+            if (_flipperWinPhase === 'tally') createMobileButtons();
+            return;
+        }
+        if (_flipperKeyHandler) document.removeEventListener('keydown', _flipperKeyHandler);
+        _flipperKeyHandler = (e) => {
+            if (e.key === 'Enter' || e.code === 'Space') {
+                e.preventDefault();
+                stopFlipperWin(); hideWinBanner(); document.getElementById('btn-new')?.click();
+            } else if (e.key === 'Escape') {
+                stopFlipperWin(); hideWinBanner();
+            }
+        };
+        document.addEventListener('keydown', _flipperKeyHandler);
+    }
+
+    let inputActivated = false;
+    function draw(now) {
+        const dt = Math.min(now - lastTime, 50);
+        lastTime = now;
+        elapsed += dt;
+
+        // Background
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = denied ? '#080000' : '#040200';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawDotGrid();
+
+        if (phase === FLASH) {
+            const prog = Math.min(elapsed / FLASH_MS, 1);
+            if (!isMobile) drawTitle(prog * 2.5);
+            if (elapsed >= FLASH_MS) { phase = TALLY; elapsed = 0; tallyIdx = 0; }
+        } else if (phase === TALLY) {
+            if (!isMobile) drawTitle(1);
+            tallyIdx = Math.min(Math.floor(elapsed / TALLY_ITEM_MS), tallyItems.length - 1);
+            const itemElapsed = elapsed - tallyIdx * TALLY_ITEM_MS;
+            const countProg   = Math.min(itemElapsed / COUNT_MS, 1);
+            drawTallyItems(tallyIdx, countProg);
+            if (tallyIdx >= tallyItems.length - 1 && countProg >= 1 && !inputActivated) {
+                inputActivated = true;
+                phase = IDLE;
+                elapsed = 0;
+                activateInput();
+            }
+        } else {
+            if (!isMobile) drawTitle(1);
+            if (isMobile && _flipperWinPhase === 'initials') {
+                // Initials-Eingabe im Canvas darunter
+                drawTallyItems(tallyItems.length - 1, 1);
+                drawStats();
+                const CX2 = canvas.width / 2;
+                const inputY = canvas.height * 0.82;
+                const cursor = Math.floor(elapsed / 500) % 2 === 0 ? '_' : ' ';
+                ctx.save();
+                ctx.font = `bold 28px ${FONT_MAIN}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#ffcc44'; ctx.shadowColor = '#ffcc44'; ctx.shadowBlur = 10;
+                ctx.fillText((initialsValue + cursor).toUpperCase(), CX2, inputY);
+                ctx.restore();
+            } else if (isMobile && _flipperWinPhase === 'highscore') {
+                // Warte auf Highscore-Fanfare im DMD — Canvas leer lassen
+            } else {
+                drawTallyItems(tallyItems.length - 1, 1);
+                drawStats();
+                drawPrompt(elapsed);
+            }
+        }
+
+        _flipperAnimFrame = requestAnimationFrame(draw);
+    }
+    draw(performance.now());
+}
+
+function stopFlipperWin() {
+    if (_flipperAnimFrame) { cancelAnimationFrame(_flipperAnimFrame); _flipperAnimFrame = null; }
+    if (_flipperKeyHandler) { document.removeEventListener('keydown', _flipperKeyHandler); _flipperKeyHandler = null; }
+    document.querySelectorAll('[data-flipper-btns]').forEach(el => el.remove());
+    const c = document.getElementById('matrix-canvas');
+    if (c) { c.style.display = 'none'; c.getContext('2d').clearRect(0, 0, c.width, c.height); }
+    const bannerInner = document.querySelector('#win-banner .win-banner-inner');
+    if (bannerInner) bannerInner.style.visibility = '';
+}
+
+
 // 4. SEED-HILFSFUNKTIONEN
 // Präfix-Kodierung: Größe (3-7) + Schwierigkeit (E/M/H) + '-' + 6-Zeichen-Seed
 // z.B. "4M-AB3X7K"
@@ -1368,6 +3198,7 @@ function getCell(r, c) {
 function renderBoard(puzzle) {
     const welcome = document.getElementById('welcome-screen');
     if (welcome) welcome.style.display = 'none';
+    buildFlipperTicker();
     const n = puzzle.solution.length;
     const el = document.getElementById('board');
     el.innerHTML = '';
@@ -1430,7 +3261,7 @@ function renderBoard(puzzle) {
         }
     }
 
-    window._isDirty = true;
+    window._isDirty = false;
     _errorCooldown = false;
     userBoard = Array.from({ length: n }, () => Array(n).fill(0));
     notesBoard = Array.from({ length: n }, () => Array.from({ length: n }, () => new Set()));
@@ -1444,6 +3275,8 @@ function renderBoard(puzzle) {
     moveCount = 0;
     const moveEl = document.getElementById('move-count');
     if (moveEl) moveEl.textContent = '0';
+    const mobileMoveEl = document.getElementById('mobile-move-display');
+    if (mobileMoveEl) mobileMoveEl.textContent = '0';
     updateTimerBtn();
     selectCell(0, 0);
     requestAnimationFrame(() => { resizeBoard(); numpadModule.show(n); });
@@ -1623,10 +3456,15 @@ function updateNotesDisplay(r, c) {
 }
 
 function updateMoveCount(delta = 1) {
+    const wasZero = moveCount === 0;
     moveCount = Math.max(0, moveCount + delta);
+    if (wasZero && moveCount > 0) window._isDirty = true;
     const el = document.getElementById('move-count');
     if (el) el.textContent = moveCount;
-    if (!timerVisible) updateTimerBtn();
+    const mobileEl = document.getElementById('mobile-move-display');
+    if (mobileEl) mobileEl.textContent = moveCount;
+    updateTimerBtn();
+    if (!window.electronAPI) setTimeout(saveGameState, 0);
 }
 
 // 10. VALIDIERUNG
@@ -1676,8 +3514,8 @@ function showErrorFlash() {
     const subtitleColor= isDark ? '#cc6666' : '#cc3333';
     const borderColor  = isDark ? 'rgba(255,100,100,0.3)' : 'rgba(170,0,0,0.2)';
 
-    const title    = isDark ? 'Nicht ganz richtig.' : 'Nicht korrekt.';
-    const subtitle = isDark ? 'Noch nicht alle Zellen stimmen.' : 'Es sind noch Fehler vorhanden.';
+    const title    = isDark ? t('error-title-dark') : t('error-title-default');
+    const subtitle = isDark ? t('error-sub-dark') : t('error-sub-default');
 
     overlay.innerHTML = `
         <div style="
@@ -1791,13 +3629,22 @@ function validateAll() {
             markDailySolved(window._dailyDateKey, dTimeStr);
             window._dailyMode = false;
             const dBtn = document.getElementById('btn-daily');
-            if (dBtn) { dBtn.dataset.solved = 'true'; dBtn.title = `Tägliches Rätsel – heute bereits gelöst (${dTimeStr})`; }
+            if (dBtn) { dBtn.dataset.solved = 'true'; dBtn.title = t('daily-solved-title').replace('{time}', dTimeStr); }
         }
-        setStatus(`${n}×${n} gelöst!`);
+        setStatus(t('status-solved').replace('{n}', n));
         const allHints = hintBoard && userBoard.every((row,r)=>row.every((v,c)=>v===0||hintBoard[r][c]));
         const isNewBest = recordSolve(n, diff, elapsedSeconds, moveCount);
-        showWinBanner(timeStr, n, diff, currentPuzzle.seed, allHints, isNewBest);
-        if (timerVisible) saveToLeaderboard(elapsedSeconds, n, diff, currentPuzzle.seed);
+        const leaderboardRank = (!competitiveBlocked) ? getLeaderboardRank(elapsedSeconds, n, diff) : null;
+        const _isFlipperThemeSolve = document.documentElement.getAttribute('data-theme') === 'flipper';
+        if (leaderboardRank !== null && !_isFlipperThemeSolve) {
+            const statsOverlay = document.getElementById('stats-overlay');
+            statsActiveTab = 'leaderboard';
+            renderStatsModal();
+            if (statsOverlay) statsOverlay.classList.add('visible');
+            showLeaderboardEntryPopup(leaderboardRank, elapsedSeconds, n, diff, currentPuzzle.seed);
+        } else {
+            showWinBanner(timeStr, n, diff, currentPuzzle.seed, allHints, isNewBest, leaderboardRank);
+        }
     }
     updateProgress();
 }
@@ -1811,8 +3658,6 @@ function setNotesMode(active) {
 }
 
 function setValidationMode(active) {
-    // Im Timer-Modus keine Validierung erlaubt
-    if (timerVisible && active) return;
     validationActive = active;
     if (active) {
         competitiveBlocked = true;
@@ -1829,8 +3674,8 @@ function setValidationMode(active) {
             if (wrongCount > 0) {
                 const msg = document.getElementById('clear-invalid-msg');
                 if (msg) msg.textContent = wrongCount === 1
-                    ? '1 falsche Zahl gefunden. Löschen?'
-                    : `${wrongCount} falsche Zahlen gefunden. Löschen?`;
+                    ? t('clear-invalid-1')
+                    : t('clear-invalid-n').replace('{n}', wrongCount);
                 document.getElementById('clear-invalid-overlay')?.classList.add('visible');
             }
         }
@@ -1864,20 +3709,17 @@ function clearInvalidCells() {
     for (const ch of changes) applyCell(ch.r, ch.c, 0, ch.nextNotes, false);
     validateAll();
     const statusEl = document.getElementById('status');
-    if (statusEl) setStatus(`${changes.length} falsche ${changes.length === 1 ? 'Zahl' : 'Zahlen'} gelöscht.`);
+    if (statusEl) setStatus(changes.length === 1 ? t('status-cleared-1') : t('status-cleared-n').replace('{n}', changes.length));
 }
 
 
 function updateTimerBtn() {
     const btn = document.getElementById('btn-timer');
     if (!btn) return;
-    const blocked = moveCount > 0 || competitiveBlocked;
-    btn.disabled = !timerVisible && blocked;
-    btn.title = blocked && !timerVisible
-        ? 'Wettkampf-Modus nicht mehr aktivierbar (Züge oder Hilfe bereits genutzt)'
-        : 'Wettkampf-Modus (Zeit wird für Leaderboard gespeichert)';
-    btn.style.opacity = (!timerVisible && blocked) ? '0.35' : '';
-    btn.style.cursor = (!timerVisible && blocked) ? 'not-allowed' : '';
+    btn.disabled = false;
+    btn.title = competitiveBlocked ? t('title-timer-blocked') : t('title-timer');
+    btn.style.opacity = competitiveBlocked ? '0.45' : '';
+    btn.style.cursor = '';
 }
 
 function showCountdown(onComplete) {
@@ -1946,28 +3788,14 @@ function showCountdown(onComplete) {
 }
 
 function setTimerVisible(active) {
-    // Wettkampf-Modus nur aktivierbar wenn noch kein Zug gemacht und keine Hilfe genutzt
-    if (active && (moveCount > 0 || competitiveBlocked)) return;
     timerVisible = active;
     const btn = document.getElementById('btn-timer');
     if (btn) btn.dataset.active = active ? 'true' : 'false';
-
+    if (active && currentPuzzle && !timerStopped && timerInterval === null) startTimer();
     const headerTimer = document.getElementById('timer-display-header');
     if (headerTimer) headerTimer.textContent = active ? formatTime(elapsedSeconds) : '';
     if (active) updateTimerDisplay();
     updateTimerBtn();
-
-    // Timer-Modus aktiv: Validierung deaktivieren und sperren
-    const btnValidate = document.getElementById('btn-validate');
-    const btnHint = document.getElementById('btn-hint');
-    if (active) {
-        setValidationMode(false);
-        if (btnValidate) btnValidate.disabled = true;
-        if (btnHint) btnHint.disabled = true;
-    } else {
-        if (btnValidate) btnValidate.disabled = false;
-        if (btnHint) btnHint.disabled = false;
-    }
 }
 
 // 12. UNDO/REDO FUNKTIONEN v0.6.0
@@ -2038,6 +3866,7 @@ function updateUndoRedoButtons() {
 document.addEventListener('keydown', (e) => {
     if (!currentPuzzle) return;
     if (document.activeElement?.id === 'seed-input') return;
+    if (document.getElementById('leaderboard-entry-overlay')?.classList.contains('visible')) return;
     if (typeof tutorialModule !== 'undefined' && tutorialModule.isActive()) return;
 
     const n = currentPuzzle.solution.length;
@@ -2080,6 +3909,14 @@ document.addEventListener('keydown', (e) => {
         case 'V':
             setValidationMode(!validationActive);
             return;
+        case 't':
+        case 'T':
+            document.getElementById('btn-timer')?.click();
+            return;
+        case 'h':
+        case 'H':
+            giveHint();
+            return;
         case 'Backspace':
         case 'Delete':
             e.preventDefault();
@@ -2103,7 +3940,6 @@ document.addEventListener('keydown', (e) => {
 // 14. TIPP-FUNKTION
 function giveHint() {
     if (!currentPuzzle) return;
-    if (timerVisible) return;
 
     const n = currentPuzzle.solution.length;
     let r = selected.r;
@@ -2186,9 +4022,10 @@ window.addEventListener('DOMContentLoaded', () => {
     if (redoBtn) redoBtn.addEventListener('click', redo);
     updateUndoRedoButtons(); // Initial
 
-    const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
+    const diffLabels = { easy: t('diff-easy'), medium: t('diff-medium'), hard: t('diff-hard') };
 
     function newPuzzle(forceSeed = null) {
+        clearSavedGame();
         let n, diff, rawSeed;
 
         if (forceSeed !== null) {
@@ -2237,21 +4074,19 @@ window.addEventListener('DOMContentLoaded', () => {
             const _vBtn = document.getElementById('btn-validate');
             if (_vBtn) _vBtn.dataset.active = 'false';
             requestAnimationFrame(() => renderBoard(currentPuzzle));
-            if (timerVisible) {
-                showCountdown(() => startTimer());
-            } else {
-                startTimer();
-            }
-            setStatus(`${n}×${n} ${diffLabels[diff]}`);
+            startTimer();
+            setStatus(t('status-loaded').replace('{n}', n).replace('{diff}', diffLabels[diff]));
+            if (document.documentElement.getAttribute('data-theme') === 'flipper')
+                flipperDMD.setState('playing', { size: n, diff, seed: fullSeedStr });
             btnSolve.disabled = false;
             btnNew.disabled = false;
-            btnNew.textContent = 'Neues Rätsel';
+            btnNew.textContent = t('btn-new');
             return;
         }
 
         btnNew.disabled = true;
-        btnNew.textContent = 'Generiere...';
-        setStatus(`Generiere ${n}x${n}-Rätsel ${diffLabels[diff]}…`);
+        btnNew.textContent = t('btn-generating');
+        setStatus(t('status-generating').replace('{n}', n).replace('{diff}', diffLabels[diff]));
 
         generationWorker = new Worker('worker.js');
         generationWorker.onmessage = function(e) {
@@ -2268,25 +4103,23 @@ window.addEventListener('DOMContentLoaded', () => {
                     window._dailyDateKey = null;
                 }
                 requestAnimationFrame(() => renderBoard(currentPuzzle));
-                if (timerVisible) {
-                    showCountdown(() => startTimer());
-                } else {
-                    startTimer();
-                }
-                setStatus(`${n}×${n} ${diffLabels[diff]}`);
+                startTimer();
+                setStatus(t('status-loaded').replace('{n}', n).replace('{diff}', diffLabels[diff]));
+                if (document.documentElement.getAttribute('data-theme') === 'flipper')
+                    flipperDMD.setState('playing', { size: n, diff, seed: fullSeedStr });
                 btnSolve.disabled = false;
             } else {
-                setStatus('Fehler beim Generieren – bitte erneut klicken.');
+                setStatus(t('status-error'));
             }
             btnNew.disabled = false;
-            btnNew.textContent = 'Neues Rätsel';
+            btnNew.textContent = t('btn-new');
         };
         generationWorker.onerror = function(err) {
             generationWorker = null;
-            setStatus('Fehler beim Generieren – bitte erneut klicken.');
+            setStatus(t('status-error'));
             console.error(err);
             btnNew.disabled = false;
-            btnNew.textContent = 'Neues Rätsel';
+            btnNew.textContent = t('btn-new');
         };
         generationWorker.postMessage({ n, diff, seed: seedInt });
     }
@@ -2306,7 +4139,9 @@ window.addEventListener('DOMContentLoaded', () => {
         moveCount = 0;
         const moveEl = document.getElementById('move-count');
         if (moveEl) moveEl.textContent = '-';
-        setStatus('Lösung angezeigt. Zeit gestoppt.');
+        const mobileMoveEl2 = document.getElementById('mobile-move-display');
+        if (mobileMoveEl2) mobileMoveEl2.textContent = '0';
+        setStatus(t('status-solve-shown'));
         // Button direkt sperren (validateAll läuft nicht durch weil timerStopped=true)
         btnSolve.disabled = true;
     }
@@ -2352,15 +4187,19 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     initTheme();
+    initLanguage();
     initFontScale();
     initCustomSelects();
     updateDifficultyOptions(parseInt(document.getElementById('size')?.value ?? '4', 10));
     // Change-Listener für klassisches Theme
     document.getElementById('size')?.addEventListener('change', (e) => {
         updateDifficultyOptions(parseInt(e.target.value, 10));
+        buildFlipperTicker();
     });
+    document.getElementById('difficulty')?.addEventListener('change', () => buildFlipperTicker());
     initDailyButton();
     initStatsModal();
+    initLeaderboardEntryModal();
     initDebug();
     prewarmDailyPuzzle(); // Tagesrätsel im Hintergrund vorausberechnen
     tutorialModule.init();
@@ -2370,7 +4209,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // Gespeicherten Spielstand automatisch laden (falls vorhanden)
     const saved = loadGameState();
     if (saved) {
-        clearSavedGame();
         restoreGameState(saved);
     }
 
@@ -2381,14 +4219,14 @@ window.addEventListener('DOMContentLoaded', () => {
             if (window.electronAPI) {
                 const n = currentPuzzle.solution.length;
                 const diff = document.getElementById('difficulty').value;
-                const diffLabels = { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' };
+                const diffLabels = { easy: t('diff-easy'), medium: t('diff-medium'), hard: t('diff-hard') };
                 const pdfMeta = document.getElementById('pdf-meta');
                 if (pdfMeta) {
                     pdfMeta.textContent = `${n}×${n}  ·  ${diffLabels[diff]}  ·  ID: ${currentPuzzle.seed}`;
                 }
                 const result = await window.electronAPI.exportPDF();
                 if (result?.success) {
-                    setStatus('PDF gespeichert.');
+                    setStatus(t('status-pdf'));
                 }
             }
         });
@@ -2463,13 +4301,15 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
             startTimer();
-            setStatus('Rätsel zurückgesetzt.');
+            setStatus(t('status-reset'));
             selectCell(0, 0);
             history = [];
             redoStack = [];
             moveCount = 0;
             const moveEl = document.getElementById('move-count');
             if (moveEl) moveEl.textContent = '0';
+            const mobileMoveEl3 = document.getElementById('mobile-move-display');
+            if (mobileMoveEl3) mobileMoveEl3.textContent = '0';
             updateUndoRedoButtons();
         });
 
@@ -2508,20 +4348,272 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // ── AUTO-SAVE beim Schließen (Webversion) ─────────────────────
         // In Electron übernimmt main.js den Speicher-Dialog.
-        // Im Browser gibt es kein asynchrones beforeunload – daher
-        // wird der Stand still gespeichert damit er beim nächsten
-        // Öffnen automatisch wiederhergestellt wird.
+        // Im Browser / auf Mobilgeräten wird der Stand beim Backgrounding
+        // gespeichert, damit er beim nächsten Öffnen wiederhergestellt wird.
         if (!window.electronAPI) {
-            window.addEventListener('beforeunload', () => {
-                if (window._isDirty) saveGameState();
+            window.addEventListener('beforeunload', () => { saveGameState(); });
+            // visibilitychange ist auf Android/iOS deutlich zuverlässiger als beforeunload
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && currentPuzzle && !timerStopped) saveGameState();
             });
+            // Capacitor-natives App-Lifecycle-Event (Android/iOS)
+            if (window.Capacitor?.isNativePlatform()) {
+                window.Capacitor.Plugins.App?.addListener('appStateChange', (state) => {
+                    if (!state.isActive) saveGameState();
+                });
+            }
         }
 });
 
-// Stub für später (Leaderboard)
+// ── Leaderboard ──────────────────────────────────────────────────────
+
+function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function loadLeaderboard() {
+    try {
+        const raw = localStorage.getItem('numori-leaderboard');
+        return raw ? JSON.parse(raw) : {};
+    } catch(e) { return {}; }
+}
+
+function saveLeaderboardData(lb) {
+    try { localStorage.setItem('numori-leaderboard', JSON.stringify(lb)); }
+    catch(e) { console.error('Leaderboard speichern fehlgeschlagen:', e); }
+}
+
+function getLeaderboardRank(seconds, size, difficulty) {
+    const lb = loadLeaderboard();
+    const entries = lb[size]?.[difficulty] ?? [];
+    const rank = entries.findIndex(e => seconds < e.time || (seconds === e.time && moveCount < e.moves));
+    if (rank === -1) return entries.length < 5 ? entries.length + 1 : null;
+    return rank + 1;
+}
+
+function insertLeaderboardEntry(name, seconds, moves, size, difficulty, seed) {
+    const lb = loadLeaderboard();
+    if (!lb[size]) lb[size] = {};
+    if (!lb[size][difficulty]) lb[size][difficulty] = [];
+    const entries = lb[size][difficulty];
+    const today = new Date();
+    const dateStr = `${String(today.getDate()).padStart(2,'0')}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getFullYear()).slice(-2)}`;
+    const insertedName = name.trim() || t('lb-anon');
+    entries.push({ name: insertedName, time: seconds, moves, seed, date: dateStr });
+    entries.sort((a, b) => a.time - b.time || a.moves - b.moves);
+    if (entries.length > 5) entries.length = 5;
+    const newIdx = entries.findIndex(e => e.time === seconds && e.name === insertedName && e.moves === moves && e.seed === seed);
+    _newLeaderboardEntry = { size, difficulty, idx: newIdx };
+    lb[size][difficulty] = entries;
+    saveLeaderboardData(lb);
+    buildFlipperTicker();
+}
+
+function launchConfetti(duration = 6000) {
+    const existing = document.getElementById('lb-confetti-canvas');
+    if (existing) existing.remove();
+
+    const isConsole = document.documentElement.getAttribute('data-theme') === 'console';
+
+    const canvas = document.createElement('canvas');
+    canvas.id = 'lb-confetti-canvas';
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const ox = canvas.width  / 2;
+    const oy = canvas.height / 2;
+
+    const GRAVITY    = 0.09;
+    const FADE_START = duration - 1500;
+
+    let particles;
+
+    if (isConsole) {
+        // Matrix-Burst: grüne Zeichen wie im Matrix-Rain
+        const MATRIX_CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEF0123456789@#$%&';
+        const GREENS = ['#00ff41', '#00cc33', '#39ff82', '#00ff99', '#00dd55'];
+        particles = Array.from({ length: 80 }, () => {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 1.5 + Math.random() * 7;
+            return {
+                x:     ox,
+                y:     oy,
+                vx:    Math.cos(angle) * speed,
+                vy:    Math.sin(angle) * speed - 1.5,
+                char:  MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)],
+                color: GREENS[Math.floor(Math.random() * GREENS.length)],
+                size:  10 + Math.floor(Math.random() * 10),
+                alpha: 1,
+                // Zeichen wechselt gelegentlich
+                tick:  0,
+                tickMax: 8 + Math.floor(Math.random() * 16),
+            };
+        });
+    } else {
+        const COLORS = ['#f59e0b','#6366f1','#ec4899','#10b981','#3b82f6','#f43f5e','#a855f7','#facc15','#ffffff'];
+        const SHAPES = ['rect', 'circle', 'ribbon'];
+        particles = Array.from({ length: 160 }, () => {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 9;
+            return {
+                x:     ox,
+                y:     oy,
+                vx:    Math.cos(angle) * speed,
+                vy:    Math.sin(angle) * speed - 1.5,
+                w:     5 + Math.random() * 9,
+                h:     3 + Math.random() * 6,
+                color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+                rot:   Math.random() * Math.PI * 2,
+                rotV:  (Math.random() - 0.5) * 0.14,
+                alpha: 1,
+            };
+        });
+    }
+
+    const start = performance.now();
+
+    function draw(now) {
+        const elapsed = now - start;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const fadeAlpha = elapsed > FADE_START
+            ? Math.max(0, 1 - (elapsed - FADE_START) / 1500)
+            : 1;
+
+        for (const p of particles) {
+            p.x  += p.vx;
+            p.y  += p.vy;
+            p.vy += GRAVITY;
+            p.vx *= 0.985;
+            p.alpha = fadeAlpha;
+
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+
+            if (isConsole) {
+                p.tick++;
+                if (p.tick >= p.tickMax) {
+                    const MATRIX_CHARS = 'アイウエオカキクケコサシスセソタチツテトABCDEF0123456789@#$%&';
+                    p.char = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
+                    p.tick = 0;
+                }
+                ctx.font = `bold ${p.size}px 'Share Tech Mono', monospace`;
+                ctx.fillStyle = p.color;
+                ctx.shadowColor = p.color;
+                ctx.shadowBlur  = 8;
+                ctx.fillText(p.char, p.x, p.y);
+            } else {
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+                p.rot += p.rotV;
+                ctx.fillStyle = p.color;
+                if (p.shape === 'circle') {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (p.shape === 'ribbon') {
+                    ctx.fillRect(-p.w / 2, -p.h / 4, p.w, p.h / 2);
+                } else {
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                }
+            }
+            ctx.restore();
+        }
+
+        if (elapsed < duration) {
+            requestAnimationFrame(draw);
+        } else {
+            canvas.remove();
+        }
+    }
+
+    requestAnimationFrame(draw);
+}
+
+function showLeaderboardEntryPopup(rank, seconds, size, difficulty, seed) {
+    const overlay = document.getElementById('leaderboard-entry-overlay');
+    if (!overlay) return;
+    if (document.documentElement.getAttribute('data-theme') === 'flipper' && window.innerWidth > 600) {
+        flipperDMD.setState('initials', {
+            rank,
+            onConfirm: (name) => {
+                if (name) localStorage.setItem('numori-player-name', name);
+                insertLeaderboardEntry(name, seconds, moveCount, size, difficulty, seed);
+                statsActiveTab = 'leaderboard';
+                renderStatsModal();
+                flipperDMD.setState('playing', { size, diff: difficulty, seed });
+            },
+            onCancel: () => {
+                flipperDMD.setState('playing', { size, diff: difficulty, seed });
+            }
+        });
+        return;
+    }
+    const diffLabels = { easy: t('diff-easy'), medium: t('diff-medium'), hard: t('diff-hard') };
+    const titleEl   = document.getElementById('lb-entry-title');
+    const infoEl    = document.getElementById('lb-entry-info');
+    const nameInput = document.getElementById('lb-entry-name');
+    const medalEl   = document.getElementById('lb-entry-medal');
+    const modal     = overlay.querySelector('.lb-entry-modal');
+
+    if (medalEl) {
+        medalEl.textContent = String(rank);
+        medalEl.style.animation = 'none';
+        void medalEl.offsetWidth;
+        medalEl.style.animation = '';
+    }
+    if (modal) modal.dataset.rank = rank <= 3 ? rank : 'other';
+    if (titleEl) titleEl.textContent = t('lb-entry-title').replace('{rank}', rank);
+    if (infoEl)  infoEl.textContent  = `${size}×${size} · ${diffLabels[difficulty] ?? difficulty} · ${formatTime(seconds)}`;
+    if (nameInput) {
+        nameInput.value       = localStorage.getItem('numori-player-name') || '';
+        nameInput.placeholder = t('lb-name-placeholder');
+    }
+    overlay._pending = { seconds, moves: moveCount, size, difficulty, seed };
+    overlay.classList.add('visible');
+    launchConfetti();
+    if (nameInput) setTimeout(() => nameInput.focus(), 100);
+}
+
+function initLeaderboardEntryModal() {
+    const overlay    = document.getElementById('leaderboard-entry-overlay');
+    if (!overlay) return;
+    const nameInput  = document.getElementById('lb-entry-name');
+    const confirmBtn = document.getElementById('lb-entry-confirm');
+    const cancelBtn  = document.getElementById('lb-entry-cancel');
+
+    function submitEntry() {
+        const name = (nameInput?.value || '').trim();
+        if (name) localStorage.setItem('numori-player-name', name);
+        const p = overlay._pending;
+        if (p) {
+            insertLeaderboardEntry(name, p.seconds, p.moves, p.size, p.difficulty, p.seed);
+            statsActiveTab = 'leaderboard';
+            renderStatsModal();
+        }
+        overlay.classList.remove('visible');
+        overlay._pending = null;
+    }
+
+    if (confirmBtn) confirmBtn.addEventListener('click', submitEntry);
+    if (cancelBtn)  cancelBtn.addEventListener('click', () => {
+        overlay.classList.remove('visible');
+        overlay._pending = null;
+    });
+    if (nameInput) nameInput.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter') submitEntry();
+        if (e.key === 'Escape') { overlay.classList.remove('visible'); overlay._pending = null; }
+    });
+}
+
 function saveToLeaderboard(seconds, size, difficulty, seed) {
-    // TODO: localStorage-Einträge verwalten
-    console.log('Leaderboard-Eintrag:', formatTime(seconds), `${size}x${size}`, difficulty, seed);
+    const rank = getLeaderboardRank(seconds, size, difficulty);
+    if (rank === null) return;
+    showLeaderboardEntryPopup(rank, seconds, size, difficulty, seed);
 }
 
 // ── UPDATE-BANNER ─────────────────────────────────────────────────
@@ -2643,48 +4735,13 @@ const tutorialModule = (() => {
     const CID = [[0,1,1],[0,2,3],[4,2,3]]; // Cage-ID pro Zelle
     const LABELS = {'0,0':'3+','0,1':'5+','1,1':'4+','1,2':'3+','2,0':'3'};
 
-    const SLIDES = [
-        {
-            title: 'Das Spielprinzip',
-            body: `<p>Numori ist ein Logik-Rätsel auf einem <strong>n×n-Gitter</strong>. Fülle jede Zeile und jede Spalte mit den Zahlen <strong>1 bis n</strong> – jede Zahl genau einmal pro Zeile und Spalte.</p>
-<div class="tut-latin-wrap">
-  <div class="tut-latin">
-    <div class="tut-latin-row"><span>1</span><span>2</span><span>3</span></div>
-    <div class="tut-latin-row"><span>2</span><span>3</span><span>1</span></div>
-    <div class="tut-latin-row"><span>3</span><span>1</span><span>2</span></div>
-  </div>
-  <p class="tut-hint">↑ Jede Zahl kommt in jeder Zeile und Spalte genau einmal vor.</p>
-</div>`
-        },
-        {
-            title: 'Käfige & Operationen',
-            body: `<p>Das Gitter ist in farbige <strong>Käfige</strong> unterteilt. Jeder Käfig zeigt oben links eine Zahl mit einer Rechenoperation – die Zahlen im Käfig müssen zusammen das Ergebnis ergeben.</p>
-<ul class="tut-ops">
-  <li><strong>6+</strong><span>Summe ist 6 <em>(z.B. 1+2+3)</em></span></li>
-  <li><strong>2−</strong><span>Differenz ist 2 <em>(z.B. 3−1)</em></span></li>
-  <li><strong>12×</strong><span>Produkt ist 12 <em>(z.B. 3×4)</em></span></li>
-  <li><strong>3:</strong><span>Quotient ist 3 <em>(z.B. 6:2)</em></span></li>
-  <li><strong>4=</strong><span>Zelle enthält genau die 4</span></li>
-</ul>`
-        },
-        {
-            title: 'Nützliche Funktionen',
-            body: `<div class="tut-features">
-  <div class="tut-feat">
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-    <div><strong>Sofort-Validierung</strong><span>Markiert Fehler sofort beim Eingeben. Gut zum Üben – sperrt aber den Wettkampf-Modus.</span></div>
-  </div>
-  <div class="tut-feat">
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-    <div><strong>Wettkampf-Modus</strong><span>Startet den Timer für die Bestenliste. Vor der ersten Eingabe aktivieren – Tipps und Validierung sperren ihn.</span></div>
-  </div>
-  <div class="tut-feat">
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-    <div><strong>Rätsel-ID</strong><span>Jedes Rätsel hat eine eindeutige ID. Eingeben um ein bekanntes Rätsel erneut zu laden oder mit anderen zu teilen.</span></div>
-  </div>
-</div>`
-        }
-    ];
+    function getSlides() {
+        return [
+            { title: t('tut-slide1-title'), body: t('tut-slide1-body') },
+            { title: t('tut-slide2-title'), body: t('tut-slide2-body') },
+            { title: t('tut-slide3-title'), body: t('tut-slide3-body') },
+        ];
+    }
 
     function hasCageNb(r, c, dr, dc) {
         const nr = r+dr, nc = c+dc;
@@ -2766,17 +4823,18 @@ const tutorialModule = (() => {
     }
 
     function renderSlide() {
-        const s = SLIDES[slide];
+        const slides = getSlides();
+        const s = slides[slide];
         const isConsole = document.documentElement.getAttribute('data-theme') === 'console';
-        const t = document.getElementById('tut-stitle');
-        const b = document.getElementById('tut-sbody');
-        if (t) t.textContent = isConsole ? s.title.toLowerCase() : s.title;
-        if (b) b.innerHTML  = s.body;
+        const titleEl = document.getElementById('tut-stitle');
+        const bodyEl = document.getElementById('tut-sbody');
+        if (titleEl) titleEl.textContent = isConsole ? s.title.toLowerCase() : s.title;
+        if (bodyEl) bodyEl.innerHTML  = s.body;
         document.querySelectorAll('.tut-dot').forEach((d, i) => d.classList.toggle('active', i === slide));
         const back = document.getElementById('tut-back');
         if (back) back.style.visibility = slide === 0 ? 'hidden' : 'visible';
         const next = document.getElementById('tut-next');
-        if (next) next.textContent = slide === SLIDES.length - 1 ? 'Los geht\'s →' : 'Weiter →';
+        if (next) next.textContent = slide === slides.length - 1 ? t('tut-next-last') : t('tut-next');
     }
 
     function show() {
@@ -2818,12 +4876,21 @@ const tutorialModule = (() => {
             show();
         });
 
+    // Über Numori / Impressum
+    document.getElementById('btn-about')?.addEventListener('click', () => {
+        document.getElementById('settings-overlay')?.classList.remove('visible');
+        document.getElementById('about-overlay')?.classList.add('visible');
+    });
+    document.getElementById('about-close')?.addEventListener('click', () => {
+        document.getElementById('about-overlay')?.classList.remove('visible');
+    });
+
         // Slide-Navigation
         document.getElementById('tut-back')?.addEventListener('click', () => {
             if (slide > 0) { slide--; renderSlide(); }
         });
         document.getElementById('tut-next')?.addEventListener('click', () => {
-            if (slide < SLIDES.length - 1) { slide++; renderSlide(); }
+            if (slide < getSlides().length - 1) { slide++; renderSlide(); }
             else {
                 document.getElementById('tut-slides').style.display = 'none';
                 document.getElementById('tut-puzzle').style.display = 'flex';
@@ -3114,3 +5181,9 @@ if (document.readyState === 'loading') {
 } else {
     numpadModule.init();
 }
+
+// Fokus nach Button-Klick sofort aufheben (verhindert Browser-Focus-Ring)
+document.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (btn) btn.blur();
+}, true);

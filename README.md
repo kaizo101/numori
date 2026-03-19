@@ -1,130 +1,154 @@
 # Numori
 
-Numori ist ein kostenloses, werbefreies Logik-Rätselspiel – ähnlich einem Sudoku, aber mit Rechenoperationen.
-Fülle das Gitter so aus, dass jede Zeile und Spalte jede Zahl genau einmal enthält – und die Käfig-Ziele erfüllt sind.
+Numori is a free, ad-free logic puzzle game — similar to Sudoku, but with arithmetic operations.
+Fill the grid so that every row and column contains each number exactly once, and every cage reaches its target value.
 
-![Numori – Klassisches Theme](screenshot.png)
+![Numori – Classic Theme](screenshot.png)
 
 ---
 
-## Webversion
+## Web Version
 
-Numori ist auch als Webversion verfügbar:
+Numori is also available as a web app:
 👉 [kaizo101.github.io/numori](https://kaizo101.github.io/numori)
 
-Optimiert für Desktop-Browser. Mobile-Unterstützung ab v0.9.1 als Preview – Feedback willkommen!
+Optimized for desktop and mobile.
 
 ---
 
-## Spielprinzip
+## How to Play
 
-- Jede Zeile und Spalte enthält jede Zahl von 1 bis N genau einmal
-- Käfige geben eine Zielzahl und eine Rechenoperation vor (+, −, x, ÷)
-- Die Zahlen im Käfig müssen mit der Operation das Ziel ergeben
+- Every row and column contains each number from 1 to N exactly once
+- Cages define a target number and an arithmetic operation (+, −, ×, ÷)
+- The numbers in a cage must produce the target using the given operation
 
 ---
 
-## Features (v0.9.1)
+## Features (v1.0.0)
 
-- Prozedural generierte Rätsel – unbegrenzte einzigartige Puzzles
-- Rastergrößen: 3×3 bis 7×7
-- 3 Schwierigkeitsgrade (Leicht, Mittel, Schwer)
-- Rätsel-IDs – Puzzles teilen und wiederholen
-- **Mobile-Unterstützung** *(Preview)* – optimiertes Layout für Smartphones mit Touch-Bedienung
-- PDF-Export – Rätsel als leeres A4-PDF speichern und ausdrucken
-- Theme-System – Klassisch, Numori Dark, Console
-- Wettkampf-Modus mit Timer und 3-2-1 Countdown *(in Entwicklung)*
-- Tägliches Rätsel mit Wochenplan und Bestzeit-Speicherung
-- Spielstand speichern beim Schließen, automatisch wiederherstellen beim Start
-- Gewinn-Banner mit Statistiken (Größe, Schwierigkeit, Zeit, Züge)
-- Fehler-Anzeige wenn alle Zellen ausgefüllt aber die Lösung falsch ist
-- Sofort-Validierung (V-Taste)
-- Notizen (N-Taste)
-- Tipps
+- Procedurally generated puzzles — unlimited unique puzzles
+- Grid sizes: 3×3 to 7×7
+- 3 difficulty levels (Easy, Medium, Hard)
+- Puzzle IDs — share and replay specific puzzles
+- **Android APK** — optimized mobile layout with touch controls, status bar with move counter and copy button
+- **Local leaderboard** — best times per grid size and difficulty with name, time, moves and date; gold/silver/bronze ranking
+- **DE/EN localization** — automatic language detection, manually switchable in settings
+- PDF export — save puzzles as blank A4 PDF for printing
+- 4 themes — Classic, Numori Dark, Console, Flipper
+- Daily puzzle with weekly schedule and best-time tracking
+- Auto-save and restore game state
+- Win banner with confetti and statistics (size, difficulty, time, moves)
+- Error indicator when all cells are filled but the solution is wrong
+- Instant validation (V key)
+- Notes mode (N key)
+- Hints
 - Undo/Redo
-- Vollständige Tastatursteuerung
-- Zahlenpad-Overlay – vollständige Maussteuerung ohne Tastatur
-- Musikplayer – Chiptune-Hintergrundmusik (Console-Theme)
-- Statistiken – Bestzeiten, Durchschnittszeit, gelöste Rätsel pro Größe und Schwierigkeit
-- Interaktives Tutorial – Schritt-für-Schritt-Einführung ins Spielprinzip
-- Automatische Updates via Electron
-- Schriftgröße anpassbar (klein / mittel / groß)
-- Überarbeitete Toolbar – Theme-Wechsel, Statistiken und Einstellungen als separate Buttons
+- Full keyboard navigation
+- Number pad overlay — complete mouse control without keyboard
+- Music player — chiptune background music (Console theme)
+- Statistics — best times, average time, solved puzzles per size and difficulty
+- Interactive tutorial — step-by-step introduction to the rules
+- Automatic updates via Electron
+- Adjustable font size (small / medium / large)
+- Imprint & privacy notice in settings
 
 ---
 
 ## Themes
 
-Numori bietet drei Themes, wählbar über den Zahnrad-Button im Header. Die Auswahl wird gespeichert.
+Numori offers four themes, selectable via settings. Your choice is saved.
 
-- **Klassisch** — warmes, helles Design mit Georgia-Schrift und beigem Hintergrund
-- **Numori Dark** — dunkles Design im Stil des App-Icons, blaugraue Farbpalette, Poppins-Schrift und Goldakzente im Gewinnbanner
-- **Console** — Retro-CRT-Ästhetik mit phosphorgrüner Schrift, Scanlines und Matrix-Animationen. ACCESS GRANTED / ACCESS DENIED als Abschlussbildschirm.
+- **Classic** — warm, light design with Georgia font and beige background
+- **Numori Dark** — dark design inspired by the app icon, blue-grey palette, Poppins font and gold accents in the win banner
+- **Console** — retro CRT aesthetic with phosphor-green text, scanlines and Matrix animations. ACCESS GRANTED / ACCESS DENIED as win screen.
+- **Flipper** — pinball dot-matrix aesthetic with amber palette, Bitcount font and a scrolling high-score ticker in the header.
 
 ---
 
-## Tastaturkürzel
+## Keyboard Shortcuts
 
-| Taste | Aktion |
-|-------|--------|
-| Pfeiltasten | Zelle navigieren |
-| 1–9 | Zahl eingeben |
-| Entf / Backspace | Zelle leeren |
-| N | Notizmodus umschalten |
-| V | Validierung umschalten |
-| Strg+Z | Undo |
-| Strg+Y | Redo |
-| Enter | Seed laden |
+| Key | Action |
+|-----|--------|
+| Arrow keys | Navigate cells |
+| 1–9 | Enter number |
+| Del / Backspace | Clear cell |
+| N | Toggle notes mode |
+| V | Toggle validation |
+| Ctrl+Z | Undo |
+| Ctrl+Y | Redo |
+| Enter | Load puzzle ID |
 
 ---
 
 ## Roadmap
 
-### v1.0.0
-- GitHub Pages Webversion – Mobile-Optimierung (Touch, responsive Layout)
-- Android APK (via Capacitor)
-- Leaderboard (lokal)
-- Mehrsprachigkeit (DE/EN)
+### v1.1.0 *(planned)*
+- **Supabase integration** — optional user accounts; cross-device sync of statistics and unlocks
+- **Global leaderboard** — enabled once a sufficient user base is reached
+- **Badges** — rewards for special achievements
+- **Share puzzle** — share puzzle ID via system share dialog (APK)
 
 ---
 
-## Lizenz
+## Building the APK
 
-Numori ist lizenziert unter der **GNU General Public License v3.0**.
-Siehe [LICENSE](LICENSE) für den vollständigen Lizenztext.
+The Android folder is not included in this repository but can be reproduced from the source:
+
+```bash
+npm install
+npx cap add android
+npx cap sync android
+# Then open in Android Studio or:
+cd android && ./gradlew assembleDebug
+```
+
+Requirements: Node.js, Android Studio with SDK.
 
 ---
 
-## Autor
+## License
 
-Entwickelt von Lukas Schäfer — Feedback und Beiträge willkommen.
+Numori is licensed under the **GNU General Public License v3.0**.
+See [LICENSE](LICENSE) for the full license text.
 
 ---
 
-## Lizenzen
+## Author
+
+Developed by Lukas Schäfer — feedback and contributions welcome.
+
+---
+
+## Third-party Licenses
 
 ### Poppins
-Genutzt im Numori Dark Theme (`assets/fonts/Poppins-Medium.ttf`, `assets/fonts/Poppins-Italic.ttf`).
+Used in the Numori Dark theme (`assets/fonts/Poppins-Medium.ttf`, `assets/fonts/Poppins-Italic.ttf`).
 
-Lizenz: **SIL Open Font License 1.1**
+License: **SIL Open Font License 1.1**
 Copyright: © 2014–2020 Indian Type Foundry
 
-Die vollständige Lizenzdatei liegt unter `assets/fonts/OFL.txt`.
+The full license file is located at `assets/fonts/OFL.txt`.
 
 ### VT323
-Genutzt im Console-Theme.
+Used in the Console theme.
 
-Lizenz: **SIL Open Font License 1.1**
+License: **SIL Open Font License 1.1**
 Copyright: © 2015 Peter Hull
 
 ### Share Tech Mono
-Genutzt im Console-Theme.
+Used in the Console theme.
 
-Lizenz: **SIL Open Font License 1.1**
+License: **SIL Open Font License 1.1**
 Copyright: © 2012 Carrois Type Design
 
-### Lucide Icons
-Genutzt in der Toolbar (inline SVG).
+### Bitcount Grid Single
+Used in the Flipper theme (`assets/fonts/BitcountGridSingle-Regular.ttf`).
 
-Lizenz: **ISC License**
+License: **SIL Open Font License 1.1**
+Copyright: © 2024 Petr van Blokland
+
+### Lucide Icons
+Used in the toolbar (inline SVG).
+
+License: **ISC License**
 Copyright: © 2022 Lucide Contributors

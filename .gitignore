@@ -140,3 +140,12 @@ vite.config.ts.timestamp-*
 
 # Windows Systemordner
 System Volume Information/
+
+# Interne Roadmap
+ROADMAP.md
+
+# Test-Checkliste
+TEST_CHECKLIST.md
+
+# Android (Capacitor-Boilerplate, aus Quellcode reproduzierbar)
+android/
