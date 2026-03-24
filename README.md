@@ -24,13 +24,14 @@ Optimized for desktop and mobile.
 
 ---
 
-## Features (v1.0.0)
+## Features (v1.1.0)
 
-- Procedurally generated puzzles — unlimited unique puzzles
-- Grid sizes: 3×3 to 7×7
-- 3 difficulty levels (Easy, Medium, Hard)
+- Procedurally generated puzzles — unlimited unique puzzles (AC-3 constraint propagation)
+- Grid sizes: 3×3 to 9×9
+- 4 difficulty levels (Easy, Medium, Hard, Expert)
 - Puzzle IDs — share and replay specific puzzles
 - **Android APK** — optimized mobile layout with touch controls, status bar with move counter and copy button
+- **Global leaderboard** — online ranking via Supabase; top 20 per grid size and difficulty with daily, weekly, monthly and all-time periods
 - **Local leaderboard** — best times per grid size and difficulty with name, time, moves and date; gold/silver/bronze ranking
 - **DE/EN localization** — automatic language detection, manually switchable in settings
 - PDF export — save puzzles as blank A4 PDF for printing
@@ -77,16 +78,6 @@ Numori offers four themes, selectable via settings. Your choice is saved.
 | Ctrl+Z | Undo |
 | Ctrl+Y | Redo |
 | Enter | Load puzzle ID |
-
----
-
-## Roadmap
-
-### v1.1.0 *(planned)*
-- **Supabase integration** — optional user accounts; cross-device sync of statistics and unlocks
-- **Global leaderboard** — enabled once a sufficient user base is reached
-- **Badges** — rewards for special achievements
-- **Share puzzle** — share puzzle ID via system share dialog (APK)
 
 ---
 
@@ -146,6 +137,13 @@ Used in the Flipper theme (`assets/fonts/BitcountGridSingle-Regular.ttf`).
 
 License: **SIL Open Font License 1.1**
 Copyright: © 2024 Petr van Blokland
+
+### Norse & Norse Bold
+Used in the Space theme (`assets/fonts/Norse.otf`, `assets/fonts/Norsebold.otf`).
+
+License: **Freeware** — © Joël Carrouché
+Free for personal and commercial use including embedding in applications. Font files may not be modified or sold.
+Full license: `assets/fonts/freefont_license.txt`
 
 ### Lucide Icons
 Used in the toolbar (inline SVG).
