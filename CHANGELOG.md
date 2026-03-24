@@ -1,5 +1,33 @@
 # Changelog
 
+## v1.1.0 — 2026-03-24
+
+### New
+- **Reworked puzzle generator** — complete rewrite using AC-3 constraint propagation; puzzles are now generated faster, are always uniquely solvable and scale correctly to larger grids
+- **Expert difficulty** — new difficulty level available for 6×6 and larger grids; requires logical deduction across multiple constraints simultaneously
+- **8×8 and 9×9 grids** — two new grid sizes, exclusively in Expert difficulty
+- **Global leaderboard** — online ranking via Supabase; top 20 per grid size and difficulty with daily, weekly, monthly and all-time periods; name entry after a qualifying run (no hints, no validation used)
+- **Daily puzzle info on welcome screen** — shows today's grid size, difficulty and whether it has already been solved
+
+### Improvements
+- **Daily puzzle** — seed bar permanently shows the solved time after completing the daily puzzle; win popup now shows your daily rank instead of all-time rank
+- **Stats modal** — "Leaderboard" tab renamed to "Local" for clarity alongside the new Global tab
+- **Flipper theme on mobile** — improved readability of the DMD display and score tally on small screens
+- **Privacy notice** — reworded for clarity; explicitly confirms local-only storage and includes a hint on how to opt out of leaderboard submission
+
+### Bug Fixes
+- Diagonal cage validation incorrectly rejected repeated values that are valid in non-latin-square cages
+- Flipper DMD showed a blank gap instead of the difficulty label when Expert was selected
+- Email address in the About section was unreadable in Numori Dark due to insufficient contrast
+
+### Licenses
+Norse & Norse Bold (`assets/fonts/Norse.otf`, `assets/fonts/Norsebold.otf`) — used in the Space theme.
+License: **Freeware** — © Joël Carrouché, free for personal and commercial use including embedding in applications. Font files may not be modified or sold.
+
+---
+
+
+
 ## v1.0.0 — 2026-03-19
 
 ### New

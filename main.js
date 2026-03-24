@@ -116,6 +116,11 @@ function createWindow() {
                     await win.webContents.executeJavaScript('window._saveStateForElectron && window._saveStateForElectron()');
                     await new Promise(r => setTimeout(r, 150));
                 } catch (_) {}
+            } else {
+                // Verwerfen – gespeicherten Stand löschen damit er nicht beim nächsten Start lädt
+                try {
+                    await win.webContents.executeJavaScript('typeof clearSavedGame === "function" && clearSavedGame()');
+                } catch (_) {}
             }
 
             closeConfirmed = true;
