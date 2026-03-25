@@ -175,7 +175,20 @@ async function renderGlobalLeaderboard() {
     const rankClasses = ['lb-row-gold', 'lb-row-silver', 'lb-row-bronze'];
 
     const sizes = [3, 4, 5, 6, 7, 8, 9];
-    const diffs = ['easy', 'medium', 'hard', 'expert'];
+    const VALID_DIFFS = {
+        3: ['easy'],
+        4: ['easy', 'medium'],
+        5: ['easy', 'medium', 'hard'],
+        6: ['easy', 'medium', 'hard'],
+        7: ['medium', 'hard', 'expert'],
+        8: ['hard', 'expert'],
+        9: ['expert'],
+    };
+
+    // Sicherstellen dass globalActiveDiff für die aktuelle Größe valide ist
+    if (!VALID_DIFFS[globalActiveSize].includes(globalActiveDiff)) {
+        globalActiveDiff = VALID_DIFFS[globalActiveSize][0];
+    }
 
     const periods = [
         { key: 'daily',   label: t('lb-period-daily') },
@@ -188,7 +201,7 @@ async function renderGlobalLeaderboard() {
         `<option value="${n}"${n === globalActiveSize ? ' selected' : ''}>${n}×${n}</option>`
     ).join('');
 
-    const diffOptionsHtml = diffs.map(d =>
+    const diffOptionsHtml = VALID_DIFFS[globalActiveSize].map(d =>
         `<option value="${d}"${d === globalActiveDiff ? ' selected' : ''}>${lc(diffLabels[d] ?? d)}</option>`
     ).join('');
 
@@ -233,6 +246,13 @@ async function renderGlobalLeaderboard() {
 
     container.querySelector('#lb-global-size').addEventListener('change', (e) => {
         globalActiveSize = Number(e.target.value);
+        if (!VALID_DIFFS[globalActiveSize].includes(globalActiveDiff)) {
+            globalActiveDiff = VALID_DIFFS[globalActiveSize][0];
+        }
+        const diffSel = container.querySelector('#lb-global-diff');
+        diffSel.innerHTML = VALID_DIFFS[globalActiveSize].map(d =>
+            `<option value="${d}"${d === globalActiveDiff ? ' selected' : ''}>${lc(diffLabels[d] ?? d)}</option>`
+        ).join('');
         fetchAndRender();
     });
     container.querySelector('#lb-global-diff').addEventListener('change', (e) => {
@@ -265,7 +285,7 @@ async function renderGlobalLeaderboard() {
             return;
         }
 
-        const rows = await window.supabaseFetchLeaderboard(globalActiveSize, globalActiveDiff, globalActivePeriod, 20);
+        const rows = await window.supabaseFetchLeaderboard(globalActiveSize, globalActiveDiff, globalActivePeriod, 10);
 
         if (!rows.length) {
             content.innerHTML = `<p class="stats-empty">${lc(t('lb-global-empty'))}</p>`;
@@ -308,7 +328,7 @@ async function renderGlobalLeaderboard() {
             return;
         }
 
-        const rows = await window.supabaseFetchDailyLeaderboard(todayIso, 20);
+        const rows = await window.supabaseFetchDailyLeaderboard(todayIso, 10);
 
         if (!rows.length) {
             content.innerHTML = `<p class="lb-daily-date">${todayDisplay}</p><p class="stats-empty">${lc(t('lb-daily-empty'))}</p>`;

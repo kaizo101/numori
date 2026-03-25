@@ -410,6 +410,23 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ── APK-UPDATE-CHECK ──────────────────────────────────────────
+    if (window.Capacitor?.isNativePlatform()) {
+        setTimeout(() => {
+            fetch('https://api.github.com/repos/kaizo101/numori/releases/latest', { cache: 'no-store' })
+                .then(r => r.json())
+                .then(data => {
+                    const latest = (data.tag_name || '').replace(/^v/, '');
+                    const current = typeof APP_VERSION !== 'undefined' ? APP_VERSION : '';
+                    if (!latest || !current || latest === current) return;
+                    const dismissed = localStorage.getItem('numori-update-dismissed');
+                    if (dismissed === latest) return;
+                    showUpdateBanner(`Version ${latest} verfügbar.`, 'apk', latest);
+                })
+                .catch(() => {});
+        }, 4000);
+    }
+
     // ── AUTO-SAVE beim Schließen (Webversion) ─────────────────────
     // In Electron übernimmt main.js den Speicher-Dialog.
     // Im Browser / auf Mobilgeräten wird der Stand beim Backgrounding

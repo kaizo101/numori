@@ -783,18 +783,19 @@ function validateAll() {
         const n = currentPuzzle.solution.length;
         window._isDirty = false;
         const wasDailyMode = window._dailyMode === true;
+        const wasDailyAlreadySolved = wasDailyMode && window._dailyDateKey && !!getDailySolvedTime(window._dailyDateKey);
         if (wasDailyMode && window._dailyDateKey) {
             const dTimeStr = formatTime(elapsedSeconds);
-            markDailySolved(window._dailyDateKey, dTimeStr);
+            if (!wasDailyAlreadySolved) markDailySolved(window._dailyDateKey, dTimeStr);
             window._dailyMode = false;
             const dBtn = document.getElementById('btn-daily');
-            if (dBtn) { dBtn.dataset.solved = 'true'; dBtn.title = t('daily-solved-title').replace('{time}', dTimeStr); }
+            if (dBtn) { dBtn.dataset.solved = 'true'; dBtn.title = t('daily-solved-title').replace('{time}', getDailySolvedTime(window._dailyDateKey)); }
         }
         setStatus(t('status-solved').replace('{n}', n));
         const allHints = hintBoard && userBoard.every((row,r)=>row.every((v,c)=>v===0||hintBoard[r][c]));
         const isNewBest = recordSolve(n, diff, elapsedSeconds, moveCount);
-        const leaderboardRank = (!competitiveBlocked) ? getLeaderboardRank(elapsedSeconds, n, diff) : null;
-        const cleanSolve = !competitiveBlocked && !solvedByCheat && !debugSolveUsed;
+        const leaderboardRank = (!competitiveBlocked && !wasDailyAlreadySolved) ? getLeaderboardRank(elapsedSeconds, n, diff) : null;
+        const cleanSolve = !competitiveBlocked && !solvedByCheat && !debugSolveUsed && !wasDailyAlreadySolved;
         const _theme = document.documentElement.getAttribute('data-theme');
         const _isFlipperThemeSolve = _theme === 'flipper';
         const _isSpaceTheme = _theme === 'space';

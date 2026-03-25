@@ -1,5 +1,7 @@
 // ── CONSTANTS ─────────────────────────────────────────────────────
 
+const APP_VERSION = '1.1.1';
+
 const FONT_SCALE_KEY = 'numori-font-scale';
 
 const MAX_HISTORY = 50;

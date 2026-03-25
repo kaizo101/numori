@@ -3,6 +3,15 @@ const { autoUpdater } = require('electron-updater');
 const fs = require('fs');
 const path = require('path');
 
+// Nur eine Instanz erlauben
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) { app.quit(); }
+
+app.on('second-instance', () => {
+    const win = BrowserWindow.getAllWindows()[0];
+    if (win) { if (win.isMinimized()) win.restore(); win.focus(); }
+});
+
 // Updater-Konfiguration
 autoUpdater.autoDownload = false;        // Nutzer muss erst zustimmen
 autoUpdater.autoInstallOnAppQuit = true; // Nach Download bei nächstem Beenden installieren

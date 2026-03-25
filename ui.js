@@ -577,6 +577,24 @@ function showUpdateBanner(message, mode, version) {
         buttons.appendChild(btnNo);
     }
 
+    if (mode === 'apk') {
+        const btnDownload = document.createElement('a');
+        btnDownload.className = 'update-banner-btn';
+        btnDownload.textContent = 'Herunterladen';
+        btnDownload.href = `https://github.com/kaizo101/numori/releases/latest`;
+        btnDownload.target = '_blank';
+        btnDownload.rel = 'noopener noreferrer';
+        const btnLater = document.createElement('button');
+        btnLater.className = 'update-banner-btn update-banner-btn--ghost';
+        btnLater.textContent = 'Später';
+        btnLater.addEventListener('click', () => {
+            localStorage.setItem('numori-update-dismissed', version);
+            banner.classList.remove('visible');
+        });
+        buttons.appendChild(btnDownload);
+        buttons.appendChild(btnLater);
+    }
+
     if (mode === 'install') {
         const btn = document.createElement('button');
         btn.className = 'update-banner-btn';
