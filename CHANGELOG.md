@@ -1,174 +1,189 @@
 # Changelog
 
-## v1.1.0 — 2026-03-24
+## v1.2.0 — 2026-06-06
 
-### New
-- **Reworked puzzle generator** — complete rewrite using AC-3 constraint propagation; puzzles are now generated faster, are always uniquely solvable and scale correctly to larger grids
-- **Expert difficulty** — new difficulty level available for 6×6 and larger grids; requires logical deduction across multiple constraints simultaneously
-- **8×8 and 9×9 grids** — two new grid sizes, exclusively in Expert difficulty
-- **Global leaderboard** — online ranking via Supabase; top 20 per grid size and difficulty with daily, weekly, monthly and all-time periods; name entry after a qualifying run (no hints, no validation used)
-- **Daily puzzle info on welcome screen** — shows today's grid size, difficulty and whether it has already been solved
+### Neu
+- **Achievement-System** — über 25 Achievements in verschiedenen Kategorien (Core, Leaderboard, Console, Flipper); Toast-Benachrichtigung bei Freischaltung, Detail-Modal bei Klick, retroaktive Vergabe für Bestandsnutzer; Statistik-Tracking pro Größe, Schwierigkeit und Theme
+- **PDF-Lösungsexport** — optionale zweite Seite im PDF-Export mit aufgedeckter Lösung
 
-### Improvements
-- **Daily puzzle** — seed bar permanently shows the solved time after completing the daily puzzle; win popup now shows your daily rank instead of all-time rank
-- **Stats modal** — "Leaderboard" tab renamed to "Local" for clarity alongside the new Global tab
-- **Flipper theme on mobile** — improved readability of the DMD display and score tally on small screens
-- **Privacy notice** — reworded for clarity; explicitly confirms local-only storage and includes a hint on how to opt out of leaderboard submission
+### Verbesserungen
+- **Flipper-Ticker** — Highscore-Ticker überarbeitet
+- **Console-Theme** — Detailverbesserungen am Matrix-Gewinnbildschirm und Fehlerbildschirm
+- **Undo-Tracking** — `undoWasUsed`-Flag für Achievement-Prüfungen (no_undo)
 
-### Bug Fixes
-- Diagonal cage validation incorrectly rejected repeated values that are valid in non-latin-square cages
-- Flipper DMD showed a blank gap instead of the difficulty label when Expert was selected
-- Email address in the About section was unreadable in Numori Dark due to insufficient contrast
-
-### Licenses
-Norse & Norse Bold (`assets/fonts/Norse.otf`, `assets/fonts/Norsebold.otf`) — used in the Space theme.
-License: **Freeware** — © Joël Carrouché, free for personal and commercial use including embedding in applications. Font files may not be modified or sold.
+### Fehlerbehebungen
+- **Globale Leaderboard-Übermittlung** — Zeiten können jetzt auch ohne lokalen Top-5-Rang für wöchentliche, monatliche und Gesamtzeiträume übermittelt werden. Zuvor hatte nur das Tagesrätsel diesen Fallback.
+- **Globale Rang-Anzeige** — Gewinnbildschirm, Console- und Flipper-Theme zeigen jetzt nur noch einen globalen Rang bei ≤ 10 (zuvor 20), konsistent mit der Leaderboard-Ansicht.
 
 ---
 
+## v1.1.0 — 2026-03-24
 
+### Neu
+- **Überarbeiteter Rätsel-Generator** — komplette Neuentwicklung mit AC-3 Constraint Propagation; Rätsel werden jetzt schneller generiert, sind immer eindeutig lösbar und skalieren korrekt auf größere Gitter
+- **Experten-Schwierigkeit** — neue Schwierigkeitsstufe verfügbar für 6×6 und größere Gitter; erfordert logisches Denken über mehrere Constraints gleichzeitig
+- **8×8 und 9×9 Gitter** — zwei neue Gittergrößen, ausschließlich in Experten-Schwierigkeit
+- **Globales Leaderboard** — Online-Ranking via Supabase; Top 20 pro Gittergröße und Schwierigkeit mit täglichen, wöchentlichen, monatlichen und Gesamtzeiträumen; Namenseingabe nach qualifiziertem Lauf (keine Hinweise, keine Validierung verwendet)
+- **Tagesrätsel-Info auf Willkommensbildschirm** — zeigt heutige Gittergröße, Schwierigkeit und ob es bereits gelöst wurde
+
+### Verbesserungen
+- **Tagesrätsel** — Seed-Leiste zeigt dauerhaft die gelöste Zeit nach Abschluss des Tagesrätsels; Gewinn-Popup zeigt jetzt den Tagesrang statt des Gesamtrangs
+- **Statistik-Modal** — "Leaderboard"-Tab umbenannt in "Lokal" zur besseren Übersicht neben dem neuen Global-Tab
+- **Flipper-Theme auf Mobile** — verbesserte Lesbarkeit der DMD-Anzeige und Punkteanzeige auf kleinen Bildschirmen
+- **Datenschutzhinweis** — umformuliert für bessere Verständlichkeit; bestätigt explizit die lokale Speicherung und enthält einen Hinweis zum Deaktivieren der Leaderboard-Übermittlung
+
+### Fehlerbehebungen
+- Diagonale Käfig-Validierung lehnte fälschlicherweise wiederholte Werte ab, die in Nicht-Latin-Square-Käfigen gültig sind
+- Flipper-DMD zeigte eine Lücke statt des Schwierigkeitslabels wenn Experte ausgewählt war
+- E-Mail-Adresse im Über-Bereich war in Numori Dark aufgrund unzureichendem Kontrast unlesbar
+
+### Lizenzen
+Norse & Norse Bold (`assets/fonts/Norse.otf`, `assets/fonts/Norsebold.otf`) — verwendet im Space-Theme.
+Lizenz: **Freeware** — © Joël Carrouché, frei für persönliche und kommerzielle Nutzung einschließlich Einbettung in Anwendungen. Font-Dateien dürfen nicht modifiziert oder verkauft werden.
+
+---
 
 ## v1.0.0 — 2026-03-19
 
-### New
-- **Android APK** — first public APK release via Capacitor
-- **Flipper theme** — full pinball arcade theme with DMD display (attract, playing, win, tilt, highscore and initials flow), coin slot, scrolling ticker with high scores, Flipper-specific font (Bitcount Grid Single)
-- **Local leaderboard** — top entries per grid size and difficulty with name, time, moves and date; gold/silver/bronze ranking; name entry after high score incl. Flipper DMD integration
-- **DE/EN localization** — full localization of all UI texts; automatic language detection; manually switchable in settings
-- **Statistics & leaderboard as tabs** — combined in a single modal instead of separate views
-- **Mobile status bar** — shows puzzle ID, move counter and copy button for quick puzzle ID sharing
-- **Confetti animation** on win
-- **Imprint & privacy notice** — section in settings; privacy notice confirms local-only storage with no data transmission
+### Neu
+- **Android APK** — erste öffentliche APK-Veröffentlichung via Capacitor
+- **Flipper-Theme** — vollständiges Pinball-Arcade-Theme mit DMD-Anzeige (Attract, Playing, Win, Tilt, Highscore und Initials Flow), Coin Slot, scrollender Ticker mit Highscores, Flipper-spezifische Schrift (Bitcount Grid Single)
+- **Lokales Leaderboard** — Top-Einträge pro Gittergröße und Schwierigkeit mit Name, Zeit, Zügen und Datum; Gold/Silber/Bronze-Ranking; Namenseingabe nach Highscore inkl. Flipper-DMD-Integration
+- **DE/EN Lokalisierung** — vollständige Lokalisierung aller UI-Texte; automatische Spracherkennung; manuell umschaltbar in den Einstellungen
+- **Statistiken & Leaderboard als Tabs** — zusammengefasst in einem Modal statt separater Ansichten
+- **Mobile Statusleiste** — zeigt Rätsel-ID, Züge-Zähler und Kopier-Button zum schnellen Teilen der Rätsel-ID
+- **Konfetti-Animation** bei Gewinn
+- **Impressum & Datenschutzhinweis** — Bereich in den Einstellungen; Datenschutzhinweis bestätigt lokale Speicherung ohne Datenübertragung
 
-### Changes
-- **Competitive mode** — removed from development; replaced by the local leaderboard, which automatically tracks and ranks fair runs (no validation or hints used)
+### Änderungen
+- **Wettkampf-Modus** — aus der Entwicklung entfernt; ersetzt durch das lokale Leaderboard, das faire Läufe automatisch verfolgt und rankt (keine Validierung oder Hinweise verwendet)
 
-### Licenses
-Bitcount Grid Single (`assets/fonts/BitcountGridSingle-Regular.ttf`) — used in the Flipper theme.
-License: **SIL Open Font License 1.1** — Copyright © 2024 Petr van Blokland
+### Lizenzen
+Bitcount Grid Single (`assets/fonts/BitcountGridSingle-Regular.ttf`) — verwendet im Flipper-Theme.
+Lizenz: **SIL Open Font License 1.1** — Copyright © 2024 Petr van Blokland
 
 ---
 
 ## v0.9.2 — 2026-03-12
 
-### New
-- **Music player on mobile** — music panel in the more menu (Console theme); play/pause, next/previous, volume and track display
-- **Auto-save on close** — game state is automatically saved in the web version when the tab is closed or the page is left
+### Neu
+- **Musikplayer auf Mobile** — Musik-Panel im Mehr-Menü (Console-Theme); Play/Pause, Nächster/Vorheriger, Lautstärke und Track-Anzeige
+- **Auto-Save beim Schließen** — Spielstand wird in der Webversion automatisch gespeichert wenn der Tab geschlossen oder die Seite verlassen wird
 
-### Improvements
-- Number pad on mobile revised — optimized layout and presentation for small screens
+### Verbesserungen
+- Zahlenpad auf Mobile überarbeitet — optimiertes Layout und Darstellung für kleine Bildschirme
 
 ---
 
 ## v0.9.1 — 2026-03-11
 
-### New
-- **Mobile layout** *(Preview)* — optimized layout for smartphones (≤ 600px): compact top toolbar with size, difficulty, puzzle ID and daily puzzle; fixed bottom nav with notes, hint, undo, redo and more menu
-- **Seed modal** — puzzle ID input on mobile as modal instead of text field; shows the current puzzle ID
-- **Puzzle ID above the board** — current ID is shown in the top left on mobile
-- **Number pad auto-open** — opens automatically on mobile when a puzzle is started
-- **Matrix win screen on mobile** — touch buttons instead of keyboard input; animation is now time-based (consistent across all devices and frame rates)
+### Neu
+- **Mobile-Layout** *(Preview)* — optimiertes Layout für Smartphones (≤ 600px): kompakte obere Toolbar mit Größe, Schwierigkeit, Rätsel-ID und Tagesrätsel; feste untere Navigation mit Notizen, Hinweis, Undo, Redo und Mehr-Menü
+- **Seed-Modal** — Rätsel-ID-Eingabe auf Mobile als Modal statt Textfeld; zeigt die aktuelle Rätsel-ID
+- **Rätsel-ID über dem Board** — aktuelle ID wird auf Mobile oben links angezeigt
+- **Zahlenpad Auto-Open** — öffnet sich auf Mobile automatisch wenn ein Rätsel gestartet wird
+- **Matrix-Gewinnbildschirm auf Mobile** — Touch-Buttons statt Tastatureingabe; Animation ist jetzt zeitbasiert (konsistent auf allen Geräten und Frameraten)
 
-### Improvements
-- Cage labels and notes on mobile 40% larger
-- Difficulty dropdown on mobile now adjusts correctly when grid size changes
-- Minimum window size in Electron set to 900×600 (prevents accidental mobile layout activation)
+### Verbesserungen
+- Käfig-Labels und Notizen auf Mobile 40% größer
+- Schwierigkeits-Dropdown auf Mobile passt sich jetzt korrekt an bei Größenänderung
+- Minimale Fenstergröße in Electron auf 900×600 gesetzt (verhindert versehentliche Mobile-Layout-Aktivierung)
 
-### Bug Fixes
-- Mobile bottom nav in Console theme had green background instead of black
-- Console theme vignette overlay was covering mobile elements
+### Fehlerbehebungen
+- Mobile Bottom-Nav im Console-Theme hatte grünen Hintergrund statt schwarz
+- Console-Theme Vignette-Overlay überdeckte Mobile-Elemente
 
 ---
 
 ## v0.9.0 — 2026-03-10
 
-### New
-- **Music player** (Console theme) — 17 royalty-free chiptune tracks; play/pause, next/previous, volume control; scrollable playlist with track selection; marquee animation for artist and title; volume saved in localStorage
-- **Number pad overlay** — freely positionable and scalable number pad; notes mode toggle directly in the pad; position and scale saved in localStorage; toggleable via toolbar button
-- **Statistics** — modal with best time, average time, best moves and number of solved puzzles per size and difficulty; reset option; statistics saved in localStorage
-- **Interactive tutorial** — 3 explanation slides (game rules, cages & operations, useful features) followed by a playable 3×3 puzzle; on first launch the user is asked whether to skip the tutorial; accessible at any time via settings; theme-specific design
-- **Automatic updates** — update check on launch via `electron-updater`; non-intrusive banner with download and install option; installation on next restart
-- **GitHub Pages** — Numori is available at [kaizo101.github.io/numori](https://kaizo101.github.io/numori) as a web version
+### Neu
+- **Musikplayer** (Console-Theme) — 17 lizenzfreie Chiptune-Tracks; Play/Pause, Nächster/Vorheriger, Lautstärkeregelung; scrollbarer Playlist mit Track-Auswahl; Marquee-Animation für Künstler und Titel; Lautstärke in localStorage gespeichert
+- **Zahlenpad-Overlay** — frei positionierbares und skalierbares Zahlenpad; Notiz-Modus-Toggle direkt im Pad; Position und Skalierung in localStorage gespeichert; umschaltbar via Toolbar-Button
+- **Statistiken** — Modal mit Bestzeit, Durchschnittszeit, beste Züge und Anzahl gelöster Rätsel pro Größe und Schwierigkeit; Reset-Option; Statistiken in localStorage gespeichert
+- **Interaktives Tutorial** — 3 Erklärungs-Slides (Spielregeln, Käfige & Operationen, nützliche Features) gefolgt von einem spielbaren 3×3 Rätsel; beim ersten Start wird gefragt ob das Tutorial übersprungen werden soll; jederzeit über Einstellungen zugänglich; Theme-spezifisches Design
+- **Automatische Updates** — Update-Check beim Start via `electron-updater`; unaufdringliches Banner mit Download- und Install-Option; Installation beim nächsten Neustart
+- **GitHub Pages** — Numori ist verfügbar unter [kaizo101.github.io/numori](https://kaizo101.github.io/numori) als Webversion
 
-### Improvements
-- **Difficulty model** revised: `maxSingleRatio` for Easy reduced from 40% to 20% (fewer free cells); multiplication in Medium restricted to 2-cell cages (prevents brutally hard large cages); size-dependent op weights for Medium (3+ cell cages always addition, 2-cell cages balanced `+/-/*`); dead soft-cap code (`targetAvgSize`) removed
-- **Header and toolbar** now scale correctly with window size (clamp values with v0.8 minimum)
-- **Toolbar** revised — theme switcher, statistics and settings as separate buttons in the top right
-- Cage border radii for corner cells in the Dark theme
+### Verbesserungen
+- **Schwierigkeitsmodell** überarbeitet: `maxSingleRatio` für Leicht von 40% auf 20% reduziert (weniger freie Zellen); Multiplikation in Mittel auf 2-Zellen-Käfige beschränkt (verhindert brutal schwere große Käfige); größenabhängige Op-Gewichte für Mittel (3+ Zellen-Käfige immer Addition, 2-Zellen-Käfige ausgewogen `+/-/*`); toter Soft-Cap-Code (`targetAvgSize`) entfernt
+- **Header und Toolbar** skalieren jetzt korrekt mit Fenstergröße (Clamp-Werte mit v0.8 Minimum)
+- **Toolbar** überarbeitet — Theme-Wechsler, Statistiken und Einstellungen als separate Buttons oben rechts
+- Käfig-Eckradien für Eckzellen im Dark-Theme
 
-### Bug Fixes
-- `saveGameState` was incorrectly resetting the daily mode state (copy-paste error)
-- Undo was increasing the move counter instead of leaving it unchanged
-- `#btn-load-seed` had a hardcoded height and overflowed the seed input field on large windows
+### Fehlerbehebungen
+- `saveGameState` setzte fälschlicherweise den Daily-Mode-Status zurück (Copy-Paste-Fehler)
+- Undo erhöhte den Züge-Zähler statt ihn unverändert zu lassen
+- `#btn-load-seed` hatte eine hardcodierte Höhe und überlappte das Seed-Input-Feld auf großen Fenstern
 
 ---
 
 ## v0.8.0 — 2026-03-04
 
-### New
-- **Console theme** — retro CRT aesthetic with phosphor-green text (VT323/Share Tech Mono), scanlines on toolbar, board and welcome screen, typewriter status bar and typewriter animation in the seed input field
-- **Matrix win screen** (Console) — animated completion screen with Matrix rain, flash, fly-in and typewriter phases; shows size, difficulty, time, moves and seed. ACCESS GRANTED for correct solution, ACCESS DENIED for hint-only solution
-- **Daily puzzle** — daily changing puzzle, deterministically generated from the date; ascending weekly schedule (Mon: 4×4 Easy → Sun: 6×6 Hard); best time saved locally; calendar icon in toolbar shows solved status
-- **Save game state** — on closing the app, the user is asked whether to save the current state; automatically resumed on next launch
-- **3-2-1 countdown** — starts when beginning a new puzzle in competitive mode; board is locked during countdown; theme-specific design
-- **Error display** — appears when all cells are filled but the solution is incorrect; theme-specific (Console: red ERROR screen, Dark: dark modal, Classic: light modal)
-- **Moves in win banner** — move counter is now also shown in the completion banner
+### Neu
+- **Console-Theme** — Retro-CRT-Ästhetik mit Phosphor-Grün-Text (VT323/Share Tech Mono), Scanlines auf Toolbar, Board und Willkommensbildschirm, Schreibmaschinen-Statusleiste und Schreibmaschinen-Animation im Seed-Input-Feld
+- **Matrix-Gewinnbildschirm** (Console) — animierter Abschlussbildschirm mit Matrix-Rain, Flash, Fly-In und Schreibmaschinen-Phasen; zeigt Größe, Schwierigkeit, Zeit, Züge und Seed. ACCESS GRANTED für korrekte Lösung, ACCESS DENIED für Hinweis-Lösung
+- **Tagesrätsel** — täglich wechselndes Rätsel, deterministisch aus dem Datum generiert; aufsteigender Wochenplan (Mo: 4×4 Leicht → So: 6×6 Schwer); Bestzeit lokal gespeichert; Kalender-Icon in Toolbar zeigt Gelöst-Status
+- **Spielstand speichern** — beim Schließen der App wird gefragt ob der aktuelle Stand gespeichert werden soll; automatisch beim nächsten Start fortgesetzt
+- **3-2-1 Countdown** — startet beim Beginn eines neuen Rätsels im Wettkampf-Modus; Board ist während Countdown gesperrt; Theme-spezifisches Design
+- **Fehleranzeige** — erscheint wenn alle Zellen gefüllt sind aber die Lösung falsch ist; Theme-spezifisch (Console: roter ERROR-Screen, Dark: dunkles Modal, Classic: helles Modal)
+- **Züge im Gewinn-Banner** — Züge-Zähler wird jetzt auch im Abschluss-Banner angezeigt
 
-### Improvements
-- Validation mode is automatically reset when starting a new puzzle
-- When instant validation is activated, the user is offered to automatically clear all incorrect digits
-- Move counter revised
-- Info popup in Console theme revised (scanlines, border)
-- Modal windows in Console theme consistently lowercase
+### Verbesserungen
+- Validierungs-Modus wird automatisch zurückgesetzt beim Start eines neuen Rätsels
+- Bei aktivierter Sofort-Validierung wird angeboten, alle falschen Ziffern automatisch zu löschen
+- Züge-Zähler überarbeitet
+- Info-Popup im Console-Theme überarbeitet (Scanlines, Border)
+- Modal-Fenster im Console-Theme konsequent lowercase
 
 ---
 
 ## v0.7.0 — 2026-03-02
 
-### New
-- **PDF export** — puzzles can be saved as a blank A4 PDF (for printing). The export includes grid size, difficulty and puzzle ID as a header. Always in the classic look, regardless of the active theme.
-- **Theme system** — two designs selectable via the settings menu (gear button in header):
-  - **Classic** — the previous warm design
-  - **Numori Dark** — modern dark design in the style of the app icon. Uses the Poppins font (SIL Open Font License, see below), rounded corners and a blue-grey colour palette. The selected setting is saved.
-- **Version number** visible in the header.
-- **Timer** now prominently placed in the top right of the game area.
+### Neu
+- **PDF-Export** — Rätsel können als leeres A4-PDF gespeichert werden (zum Ausdrucken). Der Export enthält Gittergröße, Schwierigkeit und Rätsel-ID als Header. Immer im klassischen Look, unabhängig vom aktiven Theme.
+- **Theme-System** — zwei Designs auswählbar über das Einstellungen-Menü (Zahnrad-Button im Header):
+  - **Klassisch** — das bisherige warme Design
+  - **Numori Dark** — modernes dunkles Design im Stil des App-Icons. Verwendet die Poppins-Schrift (SIL Open Font License, siehe unten), abgerundete Ecken und eine Blau-Grau-Farbpalette. Die ausgewählte Einstellung wird gespeichert.
+- **Versionsnummer** im Header sichtbar.
+- **Timer** jetzt prominent oben rechts im Spielbereich platziert.
 
-### Improvements
-- **Win banner** completely revised — in the classic theme white/inverted with header blue, in Numori Dark with gold accents, SVG trophy and statistics bar.
-- **Toolbar icons** switched to system-independent SVGs (previously emojis, which looked different on each OS).
-- **Custom dropdowns** in Numori Dark theme — rounded, with Poppins font and smooth open animation.
-- **Info popup** (difficulty) in the classic theme inverted — white background, dark text.
-- **Competitive mode** can now only be activated when the puzzle is still empty and neither hints nor validation have been used. The lock is reset for each new puzzle.
+### Verbesserungen
+- **Gewinn-Banner** komplett überarbeitet — im klassischen Theme weiß/invertiert mit Header-Blau, in Numori Dark mit Gold-Akzenten, SVG-Trophäe und Statistik-Leiste.
+- **Toolbar-Icons** auf systemunabhängige SVGs umgestellt (zuvor Emojis, die auf jedem OS anders aussahen).
+- **Custom-Dropdowns** im Numori-Dark-Theme — abgerundet, mit Poppins-Schrift und sanfter Öffnungs-Animation.
+- **Info-Popup** (Schwierigkeit) im klassischen Theme invertiert — weißer Hintergrund, dunkler Text.
+- **Wettkampf-Modus** kann jetzt nur aktiviert werden wenn das Rätsel noch leer ist und weder Hinweise noch Validierung verwendet wurden. Die Sperre wird bei jedem neuen Rätsel zurückgesetzt.
 
-### Bug Fixes
-- Validation and hint cells were coloured black in the classic theme.
-- Loading a puzzle ID no longer correctly jumped the dropdowns to the right size and difficulty.
-
----
-
-## v0.6.0 and earlier
-
-See previous release notes.
+### Fehlerbehebungen
+- Validierungs- und Hinweis-Zellen wurden im klassischen Theme schwarz gefärbt.
+- Laden einer Rätsel-ID sprang nicht mehr korrekt zu richtiger Größe und Schwierigkeit in den Dropdowns.
 
 ---
 
-## Third-party Licenses
+## v0.6.0 und früher
+
+Siehe frühere Release-Notes.
+
+---
+
+## Drittanbieter-Lizenzen
 
 ### Poppins
-Used in the Numori Dark theme (`assets/fonts/Poppins-Medium.ttf`, `assets/fonts/Poppins-Italic.ttf`).
+Verwendet im Numori-Dark-Theme (`assets/fonts/Poppins-Medium.ttf`, `assets/fonts/Poppins-Italic.ttf`).
 
-License: **SIL Open Font License 1.1**
+Lizenz: **SIL Open Font License 1.1**
 Copyright: © 2014–2020 Indian Type Foundry
 
-The full license file is located at `assets/fonts/OFL.txt`.
-The SIL OFL permits free use, redistribution and embedding in commercial products, as long as the font is not sold on its own and the license file is included.
+Die vollständige Lizenzdatei befindet sich unter `assets/fonts/OFL.txt`.
+Die SIL OFL erlaubt freie Nutzung, Weiterverbreitung und Einbettung in kommerzielle Produkte, solange die Schrift nicht einzeln verkauft wird und die Lizenzdatei mitgeliefert wird.
 
-Further information: https://scripts.sil.org/OFL
+Weitere Informationen: https://scripts.sil.org/OFL
 
 ### Lucide Icons
-Used in the toolbar (inline SVG).
+Verwendet in der Toolbar (Inline-SVG).
 
-License: **ISC License**
+Lizenz: **ISC License**
 Copyright: © 2022 Lucide Contributors
 
-The ISC License permits free use and redistribution without further conditions.
+Die ISC License erlaubt freie Nutzung und Weiterverbreitung ohne weitere Bedingungen.
