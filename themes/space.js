@@ -549,6 +549,16 @@ const spaceMusic = (() => {
             audio = new Audio(TRACK);
             audio.loop   = true;
             audio.volume = 0.40;
+            // Achievement: Track einmal komplett durchgehört
+            let _lastTime = 0;
+            audio.addEventListener('timeupdate', () => {
+                const cur = audio.currentTime;
+                // Loop-Reset erkennen: currentTime springt zurück → Track war zu Ende
+                if (_lastTime > 10 && cur < 2 && typeof _unlockAchievement === 'function') {
+                    _unlockAchievement('space_full_listen');
+                }
+                _lastTime = cur;
+            });
         }
         _updateBtn();
         _tryPlay();

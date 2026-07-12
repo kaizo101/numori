@@ -1,0 +1,156 @@
+@font-face {
+    font-family: "Bitcount Grid Single";
+    src: url("../assets/fonts/BitcountGridSingle-Regular.ttf")
+        format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Norse";
+    src: url("../assets/fonts/Norse.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Norse";
+    src: url("../assets/fonts/Norsebold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("../assets/fonts/Poppins-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Orbitron";
+    src: url("../assets/fonts/Orbitron-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("../assets/fonts/Poppins-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+:root {
+    --mobile-nav-height: 64px;
+    /* Hintergrund */
+    --bg-body: #ddd9d0;
+    --bg-app: #f7f5f0;
+    --bg-toolbar: #ffffff;
+    --bg-status: #fafaf7;
+    --bg-board: #eae6dc;
+    --bg-footer: #ffffff;
+    --bg-cell: #ffffff;
+    --bg-cell-hover: #f3f0e8;
+    --bg-input: #fafafa;
+    --bg-btn-pencil: #fafafa;
+    --bg-move-card: #fafafa;
+
+    /* Text */
+    --text-primary: #1a1a1a;
+    --text-muted: #777;
+    --text-faint: #999;
+
+    /* Rahmen */
+    --border-main: #c8c4bc;
+    --border-light: #d0ccc4;
+    --border-input: #bbb;
+    --border-cell: #c4c0b8;
+
+    /* Akzent (Header, Buttons) */
+    --accent: #1a1a2e;
+    --accent-dark: #0f0f1e;
+    --accent-mid: #2d2d4e;
+
+    /* Board */
+    --board-border: #1a1a1a;
+    --board-shadow: #9a9690;
+
+    /* Selektion */
+    --select-bg: #deeafd;
+    --select-border: #3a5bbf;
+    --select-text: #1a3a9e;
+
+    /* Validierung */
+    --invalid-bg: #fff3f3;
+    --invalid-text: #aa0000;
+    --correct-bg: #f3fff3;
+    --correct-text: #005500;
+    --hint-bg: #fffbe6;
+    --hint-text: #b07800;
+
+    /* Notes */
+    --note-color: #aaa;
+    --note-active: #000;
+
+    /* Leaderboard Podium */
+    --lb-gold: #c9a227;
+    --lb-silver: #909090;
+    --lb-bronze: #b87333;
+
+    /* Typografie & Radius */
+    --font-modern: system-ui, "Segoe UI", sans-serif;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    /* Käfig-Trennlinien (theme-spezifisch) */
+    --cage-border: var(--board-border);
+
+    /* Nutzereingabe-Farbe */
+    --user-input-color: var(--select-text);
+
+    /* Buttons */
+    --btn-primary-bg: var(--accent);
+    --btn-primary-color: #ffffff;
+    --btn-primary-bg-hover: var(--accent-mid);
+    --btn-disabled-bg: #ccc;
+    --btn-disabled-color: #888;
+    --btn-ghost-color: var(--text-muted);
+    --btn-ghost-border: var(--border-main);
+    --btn-ghost-bg-hover: rgba(0, 0, 0, 0.04);
+    --btn-active-bg: var(--accent);
+    --btn-active-color: #fff;
+    --btn-active-border: var(--accent);
+
+    /* Win-Banner */
+    --win-gold: var(--lb-gold);
+    --win-gold-hover: var(--accent-mid);
+}
+
+/* ── Reset ───────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+body {
+    font-family: system-ui, "Segoe UI", sans-serif;
+    background: var(--bg-body);
+    color: var(--text-primary);
+}

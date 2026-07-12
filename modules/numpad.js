@@ -116,7 +116,17 @@ const numpadModule = (() => {
                 } else if (typeof setNumber === 'function') {
                     setNumber(selected.r, selected.c, v);
                 }
+                // Fokus sofort entfernen (wichtig für Touch-Geräte)
+                btn.blur();
+                document.activeElement?.blur();
             });
+
+            // Touch-Geräte: zusätzlich auf touchend blurren
+            btn.addEventListener('touchend', (e) => {
+                e.stopPropagation();
+                btn.blur();
+                document.activeElement?.blur();
+            }, { passive: true });
             grid.appendChild(btn);
         }
     }
@@ -146,7 +156,8 @@ const numpadModule = (() => {
     function _applyPosition() {
         // Setzt Position anhand gespeicherter Prozentwerte
         // Muss nach display:block aufgerufen werden damit offsetWidth bekannt ist
-        const savedPos = JSON.parse(localStorage.getItem('numori-numpad-pos') || 'null');
+        let savedPos = null;
+        try { savedPos = JSON.parse(localStorage.getItem('numori-numpad-pos') || 'null'); } catch(e) {}
         let leftPct = savedPos ? savedPos.leftPct : null;
         let topPct  = savedPos ? savedPos.topPct  : null;
 

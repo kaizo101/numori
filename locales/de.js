@@ -38,7 +38,7 @@ window.TRANSLATIONS.de = {
     'nav-more': 'Mehr',
     'footer-download': 'Auch für PC & Android',
     'footer-shortcuts': 'Pfeiltasten: Navigation\u00a0\u00a0·\u00a0\u00a0N: Notizen\u00a0\u00a0·\u00a0\u00a0V: Validierung\u00a0\u00a0·\u00a0\u00a0T: Timer\u00a0\u00a0·\u00a0\u00a0H: Tipp\u00a0\u00a0·\u00a0\u00a0Entf: Löschen\u00a0\u00a0·\u00a0\u00a0Strg+Z/Y: Undo/Redo',
-    'footer-timer-label': 'Timer starten',
+    'flipper-menu-achievements': 'ACHIEVEMENTS',
     'flipper-menu-scores': 'BESTENLISTE',
     'flipper-menu-theme': 'DESIGN',
     'flipper-menu-settings': 'EINSTELLUNGEN',
@@ -76,6 +76,7 @@ window.TRANSLATIONS.de = {
     'settings-font-large': 'Groß',
     'settings-font-xlarge': 'Sehr groß',
     'settings-help': 'Hilfe',
+    'settings-pdf': 'Anleitung als PDF',
     'settings-tutorial': 'Tutorial starten',
     'settings-lang': 'Sprache',
     'settings-close': 'Schließen',
@@ -88,6 +89,7 @@ window.TRANSLATIONS.de = {
     'settings-lb-label': 'Globale Bestenliste',
     'settings-lb-on': 'An',
     'settings-lb-off': 'Aus',
+    'settings-lb-warning': 'Leaderboard-Einträge werden nicht gespeichert',
     'settings-about-imprint': 'Impressum',
     'settings-about-contact': 'Bei Fragen, Problemen oder Anregungen erreichst du mich unter:',
     'tut-welcome-title': 'Willkommen bei Numori',
@@ -157,6 +159,7 @@ window.TRANSLATIONS.de = {
     'lb-offline': 'Keine Verbindung zum globalen Leaderboard.',
     'lb-global-empty': 'Noch keine Einträge in diesem Zeitraum.',
     'lb-daily-empty': 'Noch niemand hat das heutige Rätsel abgeschlossen.',
+    'lb-global-submit-title': 'Globale Bestenliste erreicht!',
     'lb-daily-submit-title': 'Tagesrätsel gelöst!',
     'lb-info': 'Zeiten landen automatisch in der Bestenliste – solange keine Hilfe oder Sofort-Validierung genutzt wurde.',
     'lb-empty': 'Noch keine Einträge vorhanden.',
@@ -171,6 +174,7 @@ window.TRANSLATIONS.de = {
     'lb-result-global': 'Global',
     'lb-result-rank': 'Platz {rank}',
     'lb-result-view-lb': 'Bestenliste',
+    'lb-submit-error': 'Leaderboard-Eintrag konnte nicht gespeichert werden',
     'tut-slide1-title': 'Das Spielprinzip',
     'tut-slide1-body': `<p>Numori ist ein Logik-Rätsel auf einem <strong>n×n-Gitter</strong>. Fülle jede Zeile und jede Spalte mit den Zahlen <strong>1 bis n</strong> – jede Zahl genau einmal pro Zeile und Spalte.</p>
 <div class="tut-latin-wrap">
@@ -190,6 +194,69 @@ window.TRANSLATIONS.de = {
   <li><strong>3:</strong><span>Quotient ist 3 <em>(z.B. 6:2)</em></span></li>
   <li><strong>4=</strong><span>Zelle enthält genau die 4</span></li>
 </ul>`,
+    // ── Achievements ──────────────────────────────────────────────
+    'ach-first-name':            'First Blood',
+    'ach-first-desc':            'Erstes Rätsel gelöst',
+    'ach-puzzles10-name':        'Rätsel-Rookie',
+    'ach-puzzles10-desc':        '10 Rätsel gelöst',
+    'ach-puzzles50-name':        'Rätsel-Veteran',
+    'ach-puzzles50-desc':        '50 Rätsel gelöst',
+    'ach-puzzles100-name':       'Rätsel-Marathon',
+    'ach-puzzles100-desc':       '100 Rätsel gelöst',
+    'ach-all_sizes-name':        'Allrounder',
+    'ach-all_sizes-desc':        'Jede Größe (3×3–9×9) mindestens einmal gelöst',
+    'ach-all_combos-name':       'Perfektionist',
+    'ach-all_combos-desc':       'Jede Größen- & Schwierigkeits-Kombination gelöst',
+    'ach-expert9-name':          '9×9-Legende',
+    'ach-expert9-desc':          '9×9 auf Expert gelöst',
+    'ach-perfect-name':          'Makellos',
+    'ach-perfect-desc':          'Rätsel ohne Hints & ohne Validierungsmodus gelöst',
+    'ach-no_undo-name':          'Keine Reue',
+    'ach-no_undo-desc':          'Rätsel ohne Undo gelöst',
+    'ach-daily_first-name':      'Gewohnheitstier',
+    'ach-daily_first-desc':      'Erstes Tagesrätsel gelöst',
+    'ach-streak7-name':          'Tages-Serie',
+    'ach-streak7-desc':          '7 Tagesrätsel in Folge gelöst',
+    'ach-streak30-name':         'Unaufhaltsam',
+    'ach-streak30-desc':         '30 Tagesrätsel in Folge gelöst',
+    'ach-local_podium-name':     'Lokale Legende',
+    'ach-local_podium-desc':     'Lokalen #1-Platz in einer Kategorie erreicht',
+    'ach-global_entry-name':     'Dabei',
+    'ach-global_entry-desc':     'Ersten globalen Leaderboard-Eintrag submittiert',
+    'ach-console_first-name':    'Eingeloggt',
+    'ach-console_first-desc':    'Erstes Rätsel im Console-Theme gelöst',
+    'ach-console9x9-name':       'Terminal-Gott',
+    'ach-console9x9-desc':       '9×9 im Console-Theme gelöst',
+    'ach-console_denied-name':   'Loser!',
+    'ach-console_denied-desc':   'ACCESS DENIED im Console-Theme ausgelöst',
+    'ach-console_nyan-name':     'Nyan Mode',
+    'ach-console_nyan-desc':     '"nyan" in der Konsole eingegeben',
+    // 'ach-console_playlist-name': 'Alles gehört',  (entfernt)
+    // 'ach-console_playlist-desc': 'Jeden Song im Musikplayer mindestens einmal gespielt',
+    'ach-flipper_first-name':    'Münze einwerfen',
+    'ach-flipper_first-desc':    'Erstes Rätsel im Flipper-Theme gelöst',
+    'ach-flipper_jackpot-name':  'Jackpot',
+    'ach-flipper_jackpot-desc':  '5× Makellos im Flipper-Theme',
+    'ach-flipper_rickroll-name': 'Never Gonna Give You Up',
+    'ach-flipper_rickroll-desc': '???',
+    'ach-space_first-name':      'Houston',
+    'ach-space_first-desc':      'Erstes Rätsel im Space-Theme gelöst',
+    'ach-space_dark_matter-name':'Dunkle Materie',
+    'ach-space_dark_matter-desc':'Makellos im Space-Theme gelöst',
+    'ach-space_full_listen-name':'Galaxiehirn',
+    'ach-space_full_listen-desc':'Den Space-Ambient-Track einmal komplett gehört',
+    'ach-synth_first-name':      'Leg den Beat auf',
+    'ach-synth_first-desc':      'Erstes Rätsel im Synthwave-Theme gelöst',
+    'ach-synth_zone-name':       'Im Flow',
+    // 'ach-synth_playlist-name':   'Synthwelle',   (entfernt)
+    // 'ach-synth_playlist-desc':   'Jeden Synthwave-Song mindestens einmal gehört',
+    'ach-synth_zone-desc':       '5× in Folge ohne Undo im Synthwave-Theme',
+    'ach-toast-label':           'Achievement freigeschaltet',
+    'sw-win-solved':             'GELÖST',
+    'sw-win-global':             'GLOBAL',
+    'sw-win-new-best':           'NEUE BESTZEIT',
+    'sw-win-moves':              'Züge',
+
     'tut-slide3-title': 'Nützliche Funktionen',
     'tut-slide3-body': `<div class="tut-features">
   <div class="tut-feat">
@@ -204,5 +271,20 @@ window.TRANSLATIONS.de = {
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
     <div><strong>Rätsel-ID</strong><span>Jedes Rätsel hat eine eindeutige ID. Eingeben um ein bekanntes Rätsel erneut zu laden oder mit anderen zu teilen.</span></div>
   </div>
+  <div class="tut-feat">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+    <div><strong>Tipp</strong><span>Setzt die richtige Zahl in eine leere Zelle. Deaktiviert den Wettkampf-Modus.</span></div>
+  </div>
 </div>`,
+
+    'devnotes-label': 'Dev Notizen',
+    'devnotes-add': 'Hinzufügen',
+
+    'update-available': 'Version {version} verfügbar.',
+    'update-ready': 'Version {version} bereit.',
+    'update-download': 'Herunterladen',
+    'update-later': 'Später',
+    'update-restart': 'Jetzt neu starten',
+    'update-close': 'Schließen',
+    'update-progress': 'Version {version} wird heruntergeladen…',
 };

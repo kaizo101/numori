@@ -2,7 +2,7 @@
 
 ## Hintergrundbilder
 
-### Space-Theme (`assets/backgrounds/space-bg.jpg`)
+### `assets/backgrounds/space-bg.jpg`
 Photo by [Pexels](https://pixabay.com/users/pexels-2286921/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1837306) from [Pixabay](https://pixabay.com/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1837306)
 Lizenz: Pixabay Content License (kostenlose kommerzielle Nutzung, keine Namensnennung erforderlich)
 
@@ -12,8 +12,11 @@ Lizenz: Pixabay Content License (kostenlose kommerzielle Nutzung, keine Namensne
 Verwendet in: Flipper-Theme
 
 ### Norse / Norsebold (`assets/fonts/Norse.otf`, `assets/fonts/Norsebold.otf`)
-Verwendet in: Space-Theme
 Lizenz: siehe `assets/fonts/freefont_license.txt`
+
+### Orbitron (`assets/fonts/Orbitron-Bold.ttf`)
+© Matt Desmond
+Lizenz: SIL Open Font License 1.1
 
 ### Poppins (`assets/fonts/Poppins-Medium.ttf`, `Poppins-SemiBold.ttf`, `Poppins-Italic.ttf`)
 © The Poppins Project Authors
@@ -42,5 +45,20 @@ Alle Tracks von [Pixabay Music](https://pixabay.com/music/) — kostenlose komme
 - syouki_takahashi — Samurai
 - yukinegames — It Has Just Begun (Retroland)
 
-### Space-Theme (`music/space/`)
+### `music/space/`
 - natureseye — Galaxy Traveller Meditation
+
+### `music/synthwave/`
+- Amaksi — Synthwave Retrowave
+- Cekketto — Up & Down Electrik
+- Elisaveta Stoycheva — Galaxy Sounds
+- Freesound Community — Space Adventure
+- Hitslab — Retro Synthwave Gaming, Synthwave 80s Retro
+- Joelfazhari — Dark Mysterious
+- Lnplusmusic — Synthwave 80s Retro
+- Miromaxmusic — Evening Miami, Give Me Your Smile
+- Mondamusic — Synthwave Retro 80s
+- Starostin — Cosmic Universe
+- The Mountain — Synthwave, Synthwave II
+- Tunetank — 80s Synthwave Retro, Dreamy Synthwave, French Synthwave, Synthwave 80s Retro I, Synthwave 80s Retro II, Synthwave Retro 80s
+- White Records — Neon Mirage

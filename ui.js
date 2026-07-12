@@ -83,9 +83,14 @@ function initLanguage() {
 }
 
 // ── THEME ─────────────────────────────────────────────────────────
+function _loadUnlockedThemes() {
+    try { return JSON.parse(localStorage.getItem('numori-unlocked-themes') || '[]'); }
+    catch(e) { return []; }
+}
+
 function applyTheme(theme) {
     const validThemes = ['dark', 'console', 'flipper'];
-    const unlockedThemes = JSON.parse(localStorage.getItem('numori-unlocked-themes') || '[]');
+    const unlockedThemes = _loadUnlockedThemes();
     const allowedThemes  = [...validThemes, ...unlockedThemes];
     document.documentElement.setAttribute('data-theme', allowedThemes.includes(theme) ? theme : '');
     localStorage.setItem('numori-theme', theme);
@@ -93,14 +98,14 @@ function applyTheme(theme) {
         btn.classList.toggle('active', btn.dataset.theme === theme);
     });
     // Inputs übernehmen font-family nicht per CSS-Vererbung in Chromium
-    const font = theme === 'dark'    ? "'Poppins', system-ui, sans-serif"
-               : theme === 'console' ? "'Share Tech Mono', monospace"
-               : theme === 'flipper' ? "'Bitcount Grid Single', monospace"
-               : theme === 'space'   ? "'Poppins', system-ui, sans-serif"
+    const font = theme === 'dark'       ? "'Poppins', system-ui, sans-serif"
+               : theme === 'console'    ? "'Share Tech Mono', monospace"
+               : theme === 'flipper'    ? "'Bitcount Grid Single', monospace"
+               : theme === 'space'      ? "'Poppins', system-ui, sans-serif"
+               : theme === 'synthwave'  ? "'Orbitron', sans-serif"
                : "";
     const seedInput = document.getElementById('seed-input');
     if (seedInput) seedInput.style.fontFamily = font;
-    // Welcome-Icon je nach Theme tauschen
     const welcomeIcon = document.getElementById('welcome-icon');
     if (welcomeIcon) {
         welcomeIcon.src = theme === 'console'
@@ -109,6 +114,8 @@ function applyTheme(theme) {
             ? 'assets/icons/numori_flipper.png'
             : theme === 'space'
             ? 'assets/icons/numori_space.png'
+            : theme === 'synthwave'
+            ? 'assets/icons/numori_synthwave.png'
             : 'assets/icons/png/numori-1024.png';
     }
     // Shadow-Theme-Button Lock-Status aktualisieren
@@ -121,13 +128,14 @@ function applyTheme(theme) {
     if (_sizeEl) syncCustomSelect('size', _sizeEl.value);
     if (_diffEl) syncCustomSelect('difficulty', _diffEl.value);
     if (theme === 'flipper') {
-        flipperDMD.start();
+        flipperDMD?.start();
     } else {
-        flipperDMD.stop();
+        flipperDMD?.stop();
     }
     spaceStars?.onThemeChange(theme);
     spaceToolbar?.onThemeChange(theme);
     spaceMusic?.onThemeChange(theme);
+    synthwaveGrid?.onThemeChange(theme);
     const _muteBtn = document.getElementById('btn-space-mute');
     if (_muteBtn) _muteBtn.style.display = theme === 'space' ? 'flex' : 'none';
     // Ensure header-right stays in header (restore if previously moved)
@@ -164,13 +172,21 @@ function initFontScale() {
 }
 
 function initTheme() {
-    const saved = localStorage.getItem('numori-theme') || 'default';
-    applyTheme(saved);
+    const saved = localStorage.getItem('numori-theme');
+    if (saved) {
+        applyTheme(saved);
+        return;
+    }
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme('dark');
+    } else {
+        applyTheme('default');
+    }
 }
 
 // ── SHADOW THEMES ─────────────────────────────────────────────────
 function _updateShadowThemeButtons() {
-    const unlocked = JSON.parse(localStorage.getItem('numori-unlocked-themes') || '[]');
+    const unlocked = _loadUnlockedThemes();
     document.querySelectorAll('.theme-btn[data-shadow]').forEach(btn => {
         const isUnlocked = unlocked.includes(btn.dataset.theme);
         btn.style.display = isUnlocked ? '' : 'none';
@@ -179,7 +195,7 @@ function _updateShadowThemeButtons() {
 }
 
 function unlockTheme(themeName) {
-    const unlocked = JSON.parse(localStorage.getItem('numori-unlocked-themes') || '[]');
+    const unlocked = _loadUnlockedThemes();
     if (!unlocked.includes(themeName)) {
         unlocked.push(themeName);
         localStorage.setItem('numori-unlocked-themes', JSON.stringify(unlocked));
@@ -310,10 +326,12 @@ function setStatus(text) {
         el.textContent = text;
         return;
     }
-    // Laufende Animation abbrechen
+    // Laufende Animation sofort abschließen statt neu zu starten (verhindert Flackern)
     if (_typewriterTimeout) {
         clearTimeout(_typewriterTimeout);
         _typewriterTimeout = null;
+        el.textContent = text;
+        return;
     }
     el.textContent = '';
     let i = 0;
@@ -384,8 +402,27 @@ function initDebug() {
         setStatus('State in Konsole geloggt.');
     });
 
+    document.getElementById('btn-debug-copy-state')?.addEventListener('click', () => {
+        const state = JSON.stringify({
+            puzzle: currentPuzzle,
+            userBoard,
+            notesBoard: notesBoard?.map(row => row.map(s => [...s])),
+            hintBoard,
+            moveCount,
+            elapsedSeconds,
+            validationActive,
+            timerVisible,
+            timerStopped,
+        }, null, 2);
+        navigator.clipboard.writeText(state).then(() => {
+            setStatus('State in Zwischenablage kopiert.');
+        }).catch(() => {
+            setStatus('Clipboard-Zugriff fehlgeschlagen.');
+        });
+    });
+
     btnDebugClear?.addEventListener('click', () => {
-        localStorage.clear();
+        Object.keys(localStorage).filter(k => k.startsWith('numori-')).forEach(k => localStorage.removeItem(k));
         setStatus('LocalStorage geleert.');
         debugSection.style.display = 'none';
     });
@@ -427,6 +464,10 @@ function initDebug() {
         unlockTheme('space');
         setStatus('Debug: Space-Theme freigeschaltet.');
     });
+    document.getElementById('btn-debug-unlock-synthwave')?.addEventListener('click', () => {
+        unlockTheme('synthwave');
+        setStatus('Debug: Synthwave-Theme freigeschaltet.');
+    });
 
     document.getElementById('btn-debug-update-available')?.addEventListener('click', () => {
         showUpdateBanner('Version 99.0.0 verfügbar.', 'download', '99.0.0');
@@ -437,6 +478,8 @@ function initDebug() {
         showUpdateBanner('Version 99.0.0 bereit.', 'install', '99.0.0');
         setStatus('Debug: Update-heruntergeladen-Banner ausgelöst.');
     });
+
+    initDevNotes();
 
     document.getElementById('btn-debug-update-progress')?.addEventListener('click', () => {
         showUpdateBanner('Version 99.0.0 verfügbar.', 'download', '99.0.0');
@@ -467,6 +510,176 @@ function initDebug() {
     });
 }
 
+// ── DEV NOTES ────────────────────────────────────────────────────
+function initDevNotes() {
+    const overlay  = document.getElementById('dev-notes-overlay');
+    const closeBtn = document.getElementById('dev-notes-close');
+    const list     = document.getElementById('dev-notes-list');
+    const input    = document.getElementById('dev-notes-input');
+    const addBtn   = document.getElementById('btn-dev-notes-add');
+    const status   = document.getElementById('dev-notes-status');
+    const selCat   = document.getElementById('dev-notes-category');
+    const selPlat  = document.getElementById('dev-notes-platform');
+    const selTheme = document.getElementById('dev-notes-theme');
+    if (!list || !input || !addBtn) return;
+
+    const openBtn = document.getElementById('btn-dev-notes');
+    if (openBtn) openBtn.addEventListener('click', () => {
+        document.getElementById('settings-overlay')?.classList.remove('visible');
+        overlay?.classList.add('visible');
+    });
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+        overlay?.classList.remove('visible');
+    });
+    if (overlay) overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('visible');
+    });
+
+    const supabaseAvailable = typeof window.supabaseFetchDevNotes === 'function';
+    let allItems = [];
+
+    const CAT_LABELS = { ui: 'UI', function: 'Funktion', performance: 'Performance', content: 'Inhalt', other: 'Sonst.' };
+    const PLAT_LABELS = { all: 'Alle', apk: 'APK', desktop: 'Desktop', web: 'Web' };
+    const THEME_LABELS = { all: 'Alle', synthwave: 'SW', space: 'Space', console: 'Con', flipper: 'Flip', dark: 'Dark' };
+    const THEME_COLORS = {
+        synthwave: '#ff2d78',
+        space: '#8844ff',
+        console: '#008f20',
+        flipper: '#ff8c00',
+        dark: '#64748b'
+    };
+
+    function catColor(cat) {
+        return cat === 'ui'         ? 'hsl(200,60%,50%)'
+             : cat === 'function'   ? 'hsl(140,50%,45%)'
+             : cat === 'performance' ? 'hsl(30,80%,50%)'
+             : cat === 'content'    ? 'hsl(270,60%,55%)'
+             : 'hsl(0,0%,50%)';
+    }
+
+    function render(items) {
+        list.innerHTML = '';
+        if (!items || items.length === 0) return;
+
+        for (const item of items) {
+            const row = document.createElement('div');
+            row.className = 'dev-note-row';
+
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.className = 'dev-note-checkbox';
+            cb.checked = !!item.done;
+            cb.addEventListener('change', () => {
+                if (supabaseAvailable) window.supabaseToggleDevNote(item.id, cb.checked);
+                text.classList.toggle('done', cb.checked);
+            });
+
+            function badge(label, bg) {
+                const b = document.createElement('span');
+                b.className = 'dev-note-badge';
+                b.textContent = label;
+                b.style.background = bg;
+                return b;
+            }
+
+            const badges = document.createElement('span');
+            badges.className = 'dev-note-badges';
+            if (item.category && item.category !== 'other') badges.appendChild(badge(CAT_LABELS[item.category] || item.category, 'hsl(0,0%,40%)'));
+            if (item.platform && item.platform !== 'all') badges.appendChild(badge(PLAT_LABELS[item.platform] || item.platform, 'hsl(0,0%,40%)'));
+            if (item.theme && item.theme !== 'all') badges.appendChild(badge(THEME_LABELS[item.theme] || item.theme, THEME_COLORS[item.theme] || 'hsl(330,60%,45%)'));
+
+            const text = document.createElement('span');
+            text.className = 'dev-note-text' + (item.done ? ' done' : '');
+            text.textContent = item.text;
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'dev-note-edit';
+            editBtn.textContent = '✎';
+            editBtn.addEventListener('click', () => {
+                const wasEditing = row.classList.contains('editing');
+                if (wasEditing) {
+                    const input = row.querySelector('.dev-note-edit-input');
+                    const newText = input?.value.trim();
+                    if (!newText) return;
+                    if (supabaseAvailable) window.supabaseUpdateDevNote(item.id, { text: newText });
+                    item.text = newText;
+                    render(allItems);
+                    return;
+                }
+                row.classList.add('editing');
+                text.style.display = 'none';
+                const input = document.createElement('input');
+                input.className = 'dev-note-edit-input';
+                input.type = 'text';
+                input.value = item.text;
+                text.parentNode.insertBefore(input, text);
+                input.focus();
+                input.select();
+                editBtn.textContent = '✓';
+                editBtn.classList.add('saving');
+            });
+
+            const del = document.createElement('button');
+            del.className = 'dev-note-delete';
+            del.textContent = '✕';
+            del.addEventListener('click', async () => {
+                row.remove();
+                if (supabaseAvailable) await window.supabaseDeleteDevNote(item.id);
+                allItems = allItems.filter(i => i.id !== item.id);
+                render(allItems);
+            });
+
+            row.append(cb, badges, text, editBtn, del);
+            list.appendChild(row);
+        }
+    }
+
+    async function load() {
+        if (!supabaseAvailable) {
+            if (status) status.textContent = 'Supabase nicht verfügbar';
+            return;
+        }
+        try {
+            allItems = await window.supabaseFetchDevNotes();
+            render(allItems);
+        } catch (e) {
+            console.error('Dev notes load failed:', e);
+            if (status) status.textContent = 'Laden fehlgeschlagen';
+        }
+    }
+
+    async function addItem() {
+        const text = input.value.trim();
+        if (!text) return;
+        if (!supabaseAvailable) {
+            if (status) status.textContent = 'Supabase nicht verfügbar';
+            return;
+        }
+
+        const cat   = selCat?.value   || 'other';
+        const plat  = selPlat?.value  || 'all';
+        const theme = selTheme?.value || 'all';
+
+        input.value = '';
+        if (status) status.textContent = 'Speichern...';
+
+        try {
+            await window.supabaseInsertDevNote(text, cat, plat, theme);
+            allItems = await window.supabaseFetchDevNotes();
+            render(allItems);
+            if (status) status.textContent = '';
+        } catch (e) {
+            console.error('Dev notes insert failed:', e);
+            if (status) status.textContent = 'Speichern fehlgeschlagen';
+        }
+    }
+
+    addBtn.addEventListener('click', addItem);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') addItem(); });
+
+    load();
+}
+
 // ── UPDATE-BANNER ─────────────────────────────────────────────────
 function showUpdateBanner(message, mode, version) {
     let banner = document.getElementById('update-banner');
@@ -488,7 +701,7 @@ function showUpdateBanner(message, mode, version) {
 
     const closeBtn = document.createElement('button');
     closeBtn.className = 'update-banner-close';
-    closeBtn.title = 'Schließen';
+    closeBtn.title = t('update-close');
     closeBtn.innerHTML = '&times;';
     closeBtn.addEventListener('click', () => banner.classList.remove('visible'));
     inner.appendChild(closeBtn);
@@ -504,10 +717,10 @@ function showUpdateBanner(message, mode, version) {
     if (mode === 'download') {
         const btnYes = document.createElement('button');
         btnYes.className = 'update-banner-btn';
-        btnYes.textContent = 'Herunterladen';
+        btnYes.textContent = t('update-download');
         btnYes.addEventListener('click', () => {
             if (window.electronAPI) window.electronAPI.startUpdateDownload();
-            msg.textContent = `Version ${version} wird heruntergeladen…`;
+            msg.textContent = t('update-progress').replace('{version}', version);
             buttons.innerHTML = '';
 
             const theme = document.documentElement.getAttribute('data-theme');
@@ -570,7 +783,7 @@ function showUpdateBanner(message, mode, version) {
 
         const btnNo = document.createElement('button');
         btnNo.className = 'update-banner-btn update-banner-btn--ghost';
-        btnNo.textContent = 'Später';
+        btnNo.textContent = t('update-later');
         btnNo.addEventListener('click', () => banner.classList.remove('visible'));
 
         buttons.appendChild(btnYes);
@@ -580,13 +793,13 @@ function showUpdateBanner(message, mode, version) {
     if (mode === 'apk') {
         const btnDownload = document.createElement('a');
         btnDownload.className = 'update-banner-btn';
-        btnDownload.textContent = 'Herunterladen';
+        btnDownload.textContent = t('update-download');
         btnDownload.href = `https://github.com/kaizo101/numori/releases/latest`;
         btnDownload.target = '_blank';
         btnDownload.rel = 'noopener noreferrer';
         const btnLater = document.createElement('button');
         btnLater.className = 'update-banner-btn update-banner-btn--ghost';
-        btnLater.textContent = 'Später';
+        btnLater.textContent = t('update-later');
         btnLater.addEventListener('click', () => {
             localStorage.setItem('numori-update-dismissed', version);
             banner.classList.remove('visible');
@@ -598,7 +811,7 @@ function showUpdateBanner(message, mode, version) {
     if (mode === 'install') {
         const btn = document.createElement('button');
         btn.className = 'update-banner-btn';
-        btn.textContent = 'Jetzt neu starten';
+        btn.textContent = t('update-restart');
         btn.addEventListener('click', () => {
             if (window.electronAPI) window.electronAPI.installUpdateNow();
         });

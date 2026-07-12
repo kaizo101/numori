@@ -1,6 +1,7 @@
 // ── MUSIC PLAYER ─────────────────────────────────────────────────
 const MUSIC_TRACKS = [
 // TRACKS:console
+
     { file: 'antipodeanwriter-8-bit-legends-ancient-shrine-200457.mp3',                          title: '8 Bit Legends Ancient Shrine',       author: 'Antipodeanwriter' },
     { file: 'brutaldesign-electrical-bee-412311.mp3',                                             title: 'Electrical Bee',                     author: 'Brutaldesign' },
     { file: 'deselect-infebis-8-bit-lo-fi-mix-225330.mp3',                                        title: 'Infebis 8 Bit Lo Fi Mix',            author: 'Deselect' },
@@ -21,18 +22,48 @@ const MUSIC_TRACKS = [
 // END-TRACKS:console
 ];
 
+const MUSIC_TRACKS_SYNTHWAVE = [
+// TRACKS:synthwave
+    { file: 'amaksi-synthwave-retrowave-sythpop-121540.mp3',                                              title: 'Synthwave Retrowave',        author: 'Amaksi' },
+    { file: 'cekketto-up-amp-down-electrik-505105.mp3',                                                   title: 'Up & Down Electrik',         author: 'Cekketto' },
+    { file: 'elisaveta_stoycheva-galaxy-sounds-364330.mp3',                                               title: 'Galaxy Sounds',              author: 'Elisaveta Stoycheva' },
+    { file: 'freesound_community-space-adventure-29296.mp3',                                              title: 'Space Adventure',            author: 'Freesound Community' },
+    { file: 'hitslab-retro-retro-synthwave-gaming-music-270173.mp3',                                      title: 'Retro Synthwave Gaming',     author: 'Hitslab' },
+    { file: 'hitslab-synthwave-80s-retro-background-music-329439.mp3',                                    title: 'Synthwave 80s Retro',        author: 'Hitslab' },
+    { file: 'joelfazhari-dark-mysterious-true-crime-music-loopable-235870.mp3',                           title: 'Dark Mysterious',            author: 'Joelfazhari' },
+    { file: 'lnplusmusic-synthwave-80s-retro-background-music-400483.mp3',                                title: 'Synthwave 80s Retro',        author: 'Lnplusmusic' },
+    { file: 'miromaxmusic-evening-miami-no-copyright-487545.mp3',                                         title: 'Evening Miami',              author: 'Miromaxmusic' },
+    { file: 'miromaxmusic-give-me-your-smile-no-copyright-background-music-442625.mp3',                   title: 'Give Me Your Smile',         author: 'Miromaxmusic' },
+    { file: 'mondamusic-synthwave-retro-80s-491697.mp3',                                                  title: 'Synthwave Retro 80s',        author: 'Mondamusic' },
+    { file: 'starostin-cosmic-universe-planet-galaxy-music-263209.mp3',                                   title: 'Cosmic Universe',            author: 'Starostin' },
+    { file: 'the_mountain-synthwave-138606.mp3',                                                          title: 'Synthwave',                  author: 'The Mountain' },
+    { file: 'the_mountain-synthwave-139501.mp3',                                                          title: 'Synthwave II',               author: 'The Mountain' },
+    { file: 'tunetank-80s-synthwave-retro-music-349828.mp3',                                              title: '80s Synthwave Retro',        author: 'Tunetank' },
+    { file: 'tunetank-dreamy-synthwave-music-347512.mp3',                                                 title: 'Dreamy Synthwave',           author: 'Tunetank' },
+    { file: 'tunetank-french-synthwave-music-347969.mp3',                                                 title: 'French Synthwave',           author: 'Tunetank' },
+    { file: 'tunetank-synthwave-80s-retro-background-music-348239.mp3',                                   title: 'Synthwave 80s Retro I',      author: 'Tunetank' },
+    { file: 'tunetank-synthwave-80s-retro-background-music-349034.mp3',                                   title: 'Synthwave 80s Retro II',     author: 'Tunetank' },
+    { file: 'tunetank-synthwave-retro-80s-music-349182.mp3',                                              title: 'Synthwave Retro 80s',        author: 'Tunetank' },
+    { file: 'white_records-neon-mirage-background-synthwave-music-for-video-full-version-340206.mp3',     title: 'Neon Mirage',                author: 'White Records' },
+// END-TRACKS:synthwave
+];
+
 const musicPlayer = {
     audio:      null,
     trackIndex: 0,
     playing:    false,
     enabled:    false,
     seekingVol: false,
+    _themeMode: 'console',
+
+    get tracks()   { return this._themeMode === 'synthwave' ? MUSIC_TRACKS_SYNTHWAVE : MUSIC_TRACKS; },
+    get trackDir() { return this._themeMode === 'synthwave' ? 'music/synthwave/' : 'music/console/'; },
 
     init() {
         this.audio = new Audio();
         const savedVol = parseFloat(localStorage.getItem('numori-music-vol'));
         this.audio.volume = (!isNaN(savedVol) && savedVol >= 0 && savedVol <= 1) ? savedVol : 0.55;
-        this.trackIndex = Math.floor(Math.random() * MUSIC_TRACKS.length);
+        this.trackIndex = Math.floor(Math.random() * this.tracks.length);
 
         this.audio.addEventListener('ended', () => this.next());
 
@@ -96,22 +127,49 @@ const musicPlayer = {
     },
 
     _loadTrack(autoPlay = true) {
-        const t = MUSIC_TRACKS[this.trackIndex];
-        if (!t) return;
+        const t = this.tracks[this.trackIndex];
+        if (!t || !this.audio) return;
         this.playing = false;
-        this.audio.src = `music/console/${t.file}`;
+        this.audio.src = `${this.trackDir}${t.file}`;
         this.audio.load();
         this._updateUI();
         this._updatePlayIcon();
         if (autoPlay && this.enabled) {
-            this.audio.play().then(() => { this.playing = true; this._updatePlayIcon(); }).catch((err) => { console.warn('Autoplay blocked:', err); });
+            this.audio.play().then(() => {
+                this.playing = true;
+                this._updatePlayIcon();
+                this._trackPlayedSong(this.trackIndex);
+            }).catch((err) => { console.warn('Autoplay blocked:', err); });
         }
+    },
+
+    _trackPlayedSong(index) {
+        if (typeof _loadAchievementStats !== 'function') return;
+        const theme = this._themeMode;
+        const stats = _loadAchievementStats();
+        // Migration alter Daten: früher war playedSongs ein flaches Array
+        if (Array.isArray(stats.playedSongs)) {
+            const old = stats.playedSongs;
+            stats.playedSongs = {};
+            if (old.length > 0) stats.playedSongs.console = old;
+        }
+        stats.playedSongs = stats.playedSongs || {};
+        stats.playedSongs[theme] = stats.playedSongs[theme] || [];
+        if (!stats.playedSongs[theme].includes(index)) {
+            stats.playedSongs[theme].push(index);
+            _saveAchievementStats(stats);
+        }
+        // Playlist-Achievement entfernt (war buggy)
     },
 
     play() {
         if (!this.enabled) return;
         if (!this.audio.src || this.audio.src === window.location.href) { this._loadTrack(); return; }
-        this.audio.play().then(() => { this.playing = true; this._updatePlayIcon(); }).catch(() => {});
+        this.audio.play().then(() => {
+            this.playing = true;
+            this._updatePlayIcon();
+            this._trackPlayedSong(this.trackIndex);
+        }).catch(() => {});
     },
 
     togglePlay() {
@@ -137,7 +195,7 @@ const musicPlayer = {
     },
 
     next() {
-        this.trackIndex = (this.trackIndex + 1) % MUSIC_TRACKS.length;
+        this.trackIndex = (this.trackIndex + 1) % this.tracks.length;
         this._loadTrack();
     },
 
@@ -145,7 +203,7 @@ const musicPlayer = {
         if (this.audio.currentTime > 3) {
             this.audio.currentTime = 0;
         } else {
-            this.trackIndex = (this.trackIndex - 1 + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
+            this.trackIndex = (this.trackIndex - 1 + this.tracks.length) % this.tracks.length;
             this._loadTrack();
         }
     },
@@ -194,14 +252,14 @@ const musicPlayer = {
         titlebar.className = 'music-playlist-titlebar';
         titlebar.innerHTML =
             `<span class="music-playlist-titlebar-text">▌playlist</span>` +
-            `<span class="music-playlist-titlebar-count">${MUSIC_TRACKS.length} tracks</span>`;
+            `<span class="music-playlist-titlebar-count">${this.tracks.length} tracks</span>`;
         inner.appendChild(titlebar);
 
         // Scrollbarer Body
         const body = document.createElement('div');
         body.className = 'music-playlist-body';
 
-        MUSIC_TRACKS.forEach((t, i) => {
+        this.tracks.forEach((t, i) => {
             const item = document.createElement('div');
             item.className = 'music-playlist-item' + (i === this.trackIndex ? ' active' : '');
             item.dataset.index = i;
@@ -263,7 +321,7 @@ const musicPlayer = {
     },
 
     _updateUI() {
-        const t = MUSIC_TRACKS[this.trackIndex];
+        const t = this.tracks[this.trackIndex];
         if (!t) return;
         const author = t.author.toLowerCase();
         const title  = t.title.toLowerCase();
@@ -314,18 +372,30 @@ const musicPlayer = {
 };
 
 function initMusicPlayer() {
-    const isConsole = document.documentElement.getAttribute('data-theme') === 'console';
-    const isMobile  = window.innerWidth <= 600;
-    const playerEl  = document.getElementById('music-player');
+    const theme       = document.documentElement.getAttribute('data-theme') || '';
+    const isConsole   = theme === 'console';
+    const isSynthwave = theme === 'synthwave';
+    const isMobile    = window.innerWidth <= 600;
+    const playerEl    = document.getElementById('music-player');
     if (!playerEl) return;
 
-    // Mobile Musik-Button: nur auf Mobile + Console-Theme
-    const mobileMusicBtn = document.getElementById('btn-music-mobile');
-    if (mobileMusicBtn) {
-        mobileMusicBtn.style.display = (isConsole && isMobile) ? 'flex' : 'none';
+    // Theme-Modus wechseln und Playlist neu bauen falls nötig
+    const newMode = isSynthwave ? 'synthwave' : 'console';
+    if (musicPlayer._themeMode !== newMode) {
+        musicPlayer._themeMode = newMode;
+        musicPlayer.trackIndex = Math.floor(Math.random() * musicPlayer.tracks.length);
+        musicPlayer._loadTrack(false);
+        const playlistEl = document.getElementById('music-playlist');
+        if (playlistEl) musicPlayer._buildPlaylist(playlistEl);
     }
 
-    if (isConsole && !isMobile) {
+    // Mobile Musik-Button: Console + Synthwave auf Mobile
+    const mobileMusicBtn = document.getElementById('btn-music-mobile');
+    if (mobileMusicBtn) {
+        mobileMusicBtn.style.display = ((isConsole || isSynthwave) && isMobile) ? 'flex' : 'none';
+    }
+
+    if ((isConsole || isSynthwave) && !isMobile) {
         playerEl.style.display = 'flex';
         // Play-Icon-Zustand synchronisieren
         musicPlayer._updatePlayIcon();
@@ -362,7 +432,7 @@ function initMusicPlayer() {
     const pl = document.getElementById('music-playlist');
     if (pl) { pl.style.display = 'none'; pl.style.flexDirection = ''; }
     const mPanel = document.getElementById('music-mobile-panel');
-    if (mPanel && !isConsole) mPanel.style.display = 'none';
+    if (mPanel && !isConsole && !isSynthwave) mPanel.style.display = 'none';
 }
 
 // ── Mobile-Musikplayer Panel verdrahten ───────────────────────────

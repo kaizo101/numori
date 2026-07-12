@@ -1,0 +1,202 @@
+/* ── PDF-Export ──────────────────────────────────────────────────── */
+@media print {
+    body.pdf-export header,
+    body.pdf-export .toolbar,
+    body.pdf-export .status,
+    body.pdf-export .footer,
+    body.pdf-export .welcome-screen,
+    body.pdf-export #win-banner,
+    body.pdf-export #modal-overlay {
+        display: none !important;
+    }
+
+    html, body.pdf-export {
+        height: auto !important;
+        overflow: visible !important;
+        background: white !important;
+    }
+
+    body.pdf-export,
+    body.pdf-export .app-container,
+    body.pdf-export #board-container,
+    body.pdf-export .cell {
+        background: white !important;
+        box-shadow: none !important;
+    }
+
+    body.pdf-export #board-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        padding: 0;
+    }
+
+    body.pdf-export #board {
+        border: 3px solid #1a1a1a !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: #1a1a1a !important;
+        gap: 1px !important;
+        overflow: hidden !important;
+        outline: none !important;
+    }
+
+    body.pdf-export .cell {
+        border-color: #ccc !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    body.pdf-export .cell.bt { border-top-color: #1a1a1a !important; border-top-width: 2px !important; }
+    body.pdf-export .cell.bb { border-bottom-color: #1a1a1a !important; border-bottom-width: 2px !important; }
+    body.pdf-export .cell.bl { border-left-color: #1a1a1a !important; border-left-width: 2px !important; }
+    body.pdf-export .cell.br { border-right-color: #1a1a1a !important; border-right-width: 2px !important; }
+
+    body.pdf-export .cage-label {
+        color: #1a1a1a !important;
+        font-family: 'Georgia', serif !important;
+        opacity: 1 !important;
+    }
+
+    /* Dark Theme Board-Styles im Print komplett neutralisieren */
+    body.pdf-export [data-theme="dark"] #board,
+    [data-theme="dark"] body.pdf-export #board {
+        border-color: #1a1a1a !important;
+        border-radius: 0 !important;
+        background: #1a1a1a !important;
+        box-shadow: none !important;
+    }
+
+    body.pdf-export [data-theme="dark"] .cell,
+    [data-theme="dark"] body.pdf-export .cell {
+        background: #fff !important;
+        border-radius: 0 !important;
+        border-color: #ccc !important;
+    }
+
+    body.pdf-export .cell-value,
+    body.pdf-export .cell-notes {
+        display: none !important;
+    }
+
+    body.pdf-export .cage-label {
+        color: var(--note-active);
+    }
+
+    body.pdf-export .cell.selected {
+        background: white !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    body.pdf-export #pdf-info {
+        display: block !important;
+    }
+}
+
+/* ── PDF-Lösungsblatt ────────────────────────────────────────────── */
+@media print {
+    /* Seite 2: gleiche Struktur wie die Puzzle-Seite */
+    .pdf-solution-page {
+        display: flex !important;
+        flex-direction: column;
+        page-break-before: always;
+        height: 100vh;
+        background: white !important;
+        overflow: hidden;
+    }
+
+    .pdf-solution-heading {
+        flex-shrink: 0;
+        font-family: 'Georgia', serif;
+        font-size: 1.4rem;
+        color: #1a1a1a;
+        text-align: center;
+        padding: 24px 0 0;
+        letter-spacing: 0.05em;
+    }
+
+    /* Board-Container wie body.pdf-export #board-container */
+    .pdf-solution-board-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    /* Zell-Styles — gleich wie body.pdf-export .cell */
+    body.pdf-export #pdf-solution-board .cell {
+        background: #fff !important;
+        border-color: #ccc !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    body.pdf-export #pdf-solution-board .cell.bt { border-top-color: #1a1a1a !important; border-top-width: 2px !important; }
+    body.pdf-export #pdf-solution-board .cell.bb { border-bottom-color: #1a1a1a !important; border-bottom-width: 2px !important; }
+    body.pdf-export #pdf-solution-board .cell.bl { border-left-color: #1a1a1a !important; border-left-width: 2px !important; }
+    body.pdf-export #pdf-solution-board .cell.br { border-right-color: #1a1a1a !important; border-right-width: 2px !important; }
+
+    body.pdf-export #pdf-solution-board .cage-label {
+        position: absolute;
+        top: 3px;
+        left: 4px;
+        font-size: var(--cage-label-size) !important;
+        font-family: 'Georgia', serif;
+        font-weight: 700;
+        color: #1a1a1a !important;
+        opacity: 1 !important;
+    }
+
+    body.pdf-export #pdf-solution-board .cell-value {
+        display: block !important;
+        font-size: var(--cell-value-size) !important;
+        font-weight: 700;
+        font-family: 'Georgia', serif;
+        color: #1a1a1a !important;
+    }
+
+    body.pdf-export #pdf-solution-board .cell-notes {
+        display: none !important;
+    }
+
+    body.pdf-export #pdf-solution-board .cell.selected {
+        background: white !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+}
+
+/* ── PDF-Info-Block (nur sichtbar beim Export) ───────────────────── */
+@media print {
+    #pdf-info {
+        display: block !important;
+        padding: 18px 32px 8px 32px;
+        border-bottom: 2px solid #1a1a2e;
+        margin-bottom: 16px;
+    }
+
+    .pdf-info-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+
+    .pdf-logo {
+        font-size: 1.4em;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        color: var(--accent);
+    }
+
+    .pdf-meta {
+        font-size: 0.82em;
+        color: #555;
+        letter-spacing: 0.02em;
+    }
+}

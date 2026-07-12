@@ -24,6 +24,7 @@ let notesBoard;
 
 // Timer-Zustand
 let timerInterval = null; // setInterval-Handle
+let timerStart = 0; // Date.now() beim Timer-Start
 let elapsedSeconds = 0; // immer mitlaufen, auch wenn unsichtbar
 let timerVisible = false; // Toggle-Status
 let timerStopped = false; // true: Rätsel gelöst oder Lösung gezeigt
@@ -31,6 +32,7 @@ let competitiveBlocked = false; // true: Tipp/Validierung genutzt, Wettkampf-Mod
 let solvedByCheat = false; // true: Lösung anzeigen wurde genutzt
 let debugSolveUsed = false; // true: Debug-Clean-Solve wurde genutzt
 let validationWasUsed = false; // true: Sofort-Validierung war aktiv
+let undoWasUsed = false;       // true: Undo wurde mindestens einmal genutzt
 
 // Tipp-Zustand
 let hintBoard; // hintBoard[r][c] = true wenn Zelle per Tipp gesetzt
@@ -125,6 +127,7 @@ window.addEventListener('DOMContentLoaded', () => {
             const cached = _dailyPuzzleCache;
             _dailyPuzzleCache = null;
             currentPuzzle = { solution: cached.solution, cages: cached.cages, seed: fullSeedStr };
+            window.currentPuzzle = currentPuzzle;
             setNotesMode(false);
             validationActive = false;
             const _vBtn = document.getElementById('btn-validate');
@@ -153,6 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
             generationWorker = null;
             if (e.data.success) {
                 currentPuzzle = { solution: e.data.solution, cages: e.data.cages, seed: fullSeedStr, score: e.data.score ?? 0 };
+                window.currentPuzzle = currentPuzzle;
                 setNotesMode(false);
                 validationActive = false;
                 const _vBtn = document.getElementById('btn-validate');
@@ -272,12 +276,68 @@ window.addEventListener('DOMContentLoaded', () => {
     tutorialModule.init();
     musicPlayer.init(); // Musik-Player initialisieren (DOM ist hier garantiert bereit)
     initSettingsMusicPlayer(); // Settings-Musiksteuerung verdrahten
+    applyRetroactiveAchievements();
 
     // Gespeicherten Spielstand automatisch laden (falls vorhanden)
     const saved = loadGameState();
     if (saved) {
         restoreGameState(saved);
     }
+
+    window._injectSolutionPage = function() {
+        document.getElementById('pdf-solution-page')?.remove();
+        if (!currentPuzzle) return;
+        const srcBoard = document.getElementById('board');
+
+        // Gleiche Struktur wie die Puzzle-Seite: app-container > board-container > board
+        const page = document.createElement('div');
+        page.id = 'pdf-solution-page';
+        page.className = 'pdf-solution-page';
+
+        const heading = document.createElement('h2');
+        heading.className = 'pdf-solution-heading';
+        heading.textContent = 'Lösung';
+        page.appendChild(heading);
+
+        const boardContainer = document.createElement('div');
+        boardContainer.id = 'pdf-solution-board-container';
+        boardContainer.className = 'pdf-solution-board-container';
+
+        const grid = srcBoard.cloneNode(true);
+        grid.id = 'pdf-solution-board';
+        // Behalte alle originalen Klassen damit bestehende CSS-Regeln greifen
+        grid.className = srcBoard.className;
+        // Setze explizit Schlüssel-Styles inline damit keine CSS-Konflikte entstehen
+        grid.style.display = 'grid';
+        grid.style.border = '3px solid #1a1a1a';
+        grid.style.borderRadius = '0';
+        grid.style.boxShadow = 'none';
+        grid.style.outline = 'none';
+        grid.style.background = '#1a1a1a';
+        grid.style.gap = '1px';
+        grid.style.overflow = 'hidden';
+
+        // Alle Zellen: Notes leeren, Lösung eintragen
+        grid.querySelectorAll('.cell').forEach(cell => {
+            const r = parseInt(cell.dataset.r);
+            const c = parseInt(cell.dataset.c);
+            const notes = cell.querySelector('.cell-notes');
+            if (notes) notes.style.display = 'none';
+            const val = cell.querySelector('.cell-value');
+            if (val) {
+                val.textContent = currentPuzzle.solution[r][c];
+            }
+            cell.style.background = '#fff';
+        });
+
+        boardContainer.appendChild(grid);
+        page.appendChild(boardContainer);
+        document.body.appendChild(page);
+    };
+
+    window._removeSolutionPage = function() {
+        document.getElementById('pdf-solution-page')?.remove();
+    };
 
     const btnPdf = document.getElementById('btn-pdf');
     if (btnPdf) {
@@ -403,10 +463,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // ── AUTO-UPDATER ──────────────────────────────────────────────
     if (window.electronAPI) {
         window.electronAPI.onUpdateAvailable((version) => {
-            showUpdateBanner(`Version ${version} verfügbar.`, 'download', version);
+            showUpdateBanner(t('update-available').replace('{version}', version), 'download', version);
         });
         window.electronAPI.onUpdateDownloaded((version) => {
-            showUpdateBanner(`Version ${version} bereit.`, 'install', version);
+            showUpdateBanner(t('update-ready').replace('{version}', version), 'install', version);
         });
     }
 

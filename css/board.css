@@ -1,0 +1,125 @@
+/* ── Board-Container ─────────────────────────────────────────────── */
+#board-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: clamp(10px, 1.5vw, 24px);
+    background: var(--bg-board);
+    position: relative;
+    gap: clamp(16px, 2vw, 40px);
+}
+
+/* ── Board ───────────────────────────────────────────────────────── */
+#board {
+    display: grid;
+    background: var(--board-border);
+    border: 4px solid var(--board-border);
+    padding: 0;
+    gap: 0;
+    box-shadow: 4px 4px 0 var(--board-shadow);
+}
+
+/* ── Zellen ──────────────────────────────────────────────────────── */
+.cell {
+    position: relative;
+    background: var(--bg-cell);
+    border: 1px solid var(--border-cell);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: background 0.08s;
+}
+
+/* ── Käfig-Trennlinien ───────────────────────────────────────────── */
+.cell.bt { border-top:    2.5px solid var(--board-border); }
+.cell.bb { border-bottom: 2.5px solid var(--board-border); }
+.cell.bl { border-left:   2.5px solid var(--board-border); }
+.cell.br { border-right:  2.5px solid var(--board-border); }
+
+/* ── Hover ───────────────────────────────────────────────────────── */
+.cell:hover:not(.selected) {
+    background: var(--bg-cell-hover);
+}
+
+/* ── Ausgewählt ──────────────────────────────────────────────────── */
+.cell.selected {
+    background: var(--select-bg) !important;
+    outline: 2px solid var(--select-border);
+    outline-offset: -2px;
+    z-index: 10;
+}
+
+/* ── Käfig-Label ─────────────────────────────────────────────────── */
+.cage-label {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    font-size: var(--cage-label-size, clamp(0.52rem, 1.8vw, 0.82rem));
+    font-weight: 700;
+    font-family: 'Georgia', serif;
+    color: var(--text-primary);
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* ── Zellenwert ──────────────────────────────────────────────────── */
+.cell-value {
+    position: relative;
+    z-index: 4;
+    font-size: var(--cell-value-size, clamp(1rem, 3.5vw, 2rem));
+    font-weight: 700;
+    font-family: 'Georgia', serif;
+    color: var(--text-primary);
+    pointer-events: none;
+}
+
+.cell-value.user-input { color: var(--select-text); }
+
+/* ── Notizen-Grid ────────────────────────────────────────────────── */
+.cell-notes {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 28% 2px 2px 2px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--note-size, clamp(0.42rem, 1.5vw, 0.68rem));
+    font-weight: 700;
+    color: var(--note-color);
+    line-height: 1;
+    visibility: hidden;
+}
+
+.note.active {
+    visibility: visible;
+    color: var(--note-active);
+}
+
+/* ── Validierungszustände ────────────────────────────────────────── */
+.cell.invalid             { background: var(--invalid-bg) !important; }
+.cell.invalid .cell-value { color: var(--invalid-text) !important; }
+
+.cell.correct             { background: var(--correct-bg) !important; }
+.cell.correct .cell-value { color: var(--correct-text) !important; }
+
+.cell.hint                { background: var(--hint-bg) !important; }
+.cell.hint .cell-value    { color: var(--hint-text) !important; font-style: italic; }
+
+#board:empty {
+display: none;
+}

@@ -5,8 +5,21 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+function _showLeaderboardErrorToast() {
+    const msg = typeof t === 'function' ? t('lb-submit-error') : 'Leaderboard-Eintrag konnte nicht gespeichert werden';
+    const toast = document.createElement('div');
+    toast.className = 'lb-error-toast';
+    toast.innerHTML = `<span class="lb-error-toast-icon">⚠</span><span>${msg}</span>`;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('visible'));
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
 window.supabaseSubmitLeaderboard = async function({ username, gridSize, difficulty, seed, timeSeconds, moveCount, difficultyScore, cleanSolve }) {
-    const score = Math.round((difficultyScore + 500) / timeSeconds * 10);
+    const score = Math.round((difficultyScore + 500) / Math.max(1, timeSeconds) * 10);
     try {
         const { error } = await supabase.from('leaderboard').insert({
             username,
@@ -19,26 +32,34 @@ window.supabaseSubmitLeaderboard = async function({ username, gridSize, difficul
             difficulty_score: difficultyScore ?? 0,
             clean_solve: cleanSolve ?? true
         });
-        if (error) console.error('Supabase insert error:', error.message);
+        if (error) {
+            console.error('Supabase insert error:', error.message);
+            _showLeaderboardErrorToast();
+        }
     } catch (e) {
         console.error('Supabase submit failed:', e);
+        _showLeaderboardErrorToast();
     }
 };
 
 window.supabaseSubmitDailyResult = async function({ username, timeSeconds, moveCount }) {
-    const score = Math.round(500 / timeSeconds * 10);
+    const score = Math.round(500 / Math.max(1, timeSeconds) * 10);
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
     try {
-        const { error } = await supabase.from('daily_results').insert({
+        const { error } = await supabase.from('daily_results').upsert({
             username,
             date: today,
             time_seconds: timeSeconds,
             move_count: moveCount,
             score
-        });
-        if (error) console.error('Supabase daily insert error:', error.message);
+        }, { onConflict: 'username,date', ignoreDuplicates: true });
+        if (error) {
+            console.error('Supabase daily insert error:', error.message);
+            _showLeaderboardErrorToast();
+        }
     } catch (e) {
         console.error('Supabase daily submit failed:', e);
+        _showLeaderboardErrorToast();
     }
 };
 
@@ -56,6 +77,63 @@ window.supabaseFetchDailyLeaderboard = async function(date, limit = 20) {
     } catch (e) {
         console.error('Supabase daily fetch failed:', e);
         return [];
+    }
+};
+
+window.supabaseFetchDevNotes = async function() {
+    try {
+        const { data, error } = await supabase
+            .from('dev_notes')
+            .select('id, text, done, category, platform, theme, created_at')
+            .order('created_at', { ascending: false });
+        if (error) { console.error('Supabase dev_notes fetch error:', error.message); return []; }
+        return data ?? [];
+    } catch (e) {
+        console.error('Supabase dev_notes fetch failed:', e);
+        return [];
+    }
+};
+
+window.supabaseInsertDevNote = async function(text, category, platform, theme) {
+    try {
+        const { data, error } = await supabase.from('dev_notes').insert({
+            text,
+            category: category || 'other',
+            platform: platform || 'all',
+            theme: theme || 'all'
+        }).select().single();
+        if (error) { console.error('Supabase dev_notes insert error:', error.message); return null; }
+        return data;
+    } catch (e) {
+        console.error('Supabase dev_notes insert failed:', e);
+        return null;
+    }
+};
+
+window.supabaseToggleDevNote = async function(id, done) {
+    try {
+        const { error } = await supabase.from('dev_notes').update({ done }).eq('id', id);
+        if (error) console.error('Supabase dev_notes toggle error:', error.message);
+    } catch (e) {
+        console.error('Supabase dev_notes toggle failed:', e);
+    }
+};
+
+window.supabaseUpdateDevNote = async function(id, updates) {
+    try {
+        const { error } = await supabase.from('dev_notes').update(updates).eq('id', id);
+        if (error) console.error('Supabase dev_notes update error:', error.message);
+    } catch (e) {
+        console.error('Supabase dev_notes update failed:', e);
+    }
+};
+
+window.supabaseDeleteDevNote = async function(id) {
+    try {
+        const { error } = await supabase.from('dev_notes').delete().eq('id', id);
+        if (error) console.error('Supabase dev_notes delete error:', error.message);
+    } catch (e) {
+        console.error('Supabase dev_notes delete failed:', e);
     }
 };
 

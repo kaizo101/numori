@@ -1,13 +1,16 @@
 {
   "name": "numori",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Numori – Logik-Rätsel",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
+    "test": "node --test --test-force-exit 'tests/**/*.test.js'",
     "update-tracks": "node scripts/update-tracks.js",
-    "sync-www": "cp app.js www/app.js && cp index.html www/index.html && cp style.css www/style.css && cp worker.js www/worker.js && cp -r music www/"
+    "sync-www": "rsync -a --exclude='main.js' --exclude='preload.js' --exclude='node_modules' --exclude='dist' --exclude='android' --exclude='www' --exclude='*.md' --exclude='.git' --exclude='package*.json' --exclude='capacitor.config.*' --exclude='scripts' --exclude='resources' --exclude='tests' . www/",
+    "deploy": "npm run sync-www && npx cap sync",
+    "watch": "node scripts/watch.js"
   },
   "dependencies": {
     "@capacitor/app": "^8.0.1",

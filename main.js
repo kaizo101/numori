@@ -85,8 +85,12 @@ function createWindow() {
     win.setAspectRatio(900 / 700); // Proportionales Resizen
     win.setMenuBarVisibility(false);
 
-    // Größe bei jedem Resize speichern
-    win.on('resize', () => saveWindowState(win));
+    // Größe bei Resize speichern (debounced)
+    let _resizeTimer = null;
+    win.on('resize', () => {
+        clearTimeout(_resizeTimer);
+        _resizeTimer = setTimeout(() => saveWindowState(win), 400);
+    });
 
     let closeConfirmed = false;
 
@@ -146,8 +150,20 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => app.quit());
 
 ipcMain.handle('export-pdf', async () => {
-    const win = BrowserWindow.getFocusedWindow();
+    const win = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
     if (!win) return { success: false };
+
+    const { response: modeResponse } = await dialog.showMessageBox(win, {
+        type: 'question',
+        title: 'PDF exportieren',
+        message: 'Soll ein Lösungsblatt angehängt werden?',
+        buttons: ['Nur Rätsel', 'Mit Lösungsblatt', 'Abbrechen'],
+        defaultId: 0,
+        cancelId: 2,
+    });
+
+    if (modeResponse === 2) return { success: false };
+    const withSolution = modeResponse === 1;
 
     const { filePath, canceled } = await dialog.showSaveDialog(win, {
         title: 'Rätsel als PDF speichern',
@@ -158,26 +174,28 @@ ipcMain.handle('export-pdf', async () => {
     if (canceled || !filePath) return { success: false };
 
     await win.webContents.executeJavaScript(`
-        // Theme sichern und entfernen
         window._pdfTheme = document.documentElement.getAttribute('data-theme') || '';
         document.documentElement.removeAttribute('data-theme');
         document.body.classList.add('pdf-export');
+        if (${withSolution}) window._injectSolutionPage?.();
     `);
 
-    // Warten bis Chromium ohne Dark Theme neu gerendert hat
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    const pdfData = await win.webContents.printToPDF({
-        printBackground: true,
-        pageSize: 'A4',
-        margins: { top: 1, bottom: 1, left: 1, right: 1 }
-    });
+    try {
+        const pdfData = await win.webContents.printToPDF({
+            printBackground: true,
+            pageSize: 'A4',
+            margins: { top: 1, bottom: 1, left: 1, right: 1 }
+        });
 
-    await win.webContents.executeJavaScript(`
-        document.body.classList.remove('pdf-export');
-        if (window._pdfTheme) document.documentElement.setAttribute('data-theme', window._pdfTheme);
-    `);
-
-    fs.writeFileSync(filePath, pdfData);
-    return { success: true };
+        await fs.promises.writeFile(filePath, pdfData);
+        return { success: true };
+    } finally {
+        await win.webContents.executeJavaScript(`
+            document.body.classList.remove('pdf-export');
+            if (window._pdfTheme) document.documentElement.setAttribute('data-theme', window._pdfTheme);
+            window._removeSolutionPage?.();
+        `);
+    }
 });

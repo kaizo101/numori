@@ -351,30 +351,42 @@ async function renderGlobalLeaderboard() {
 }
 
 function renderStatsModal() {
+    const isAchievements = statsActiveTab === 'achievements';
     document.querySelectorAll('.stats-tab').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === statsActiveTab);
     });
+    const tabsEl = document.querySelector('.stats-tabs');
+    if (tabsEl) tabsEl.style.display = isAchievements ? 'none' : '';
     // Reset-Button nur bei lokalen Tabs sichtbar
     const resetBtn = document.getElementById('stats-reset');
-    if (resetBtn) resetBtn.style.display = statsActiveTab === 'global' ? 'none' : '';
+    if (resetBtn) resetBtn.style.display = (statsActiveTab === 'global' || isAchievements) ? 'none' : '';
 
     if (statsActiveTab === 'leaderboard') {
         renderLeaderboard();
     } else if (statsActiveTab === 'global') {
         renderGlobalLeaderboard();
+    } else if (statsActiveTab === 'achievements') {
+        const c = document.getElementById('stats-content');
+        if (c && typeof renderAchievementsTab === 'function') renderAchievementsTab(c);
     } else {
         renderStatsContent();
     }
 }
 
 function initStatsModal() {
-    const btnStats     = document.getElementById('btn-stats');
-    const statsOverlay = document.getElementById('stats-overlay');
-    const statsClose   = document.getElementById('stats-close');
-    const statsReset   = document.getElementById('stats-reset');
+    const btnStats        = document.getElementById('btn-stats');
+    const btnAchievements = document.getElementById('btn-achievements');
+    const statsOverlay    = document.getElementById('stats-overlay');
+    const statsClose      = document.getElementById('stats-close');
+    const statsReset      = document.getElementById('stats-reset');
 
     if (btnStats) btnStats.addEventListener('click', () => {
         statsActiveTab = 'stats';
+        renderStatsModal();
+        statsOverlay.classList.add('visible');
+    });
+    if (btnAchievements) btnAchievements.addEventListener('click', () => {
+        statsActiveTab = 'achievements';
         renderStatsModal();
         statsOverlay.classList.add('visible');
     });
@@ -424,12 +436,10 @@ const _NAME_BLOCKLIST = [
     // DE
     'scheiß','scheisse','scheiße','fick','arsch','wichser','hurensohn','hure','nutte','fotze','schwuchtel','spast','nazi','wixer',
 ];
+const _NAME_BLOCKLIST_RE = _NAME_BLOCKLIST.map(w => new RegExp(`\\b${w}\\b`, 'i'));
 
 function _sanitizeName(name) {
-    const lower = name.toLowerCase();
-    for (const word of _NAME_BLOCKLIST) {
-        if (lower.includes(word)) return '';
-    }
+    if (_NAME_BLOCKLIST_RE.some(re => re.test(name))) return '';
     return name;
 }
 
@@ -457,12 +467,16 @@ function insertLeaderboardEntry(name, seconds, moves, size, difficulty, seed, is
     lb[size][difficulty] = entries;
     saveLeaderboardData(lb);
     buildFlipperTicker();
+    if (typeof checkAchievementsOnLeaderboard === 'function' && newIdx === 0)
+        checkAchievementsOnLeaderboard({ isLocalFirst: true });
     const _minTime = _LB_MIN_TIMES[size] ?? 10;
     if (typeof window.supabaseSubmitLeaderboard === 'function' && seconds >= _minTime) {
         const consent = localStorage.getItem('numori-lb-consent');
         const supabasePayload = { username: insertedName, gridSize: size, difficulty, seed, timeSeconds: seconds, moveCount: moves, difficultyScore: currentPuzzle?.score ?? 0, cleanSolve };
         if (consent === 'granted') {
             window.supabaseSubmitLeaderboard(supabasePayload);
+            if (typeof checkAchievementsOnLeaderboard === 'function')
+                checkAchievementsOnLeaderboard({ isGlobalEntry: true });
             if (isDailyMode && typeof window.supabaseSubmitDailyResult === 'function') {
                 window.supabaseSubmitDailyResult({ username: insertedName, timeSeconds: seconds, moveCount: moves });
             }
@@ -475,12 +489,16 @@ function insertLeaderboardEntry(name, seconds, moves, size, difficulty, seed, is
 function initLbConsentToggle() {
     const btnOn  = document.getElementById('btn-lb-consent-on');
     const btnOff = document.getElementById('btn-lb-consent-off');
+    const warning = document.getElementById('lb-consent-warning');
     if (!btnOn || !btnOff) return;
 
     function updateButtons() {
         const consent = localStorage.getItem('numori-lb-consent');
         btnOn.classList.toggle('active',  consent === 'granted');
         btnOff.classList.toggle('active', consent === 'denied');
+        if (warning) {
+            warning.style.display = consent === 'denied' ? 'flex' : 'none';
+        }
     }
 
     btnOn.addEventListener('click', () => {
@@ -515,7 +533,7 @@ function showConsentModal(pendingEntry, isDailyMode = false) {
 
 function launchConfetti(duration = 6000) {
     const existing = document.getElementById('lb-confetti-canvas');
-    if (existing) existing.remove();
+    if (existing) { existing._cancel?.(); existing.remove(); }
 
     const isConsole = document.documentElement.getAttribute('data-theme') === 'console';
 
@@ -525,6 +543,8 @@ function launchConfetti(duration = 6000) {
     canvas.height = window.innerHeight;
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
+    let _cancelled = false;
+    canvas._cancel = () => { _cancelled = true; };
 
     const ox = canvas.width  / 2;
     const oy = canvas.height / 2;
@@ -627,6 +647,7 @@ function launchConfetti(duration = 6000) {
             ctx.restore();
         }
 
+        if (_cancelled) { canvas.remove(); return; }
         if (elapsed < duration) {
             requestAnimationFrame(draw);
         } else {
@@ -704,7 +725,7 @@ function showLeaderboardEntryPopup(rank, seconds, size, difficulty, seed, isDail
                     r.time_seconds < seconds || (r.time_seconds === seconds && r.move_count < moveCount)
                 ).length;
                 const globalRank = betterCount + 1;
-                if (globalVal) globalVal.textContent = globalRank <= 20 ? t('lb-result-rank').replace('{rank}', globalRank) : '–';
+                if (globalVal) globalVal.textContent = globalRank <= 10 ? t('lb-result-rank').replace('{rank}', globalRank) : '–';
             }).catch(() => { if (globalVal) globalVal.textContent = '–'; });
         } else {
             if (globalRow) globalRow.style.display = 'none';
@@ -737,6 +758,56 @@ function showDailyOnlyPopup(seconds, onClose) {
     if (nameInput) setTimeout(() => nameInput.focus(), 100);
 }
 
+function checkAndShowGlobalRankPopup(seconds, size, difficulty, seed, cleanSolve) {
+    const consent = localStorage.getItem('numori-lb-consent');
+    if (consent === 'denied') return;
+    if (typeof window.supabaseFetchLeaderboard !== 'function') return;
+    const _moves = moveCount;
+
+    Promise.all([
+        window.supabaseFetchLeaderboard(size, difficulty, 'weekly', 100),
+        window.supabaseFetchLeaderboard(size, difficulty, 'monthly', 100),
+        window.supabaseFetchLeaderboard(size, difficulty, 'alltime', 100),
+    ]).then(([weeklyRows, monthlyRows, alltimeRows]) => {
+        const ranks = [
+            { key: 'weekly',   rank: weeklyRows.filter(r => r.time_seconds < seconds || (r.time_seconds === seconds && r.move_count < _moves)).length + 1 },
+            { key: 'monthly',  rank: monthlyRows.filter(r => r.time_seconds < seconds || (r.time_seconds === seconds && r.move_count < _moves)).length + 1 },
+            { key: 'alltime',  rank: alltimeRows.filter(r => r.time_seconds < seconds || (r.time_seconds === seconds && r.move_count < _moves)).length + 1 },
+        ];
+        const labelMap = { weekly: t('lb-period-weekly'), monthly: t('lb-period-monthly'), alltime: t('lb-period-alltime') };
+        const shown = ranks.filter(r => r.rank <= 10);
+        if (shown.length === 0) return;
+
+        const overlay = document.getElementById('leaderboard-entry-overlay');
+        if (!overlay) return;
+        const titleEl   = document.getElementById('lb-entry-title');
+        const infoEl    = document.getElementById('lb-entry-info');
+        const nameInput = document.getElementById('lb-entry-name');
+        const modal     = overlay.querySelector('.lb-entry-modal');
+        const ranksEl   = document.getElementById('lb-entry-ranks');
+        const localRow  = document.getElementById('lb-result-local-row');
+        const globalRow = document.getElementById('lb-result-global-row');
+        const globalVal = document.getElementById('lb-result-global-val');
+        const diffLabels = { easy: t('diff-easy'), medium: t('diff-medium'), hard: t('diff-hard'), expert: t('diff-expert') };
+
+        if (modal)   modal.dataset.rank = 'global';
+        if (titleEl) titleEl.textContent = t('lb-global-submit-title');
+        if (infoEl)  infoEl.textContent = `${size}×${size} · ${diffLabels[difficulty] ?? difficulty} · ${formatTime(seconds)}`;
+        if (nameInput) {
+            nameInput.value       = localStorage.getItem('numori-player-name') || '';
+            nameInput.placeholder = t('lb-name-placeholder');
+        }
+        if (ranksEl) ranksEl.style.display = '';
+        if (localRow) localRow.style.display = 'none';
+        if (globalRow) globalRow.style.display = '';
+        if (globalVal) globalVal.textContent = shown.map(r => `${labelMap[r.key]}: #${r.rank}`).join(' · ');
+
+        overlay._pending = { seconds, moves: _moves, size, difficulty, seed, cleanSolve, globalOnly: true };
+        overlay.classList.add('visible');
+        if (nameInput) setTimeout(() => nameInput.focus(), 100);
+    }).catch(() => {});
+}
+
 function initLeaderboardEntryModal() {
     const overlay    = document.getElementById('leaderboard-entry-overlay');
     if (!overlay) return;
@@ -759,7 +830,7 @@ function initLeaderboardEntryModal() {
         if (name) localStorage.setItem('numori-player-name', name);
         const p = overlay._pending;
         if (!p) return;
-        const insertedName = name || t('lb-anon');
+        const insertedName = _sanitizeName(name) || t('lb-anon');
 
         if (p.dailyOnly) {
             const consent = localStorage.getItem('numori-lb-consent');
@@ -767,6 +838,25 @@ function initLeaderboardEntryModal() {
                 window.supabaseSubmitDailyResult?.({ username: insertedName, timeSeconds: p.seconds, moveCount: p.moves });
             } else if (consent === null) {
                 showConsentModal({ username: insertedName, timeSeconds: p.seconds, moveCount: p.moves });
+            }
+        } else if (p.globalOnly) {
+            const consent = localStorage.getItem('numori-lb-consent');
+            const payload = {
+                username: insertedName,
+                gridSize: p.size,
+                difficulty: p.difficulty,
+                seed: p.seed,
+                timeSeconds: p.seconds,
+                moveCount: p.moves,
+                difficultyScore: typeof currentPuzzle !== 'undefined' && currentPuzzle ? (currentPuzzle.score ?? 0) : 0,
+                cleanSolve: p.cleanSolve ?? true,
+            };
+            if (consent === 'granted') {
+                window.supabaseSubmitLeaderboard(payload);
+                if (typeof checkAchievementsOnLeaderboard === 'function')
+                    checkAchievementsOnLeaderboard({ isGlobalEntry: true });
+            } else if (consent === null) {
+                showConsentModal(payload, false);
             }
         } else {
             insertLeaderboardEntry(name, p.seconds, p.moves, p.size, p.difficulty, p.seed, p.isDailyMode, p.cleanSolve ?? true);

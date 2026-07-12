@@ -138,6 +138,13 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# Therapie & Lizenzdokumente (vertraulich)
+ERGOTHERAPIE_KONZEPT.md
+PILOT_LIZENZVERTRAG.md
+PILOT_LIZENZVERTRAG.pdf
+Studien\ und\ Datenlage.odt
+Wirksamkeit_Numori_Ergotherapie.pdf
+
 # Windows Systemordner
 System Volume Information/
 
@@ -147,5 +154,12 @@ ROADMAP.md
 # Test-Checkliste
 TEST_CHECKLIST.md
 
+# Agent Instructions & generated test tool
+AGENTS.md
+test-tool.html
+
 # Android (Capacitor-Boilerplate, aus Quellcode reproduzierbar)
 android/
+
+# Sync-Ziel (via npm run deploy reproduzierbar)
+www/

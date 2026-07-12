@@ -38,7 +38,7 @@ window.TRANSLATIONS.en = {
     'nav-more': 'More',
     'footer-download': 'Also for PC & Android',
     'footer-shortcuts': 'Arrow keys: Navigate\u00a0\u00a0·\u00a0\u00a0N: Notes\u00a0\u00a0·\u00a0\u00a0V: Validate\u00a0\u00a0·\u00a0\u00a0T: Timer\u00a0\u00a0·\u00a0\u00a0H: Hint\u00a0\u00a0·\u00a0\u00a0Del: Clear\u00a0\u00a0·\u00a0\u00a0Ctrl+Z/Y: Undo/Redo',
-    'footer-timer-label': 'Start Timer',
+    'flipper-menu-achievements': 'ACHIEVEMENTS',
     'flipper-menu-scores': 'SCORES',
     'flipper-menu-theme': 'THEME',
     'flipper-menu-settings': 'SETTINGS',
@@ -76,6 +76,7 @@ window.TRANSLATIONS.en = {
     'settings-font-large': 'Large',
     'settings-font-xlarge': 'Very Large',
     'settings-help': 'Help',
+    'settings-pdf': 'Manual as PDF',
     'settings-tutorial': 'Start Tutorial',
     'settings-lang': 'Language',
     'settings-close': 'Close',
@@ -88,6 +89,7 @@ window.TRANSLATIONS.en = {
     'settings-lb-label': 'Global Leaderboard',
     'settings-lb-on': 'On',
     'settings-lb-off': 'Off',
+    'settings-lb-warning': 'Leaderboard entries are not saved',
     'settings-about-imprint': 'Legal Notice',
     'settings-about-contact': 'For questions, issues or suggestions, feel free to reach out:',
     'tut-welcome-title': 'Welcome to Numori',
@@ -157,6 +159,7 @@ window.TRANSLATIONS.en = {
     'lb-offline': 'No connection to global leaderboard.',
     'lb-global-empty': 'No entries in this period yet.',
     'lb-daily-empty': 'Nobody has completed today\'s puzzle yet.',
+    'lb-global-submit-title': 'Global Leaderboard Reached!',
     'lb-daily-submit-title': 'Daily Puzzle Solved!',
     'lb-info': 'Times are automatically added to the leaderboard – as long as no hints or instant validation were used.',
     'lb-empty': 'No entries yet.',
@@ -171,6 +174,7 @@ window.TRANSLATIONS.en = {
     'lb-result-global': 'Global',
     'lb-result-rank': 'Rank {rank}',
     'lb-result-view-lb': 'Leaderboard',
+    'lb-submit-error': 'Leaderboard entry could not be saved',
     'tut-slide1-title': 'The Rules',
     'tut-slide1-body': `<p>Numori is a logic puzzle on an <strong>n×n grid</strong>. Fill every row and column with the numbers <strong>1 to n</strong> – each number exactly once per row and column.</p>
 <div class="tut-latin-wrap">
@@ -190,6 +194,69 @@ window.TRANSLATIONS.en = {
   <li><strong>3:</strong><span>Quotient is 3 <em>(e.g. 6:2)</em></span></li>
   <li><strong>4=</strong><span>Cell contains exactly 4</span></li>
 </ul>`,
+    // ── Achievements ──────────────────────────────────────────────
+    'ach-first-name':            'First Blood',
+    'ach-first-desc':            'First puzzle solved',
+    'ach-puzzles10-name':        'Puzzle Rookie',
+    'ach-puzzles10-desc':        '10 puzzles solved',
+    'ach-puzzles50-name':        'Puzzle Veteran',
+    'ach-puzzles50-desc':        '50 puzzles solved',
+    'ach-puzzles100-name':       'Puzzle Marathon',
+    'ach-puzzles100-desc':       '100 puzzles solved',
+    'ach-all_sizes-name':        'Size Queen',
+    'ach-all_sizes-desc':        'Solved every size (3×3–9×9) at least once',
+    'ach-all_combos-name':       'Completionist',
+    'ach-all_combos-desc':       'Solved every size & difficulty combination',
+    'ach-expert9-name':          '9×9 Legend',
+    'ach-expert9-desc':          'Solved a 9×9 on Expert',
+    'ach-perfect-name':          'Perfect Solve',
+    'ach-perfect-desc':          'Solved a puzzle without hints or validation mode',
+    'ach-no_undo-name':          'No Regrets',
+    'ach-no_undo-desc':          'Solved a puzzle without undo',
+    'ach-daily_first-name':      'Creature of Habit',
+    'ach-daily_first-desc':      'First daily puzzle solved',
+    'ach-streak7-name':          'Daily Streak',
+    'ach-streak7-desc':          '7 daily puzzles solved in a row',
+    'ach-streak30-name':         'Streak God',
+    'ach-streak30-desc':         '30 daily puzzles solved in a row',
+    'ach-local_podium-name':     'Local Legend',
+    'ach-local_podium-desc':     'Reached local #1 in any category',
+    'ach-global_entry-name':     'On the Board',
+    'ach-global_entry-desc':     'Submitted first global leaderboard entry',
+    'ach-console_first-name':    'Logged In',
+    'ach-console_first-desc':    'First puzzle solved in Console theme',
+    'ach-console9x9-name':       'Terminal God',
+    'ach-console9x9-desc':       'Solved a 9×9 in Console theme',
+    'ach-console_denied-name':   'Loser!',
+    'ach-console_denied-desc':   'Triggered ACCESS DENIED in Console theme',
+    'ach-console_nyan-name':     'Nyan Mode',
+    'ach-console_nyan-desc':     'Typed "nyan" in the console',
+    // 'ach-console_playlist-name': 'Full Playlist',  (removed)
+    // 'ach-console_playlist-desc': 'Played every song in the music player at least once',
+    'ach-flipper_first-name':    'Insert Coin',
+    'ach-flipper_first-desc':    'First puzzle solved in Flipper theme',
+    'ach-flipper_jackpot-name':  'Jackpot',
+    'ach-flipper_jackpot-desc':  '5× Perfect Solve in Flipper theme',
+    'ach-flipper_rickroll-name': 'Never Gonna Give You Up',
+    'ach-flipper_rickroll-desc': '???',
+    'ach-space_first-name':      'Houston',
+    'ach-space_first-desc':      'First puzzle solved in Space theme',
+    'ach-space_dark_matter-name':'Dark Matter',
+    'ach-space_dark_matter-desc':'Perfect Solve in Space theme',
+    'ach-space_full_listen-name':'Galaxy Brain',
+    'ach-space_full_listen-desc':'Listened to the Space ambient track from start to finish',
+    'ach-synth_first-name':      'Drop the Beat',
+    'ach-synth_first-desc':      'First puzzle solved in Synthwave theme',
+    'ach-synth_zone-name':       'In the Zone',
+    // 'ach-synth_playlist-name':   'Synth Wave',   (removed)
+    // 'ach-synth_playlist-desc':   'Listened to every Synthwave track at least once',
+    'ach-synth_zone-desc':       '5× in a row without undo in Synthwave theme',
+    'ach-toast-label':           'Achievement Unlocked',
+    'sw-win-solved':             'SOLVED',
+    'sw-win-global':             'GLOBAL',
+    'sw-win-new-best':           'NEW BEST',
+    'sw-win-moves':              'moves',
+
     'tut-slide3-title': 'Useful Features',
     'tut-slide3-body': `<div class="tut-features">
   <div class="tut-feat">
@@ -204,5 +271,20 @@ window.TRANSLATIONS.en = {
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
     <div><strong>Puzzle ID</strong><span>Every puzzle has a unique ID. Enter it to reload a known puzzle or share it with others.</span></div>
   </div>
+  <div class="tut-feat">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+    <div><strong>Hint</strong><span>Fills in the correct number in an empty cell. Locks Competitive Mode.</span></div>
+  </div>
 </div>`,
+
+    'devnotes-label': 'Dev Notes',
+    'devnotes-add': 'Add',
+
+    'update-available': 'Version {version} available.',
+    'update-ready': 'Version {version} ready.',
+    'update-download': 'Download',
+    'update-later': 'Later',
+    'update-restart': 'Restart Now',
+    'update-close': 'Close',
+    'update-progress': 'Downloading version {version}…',
 };

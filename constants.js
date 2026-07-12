@@ -1,6 +1,6 @@
 // ── CONSTANTS ─────────────────────────────────────────────────────
 
-const APP_VERSION = '1.1.1';
+const APP_VERSION = '1.2.0';
 
 const FONT_SCALE_KEY = 'numori-font-scale';
 

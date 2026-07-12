@@ -1,23 +1,30 @@
 # Changelog
 
-## v1.2.0 — 2026-06-06
+## v1.2.0 — 21/06/2026
 
 ### Neu
 - **Achievement-System** — über 25 Achievements in verschiedenen Kategorien (Core, Leaderboard, Console, Flipper); Toast-Benachrichtigung bei Freischaltung, Detail-Modal bei Klick, retroaktive Vergabe für Bestandsnutzer; Statistik-Tracking pro Größe, Schwierigkeit und Theme
 - **PDF-Lösungsexport** — optionale zweite Seite im PDF-Export mit aufgedeckter Lösung
+- **Tutorial als PDF** — interaktives Tutorial ist jetzt auch als druckbare HTML/PDF-Seite verfügbar
 
 ### Verbesserungen
 - **Flipper-Ticker** — Highscore-Ticker überarbeitet
 - **Console-Theme** — Detailverbesserungen am Matrix-Gewinnbildschirm und Fehlerbildschirm
 - **Undo-Tracking** — `undoWasUsed`-Flag für Achievement-Prüfungen (no_undo)
+- **Footer aufgeräumt** — redundantes Timer-Symbol und "Timer starten"-Label entfernt (via `T`-Shortcut erreichbar)
+- **Tutorial erweitert** — dritter Slide enthält jetzt einen "Tipp/Hint"-Eintrag mit Glühbirnen-Symbol
+- **Statistik-Modal** — Desktop-Ansicht breiter (700px), Achievement-Raster mehrspaltig, Überlaufverhalten verbessert
+- **Tutorial-Navigation** — Buttons (Zurück/Überspringen/Weiter) auf Mobilgeräten zentriert
+- **Leaderboard-Feedback** — Error Toast erscheint bei Supabase-Fehlern; Warnhinweis in Einstellungen wenn Leaderboard-Übermittlung deaktiviert ist
 
 ### Fehlerbehebungen
 - **Globale Leaderboard-Übermittlung** — Zeiten können jetzt auch ohne lokalen Top-5-Rang für wöchentliche, monatliche und Gesamtzeiträume übermittelt werden. Zuvor hatte nur das Tagesrätsel diesen Fallback.
 - **Globale Rang-Anzeige** — Gewinnbildschirm, Console- und Flipper-Theme zeigen jetzt nur noch einen globalen Rang bei ≤ 10 (zuvor 20), konsistent mit der Leaderboard-Ansicht.
+- **Flipper-Theme** — "Anleitung als PDF"-Button funktioniert wieder (fehlendes `display: inline-flex` ergänzt)
 
 ---
 
-## v1.1.0 — 2026-03-24
+## v1.1.0 — 24/03/2026
 
 ### Neu
 - **Überarbeiteter Rätsel-Generator** — komplette Neuentwicklung mit AC-3 Constraint Propagation; Rätsel werden jetzt schneller generiert, sind immer eindeutig lösbar und skalieren korrekt auf größere Gitter
@@ -43,7 +50,7 @@ Lizenz: **Freeware** — © Joël Carrouché, frei für persönliche und kommerz
 
 ---
 
-## v1.0.0 — 2026-03-19
+## v1.0.0 — 19/03/2026
 
 ### Neu
 - **Android APK** — erste öffentliche APK-Veröffentlichung via Capacitor
@@ -64,7 +71,7 @@ Lizenz: **SIL Open Font License 1.1** — Copyright © 2024 Petr van Blokland
 
 ---
 
-## v0.9.2 — 2026-03-12
+## v0.9.2 — 12/03/2026
 
 ### Neu
 - **Musikplayer auf Mobile** — Musik-Panel im Mehr-Menü (Console-Theme); Play/Pause, Nächster/Vorheriger, Lautstärke und Track-Anzeige
@@ -75,7 +82,7 @@ Lizenz: **SIL Open Font License 1.1** — Copyright © 2024 Petr van Blokland
 
 ---
 
-## v0.9.1 — 2026-03-11
+## v0.9.1 — 11/03/2026
 
 ### Neu
 - **Mobile-Layout** *(Preview)* — optimiertes Layout für Smartphones (≤ 600px): kompakte obere Toolbar mit Größe, Schwierigkeit, Rätsel-ID und Tagesrätsel; feste untere Navigation mit Notizen, Hinweis, Undo, Redo und Mehr-Menü
@@ -95,7 +102,7 @@ Lizenz: **SIL Open Font License 1.1** — Copyright © 2024 Petr van Blokland
 
 ---
 
-## v0.9.0 — 2026-03-10
+## v0.9.0 — 10/03/2026
 
 ### Neu
 - **Musikplayer** (Console-Theme) — 17 lizenzfreie Chiptune-Tracks; Play/Pause, Nächster/Vorheriger, Lautstärkeregelung; scrollbarer Playlist mit Track-Auswahl; Marquee-Animation für Künstler und Titel; Lautstärke in localStorage gespeichert
@@ -118,7 +125,7 @@ Lizenz: **SIL Open Font License 1.1** — Copyright © 2024 Petr van Blokland
 
 ---
 
-## v0.8.0 — 2026-03-04
+## v0.8.0 — 04/03/2026
 
 ### Neu
 - **Console-Theme** — Retro-CRT-Ästhetik mit Phosphor-Grün-Text (VT323/Share Tech Mono), Scanlines auf Toolbar, Board und Willkommensbildschirm, Schreibmaschinen-Statusleiste und Schreibmaschinen-Animation im Seed-Input-Feld
@@ -138,7 +145,7 @@ Lizenz: **SIL Open Font License 1.1** — Copyright © 2024 Petr van Blokland
 
 ---
 
-## v0.7.0 — 2026-03-02
+## v0.7.0 — 02/03/2026
 
 ### Neu
 - **PDF-Export** — Rätsel können als leeres A4-PDF gespeichert werden (zum Ausdrucken). Der Export enthält Gittergröße, Schwierigkeit und Rätsel-ID als Header. Immer im klassischen Look, unabhängig vom aktiven Theme.

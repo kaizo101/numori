@@ -105,7 +105,7 @@ const tutorialModule = (() => {
         if (bodyEl) bodyEl.innerHTML  = s.body;
         document.querySelectorAll('.tut-dot').forEach((d, i) => d.classList.toggle('active', i === slide));
         const back = document.getElementById('tut-back');
-        if (back) back.style.visibility = slide === 0 ? 'hidden' : 'visible';
+        if (back) back.style.display = slide === 0 ? 'none' : '';
         const next = document.getElementById('tut-next');
         if (next) next.textContent = slide === slides.length - 1 ? t('tut-next-last') : t('tut-next');
     }

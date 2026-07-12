@@ -3,6 +3,285 @@
 let _matrixAnimFrame = null;
 let _matrixKeyHandler = null;
 let _matrixWinData = null;
+let _nyanAC = null;
+let _nyanActive = false, _nyanTick = 0, _nyanAnimFrame = null, _nyanCanvas = null, _nyanCtx = null;
+
+// ── Nyan Cat Easter Egg (Modulebene — unabhängig vom Win-Screen) ──────────────
+
+const _NYAN_FRAMES = [
+  [
+    '                                               #                                                   ',
+    '                                             #   #                                                 ',
+    '                                               #                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '  #                                                                                                ',
+    '#   #                                                                                              ',
+    '  #                        #####################################                                   ',
+    '--`````````---------```````#((((((((///////((((/(((((((((////////#                                  ',
+    '                         #(//                                 \\/(#                                 ',
+    '--`````````---------``````#(/   ##            ##    #####    ## \\(#  #####                          ',
+    '..`````````.........###```#(                       #.....###     (###.....#                         ',
+    '--`````````--------#(..*#`#(       ##              #........######........#                         ',
+    'ccCCCCCCCCCcccccccc*#(..*##(                  ##  #........................#                        ',
+    '--`````````---------*#(..*#(   ##                 #........................#                        ',
+    'mmMMMMMMMMMmmmmmmmmmM*#(..#(                      #..... #........... #....#                        ',
+    '--`````````---------``*####(         ##     ##    #.....#@...........#@....#                        ',
+    '..`````````.........``````#(\\  ##                 #\\.......#...#...#....../#                       #',
+    '--`````````---------``````#//\\                     #\\......*#######*...../#                         ',
+    '############################////(///((((/////((((((###\\.............../###                          ',
+    '--`````````---------``#(...(.##########################################                             ',
+    '                     #(..(##/#(..(#                  #/..(#   #/..(#                               ',
+    '                     #####   #####*                  *#####   *####*                               ',
+    '                                                                                                   ',
+    '                #                                                                                  ',
+    '                                                             #                                     ',
+    '           #         #                                       #                                     ',
+    '                                                         ###   ###                                 ',
+    '                #                                            #                                     ',
+    '                                                             #                                     ',
+  ],[
+    '                                            #                                                      ',
+    '                                          #   #                                                    ',
+    '                                            #                                                      ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    ' #                                                                                                 ',
+    '                           #####################################                                   ',
+    '--`````````---------```````#((((((((///////((((/(((((((((////////#                                  ',
+    '                         #(//                                 \\/(#                                 ',
+    '--`````````---------``````#(/   ##            ##     #####   ## \\(#   #####                         ',
+    '..`````````.........``````#(                        #.....###    (####.....#                        ',
+    '--`````````--------###````#(       ##               #........######........#                        ',
+    'ccCCCCCCCCCccccccc#(.*#####(                  ##   #........................#                       ',
+    '--`````````-------##(((...#(   ##                  #........................#                       ',
+    'mmMMMMMMMMMmmmmmmmm**##(((#(                       #..... #........... #....#                       ',
+    '--`````````---------``*####(         ##     ##     #.....#@...........#@....#                       ',
+    '..`````````.........``````#(\\  ##                  #\\.......#...#...#....../#                   #   ',
+    '--`````````---------``````#//\\                      #\\......*#######*...../#                        ',
+    '############################////(///((((/////((((((((###\\............../###                         ',
+    '--`````````---------```#/.(./##########################################                             ',
+    '                      #/.(/#/#(..(#                   #/..(#   #/..(#                              ',
+    '                      #####  *#####                   *#####   *#####                              ',
+    '                                                                                                   ',
+    '                                                          #                                        ',
+    '                                                          #                                        ',
+    '           #                                                                                       ',
+    '                                                     ###  #   ###                                  ',
+    '                                                                                                   ',
+    '                                                          #                                        ',
+  ],[
+    '                                      #                                                            ',
+    '                                  ###   ###                                                        ',
+    '                                      #                                                            ',
+    '                                      #                                                            ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '##                                                                                                 ',
+    '                                                                                                  ',
+    '``---------`````````--------#####################################                                   ',
+    '                          #(((((((((///////((((/(((((((((///////#                                  ',
+    '``---------`````````------#(//                                 \\/(#                                 ',
+    "''---------'''''''''------#(/   ##            ##     #####   ## \\(#   #####                         ",
+    '``---------`````````------#(                        #.....###    (####.....#                        ',
+    'CCcccccccccCCCCCCCCCcccccc#(       ##               #        ######........#                        ',
+    '``---------`````````--,####(                  ##   #........................#                       ',
+    'MMmmmmmmmmmMMMMMMM,,##....#(   ##                  #........................#                       ',
+    '``---------``````##..(((((#(                       #..... #........... #....#                       ',
+    "''---------''''''#(((,#####(         ##     ##     #.....#@...........#@....#                #      ",
+    '``---------```````###-----#(\\  ##                  #\\.......#...#...#....../#              #   #    ',
+    '###########################//\\                      #\\......*#######*...../#                 #      ',
+    '``---------`````````------##////(///((((/////((((((((###\\............../###                         ',
+    '                         #(.##########################################                             ',
+    '                         #/.#  #(.(#                  #/..(#   #/..(#                             ',
+    '                         ###   *#####                  *#####   *#####                             ',
+    '                                                       #                                           ',
+    '        #                                          #       #                                       ',
+    '      #   #                                                                                        ',
+    '        #                                        #           #                                     ',
+    '                                                                                                   ',
+    '                                                   #       #                                       ',
+  ],[
+    '                                                                                             ',
+    '                           ###  #  ###                                                        ',
+    '                                                                                             ',
+    '                                #                                                            ',
+    '                                #                                                    #             ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                  ',
+    '``---------`````````--------#####################################                                   ',
+    '                          #((((((((///////((((/(((((((((////////#                                  ',
+    '``---------`````````------#(//                                 \\/(#                                 ',
+    "''---------'''''''''------#(/   ##            ##     #####   ## \\(#   #####                         ",
+    '``---------`````````------#(                        #.....###    (####.....#                        ',
+    'CCcccccccccCCCCCCCCCcccccc#(       ##               #........######........#                        ',
+    '``---------`````````--,####(                  ##   #........................#                       ',
+    'MMmmmmmmmmmMMMMMMM,,##....#(   ##                  #........................#                       ',
+    '``---------``````##..(((((#(                       #..... #........... #....#                       ',
+    "''---------''''''#(((,#####(         ##     ##     #.....#@...........#@....#          #      ",
+    '``---------```````###-----#(\\  ##                  #\\.......#...#...#....../#        #   #    ',
+    '###########################//\\                      #\\......*#######*...../#           #      ',
+    '``---------`````````------##////(///((((/////((((((((###\\............../###                         ',
+    '                        ,#(.##########################################                             ',
+    '                      #/.(.#/#(..(#                   #/..(#   #/..(#                              ',
+    '                      #####  *#####                   *#####   *#####                              ',
+    '  #                                              #                                                 ',
+    '  #                                                                                      #         ',
+    '#   ###                                                                                            ',
+    '  #                                        #           #                                           ',
+    '  #                                                                                                ',
+    '                                                                                                   ',
+  ],[
+    '                                                                                                   ',
+    '                                                                          #                        ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                   ',
+    '                                                                                                  ',
+    '                  #                                                                                ',
+    '                           #####################################                                   ',
+    '--`````````---------```````#((((((((///////((((/(((((((((////////#                                  ',
+    '                         #(//                       #####     \\/(#   #####                         ',
+    '--`````````---------``````#(/   ##            ##    #.....###   \\(####.....#                        ',
+    '..`````````.........``````#(                        #........######........#                        ',
+    '--`````````--------###````#(       ##              #........................#                       ',
+    'ccCCCCCCCCCccccccc#(.*#####(                  ##   #........................#                       ',
+    '--`````````-------##(((...#(   ##                  #..... #........... #....#                       ',
+    'mmMMMMMMMMMmmmmmmmm**##(((#(                       #.....#@...........#@....#                       ',
+    '--`````````---------``*####(         ##     ##     #\\.......#...#...#....../#                       ',
+    '..`````````.........``````#(\\  ##                   #\\......*#######*...../# ###                ',
+    '--`````````---------``````#//\\                      ###\\............../### #                        ',
+    '############################////(///((((/////((((((((/#################    #                     ',
+    '--`````````---------``#(/..(/#####################################,,                              ',
+    '                     #(..(##/#(..(#                  #/..(#   #/..(#                               ',
+    '                     #####   #####*                  *#####   *####*                               ',
+    '                                                                                                   ',
+    '                                 #                                                                 ',
+    '                             #       #                                                             ',
+    '                                                                                                   ',
+    '                          #             #                                     #                    ',
+    '                                                                                                   ',
+    '                             #       #                                                             ',
+  ],
+];
+
+function _nyanLineColor(line) {
+    if (line.startsWith('--')) return '#00ff41';
+    if (line.startsWith('..')) return '#00dd35';
+    if (line.startsWith("''")) return '#00bb28';
+    if (line.startsWith('CC') || line.startsWith('cc')) return '#009920';
+    if (line.startsWith('MM') || line.startsWith('mm')) return '#006614';
+    if (line.startsWith('##') && line.length > 20) return '#004409';
+    return null;
+}
+
+function _startNyanMusic() {
+    if (_nyanAC) return;
+    try {
+        const audio = new Audio('music/console/nyan.mp3');
+        audio.loop = true;
+        audio.volume = 0.6;
+        audio.play().catch(() => {});
+        _nyanAC = { close: () => { audio.pause(); audio.src = ''; } };
+    } catch(e) {}
+}
+
+function _stopNyan() {
+    _nyanActive = false;
+    if (_nyanAnimFrame) { cancelAnimationFrame(_nyanAnimFrame); _nyanAnimFrame = null; }
+    if (_nyanAC) { try { _nyanAC.close(); } catch(e){} _nyanAC = null; }
+    if (_nyanCanvas) { _nyanCanvas.remove(); _nyanCanvas = null; _nyanCtx = null; }
+}
+
+function _nyanLoop() {
+    if (!_nyanActive) return;
+    _nyanTick++;
+    const CW = _nyanCanvas.width, CH = _nyanCanvas.height;
+    _nyanCtx.fillStyle = '#000';
+    _nyanCtx.fillRect(0, 0, CW, CH);
+
+    const frame = _NYAN_FRAMES[Math.floor(_nyanTick / 8) % 5];
+    const COLS = 100, ROWS = frame.length;
+    _nyanCtx.font = '14px Share Tech Mono,monospace';
+    const ratio = _nyanCtx.measureText('M').width / 14;
+    const fs = Math.min(CW / (COLS * ratio), CH / (ROWS * 1.18));
+    _nyanCtx.font = fs + 'px Share Tech Mono,monospace';
+    const lineH = fs * 1.18;
+    const startY = (CH - ROWS * lineH) / 2;
+    _nyanCtx.textAlign = 'left';
+    _nyanCtx.textBaseline = 'top';
+    for (let i = 0; i < frame.length; i++) {
+        const col = _nyanLineColor(frame[i]);
+        _nyanCtx.globalAlpha = col ? 1 : 0.3;
+        _nyanCtx.fillStyle = col || '#00ff41';
+        _nyanCtx.fillText(frame[i], 0, startY + i * lineH);
+    }
+    _nyanCtx.globalAlpha = 1;
+    _nyanCtx.font = (fs * 0.9) + 'px Share Tech Mono,monospace';
+    _nyanCtx.fillStyle = '#00ff41';
+    const charW = _nyanCtx.measureText('M').width;
+    const nyans = 'NYAN '.repeat(40);
+    const offset = (_nyanTick * 2.5) % (charW * 5);
+    _nyanCtx.fillText(nyans, -offset, CH - fs * 1.1);
+    _nyanCtx.fillStyle = 'rgba(0,255,65,0.3)';
+    _nyanCtx.font = (fs * 0.65) + 'px Share Tech Mono,monospace';
+    _nyanCtx.textAlign = 'center';
+    const hint = window.innerWidth <= 600 ? 'Tippen zum Beenden' : 'Klick oder ENTER zum Beenden';
+    _nyanCtx.fillText(hint, CW / 2, CH - fs * 2.3);
+
+    _nyanAnimFrame = requestAnimationFrame(_nyanLoop);
+}
+
+function triggerConsoleNyan() {
+    if (document.documentElement.getAttribute('data-theme') !== 'console') return;
+    if (_nyanActive) { _stopNyan(); return; }
+    _nyanActive = true;
+    _nyanTick = 0;
+    _nyanCanvas = document.createElement('canvas');
+    _nyanCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;cursor:pointer;';
+    document.body.appendChild(_nyanCanvas);
+    _nyanCanvas.width  = _nyanCanvas.offsetWidth  || window.innerWidth;
+    _nyanCanvas.height = _nyanCanvas.offsetHeight || window.innerHeight;
+    _nyanCtx = _nyanCanvas.getContext('2d');
+    _startNyanMusic();
+    if (typeof _unlockAchievement === 'function') _unlockAchievement('console_nyan');
+    // Delay stop-listeners to avoid catching the triggering touch/click itself
+    setTimeout(() => {
+        if (!_nyanCanvas) return;
+        _nyanCanvas.addEventListener('click', _stopNyan);
+        _nyanCanvas.addEventListener('touchend', (e) => { e.preventDefault(); _stopNyan(); }, { passive: false });
+    }, 500);
+    _nyanAnimFrame = requestAnimationFrame(_nyanLoop);
+}
+
+// Header-Trigger: 10× NUMORI antippen (Mobile, Modulebene)
+;(function() {
+    let _nyanTaps = 0, _nyanTapTimer = null;
+    document.addEventListener('touchend', (e) => {
+        if (document.documentElement.getAttribute('data-theme') !== 'console') return;
+        const touch = e.changedTouches && e.changedTouches[0];
+        if (!touch) return;
+        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+        const h1 = document.querySelector('header h1');
+        if (!h1 || (el !== h1 && !h1.contains(el))) return;
+        _nyanTaps++;
+        clearTimeout(_nyanTapTimer);
+        _nyanTapTimer = setTimeout(() => { _nyanTaps = 0; }, 3000);
+        if (_nyanTaps >= 10) { _nyanTaps = 0; triggerConsoleNyan(); }
+    }, { passive: true });
+})();
 
 function startMatrixRain() {
     if (document.documentElement.getAttribute('data-theme') !== 'console') return;
@@ -23,10 +302,10 @@ function startMatrixRain() {
     let elapsed = 0, lastTime = performance.now();
     function ticks() { return elapsed / MS_PER_TICK; }
     const isMobile = window.innerWidth <= 600;
-    const RAIN_TICKS  = isMobile ? 180 : 400;
-    const FLASH_TICKS = isMobile ?  50 :  90;
-    const FLY_TICKS   = isMobile ?  60 : 110;
-    const TYPE_SPEED  = isMobile ?   2 :   5; // Ticks pro Zeichen (zeit-basiert → gleich auf allen fps)
+    const RAIN_TICKS  = isMobile ? 180 : 220;  // 6.7s → 3.7s auf Desktop
+    const FLASH_TICKS = isMobile ?  50 :  70;
+    const FLY_TICKS   = isMobile ?  60 :  80;
+    const TYPE_SPEED  = isMobile ?   2 :   3; // 83ms → 50ms pro Zeichen auf Desktop
     const drops = Array.from({length:cols}, ()=>Math.floor(Math.random()*-rows));
     // Win data
     const d = _matrixWinData||{};
@@ -34,6 +313,7 @@ function startMatrixRain() {
     window._consoleLbData = null;
     const diffLabel = {easy:'easy',medium:'medium',hard:'hard',expert:'expert'}[d.diff]||'';
     const denied = d.denied || false;
+    if (denied && typeof _unlockAchievement === 'function') _unlockAchievement('console_denied');
     const ACCENT = denied ? '#ff2020' : '#00ff41';
     const TITLE_TEXT = denied ? 'ACCESS DENIED' : 'ACCESS GRANTED';
     let namePhase = !denied && lbData ? true : false;
@@ -72,7 +352,7 @@ function startMatrixRain() {
                     ).length;
                     const globalRank = betterCount + 1;
                     const idx = statLines.findIndex(l => l.startsWith('global:'));
-                    if (idx >= 0) statLines[idx] = 'global: ' + (globalRank <= 20 ? 'rank '+globalRank : '–');
+                    if (idx >= 0) statLines[idx] = 'global: ' + (globalRank <= 10 ? 'rank '+globalRank : '–');
                 }).catch(() => {
                     const idx = statLines.findIndex(l => l.startsWith('global:'));
                     if (idx >= 0) statLines[idx] = 'global: –';
@@ -97,7 +377,7 @@ function startMatrixRain() {
     let flashAlpha=0, flashScale=1, titleY=TITLE_START_Y;
     let typeLineIdx=0, typeCharIdx=0, typeElapsed=0;
     const TYPE_MS = TYPE_SPEED * MS_PER_TICK;
-    let inputActive=false, inputValue='', inputBlink=true, inputBlinkTick=0;
+    let inputActive=false, inputValue='', inputBlink=true, inputBlinkElapsed=0;
 
     // Mobile: Touch-Buttons statt Texteingabe
     let mobileButtons = null;
@@ -111,6 +391,11 @@ function startMatrixRain() {
             nameInput.type = 'text';
             nameInput.value = localStorage.getItem('numori-player-name') || '';
             nameInput.placeholder = 'enter name';
+            nameInput.setAttribute('autocomplete', 'off');
+            nameInput.setAttribute('autocorrect', 'off');
+            nameInput.setAttribute('autocapitalize', 'off');
+            nameInput.setAttribute('spellcheck', 'false');
+            nameInput.setAttribute('inputmode', 'text');
             nameInput.style.cssText = 'padding:12px 16px;border:1px solid '+ACCENT+';background:#000;color:'+ACCENT+';font-family:Share Tech Mono,monospace;font-size:0.9em;letter-spacing:1px;outline:none;border-radius:4px;';
             const btnRow = document.createElement('div');
             btnRow.style.cssText = 'display:flex;gap:10px;';
@@ -123,7 +408,7 @@ function startMatrixRain() {
             function submitName() {
                 const name = nameInput.value.trim();
                 if (name) localStorage.setItem('numori-player-name', name);
-                insertLeaderboardEntry(name, lbData.seconds, lbData.moves, lbData.size, lbData.difficulty, lbData.seed, lbData.isDailyMode);
+                insertLeaderboardEntry(name, lbData.seconds, lbData.moves, lbData.size, lbData.difficulty, lbData.seed, lbData.isDailyMode, lbData.cleanSolve ?? true);
                 nameSubmitted = true; namePhase = false;
                 statLines.push('', '> saved!');
                 removeMobileButtons();
@@ -151,6 +436,10 @@ function startMatrixRain() {
             mobileButtons.appendChild(btnExit);
         }
         document.body.appendChild(mobileButtons);
+        if (!denied && namePhase) {
+            const inp = mobileButtons.querySelector('input');
+            if (inp) setTimeout(() => { inp.focus(); inp.select(); }, 80);
+        }
     }
     function removeMobileButtons() {
         if (mobileButtons) { mobileButtons.remove(); mobileButtons = null; }
@@ -166,14 +455,16 @@ function startMatrixRain() {
                 if (namePhase && !nameSubmitted) {
                     const name = inputValue.trim();
                     if (name) localStorage.setItem('numori-player-name', name);
-                    insertLeaderboardEntry(name, lbData.seconds, lbData.moves, lbData.size, lbData.difficulty, lbData.seed, lbData.isDailyMode);
+                    insertLeaderboardEntry(name, lbData.seconds, lbData.moves, lbData.size, lbData.difficulty, lbData.seed, lbData.isDailyMode, lbData.cleanSolve ?? true);
                     nameSubmitted = true; namePhase = false;
                     statLines.push('', '> saved!', '', '> type "start" for new puzzle', '> type "exit"  to close');
                     inputValue = '';
                 } else {
                     const cmd=inputValue.trim().toLowerCase();
-                    if (cmd==='start'||cmd==='loser'){stopMatrixRain();hideWinBanner();document.getElementById('btn-new')?.click();}
+                    if (_nyanActive) { _stopNyan(); inputValue=''; }
+                    else if (cmd==='start'||cmd==='loser'){stopMatrixRain();hideWinBanner();document.getElementById('btn-new')?.click();}
                     else if(cmd==='exit'){stopMatrixRain();hideWinBanner();}
+                    else if(cmd==='nyan'){triggerConsoleNyan(); inputValue='';}
                     else inputValue='';
                 }
             } else if(e.key==='Backspace'){inputValue=inputValue.slice(0,-1);e.preventDefault();}
@@ -211,7 +502,6 @@ function startMatrixRain() {
         }
     }
     function drawInput(){
-        inputBlinkTick++; if(inputBlinkTick%40===0) inputBlink=!inputBlink;
         ctx.font=FS+'px Share Tech Mono,monospace';
         ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.fillStyle=denied?'#aa1010':'#00aa2a';
         const dy = STATS_START_Y + statLines.length * STAT_LINE_H + FS * 0.5;
@@ -263,10 +553,16 @@ function startMatrixRain() {
                 const sX2=canvas.width/2-90;const isCent=typeLineIdx===0||statLines[typeLineIdx].startsWith(">")||statLines[typeLineIdx].startsWith("ERROR");const cX=isCent?canvas.width/2+tw/2+3:sX2+tw+3;ctx.fillRect(cX,STATS_START_Y+typeLineIdx*STAT_LINE_H-FS*0.9,2,FS);
             }
         }else{
-            ctx.fillStyle="rgba(0,0,0,0.88)";ctx.fillRect(0,0,canvas.width,canvas.height);
-            drawTitle(TITLE_FINAL_Y,1,1);
-            drawStats(statLines.length,0);
-            if(!isMobile) drawInput();
+            {
+                ctx.fillStyle="rgba(0,0,0,0.88)";ctx.fillRect(0,0,canvas.width,canvas.height);
+                drawTitle(TITLE_FINAL_Y,1,1);
+                drawStats(statLines.length,0);
+                if(!isMobile) {
+                    inputBlinkElapsed += dt;
+                    if(inputBlinkElapsed >= 530){ inputBlink=!inputBlink; inputBlinkElapsed=0; }
+                    drawInput();
+                }
+            }
         }
         _matrixAnimFrame=requestAnimationFrame(draw);
     }
@@ -276,6 +572,7 @@ function startMatrixRain() {
 function stopMatrixRain(){
     if(_matrixAnimFrame){cancelAnimationFrame(_matrixAnimFrame);_matrixAnimFrame=null;}
     if(_matrixKeyHandler){document.removeEventListener("keydown",_matrixKeyHandler);_matrixKeyHandler=null;}
+    _stopNyan();
     // Mobile Touch-Buttons entfernen falls vorhanden
     document.querySelectorAll('#matrix-mobile-btns').forEach(el => el.remove());
     const c=document.getElementById("matrix-canvas");
@@ -288,6 +585,12 @@ function showErrorFlash() {
     if (_errorCooldown) return;
     const theme = document.documentElement.getAttribute('data-theme') || 'default';
     if (theme === 'console') { showConsoleError(); return; }
+    if (theme === 'synthwave') {
+        _errorCooldown = true;
+        synthwaveGlitch?.trigger();
+        setTimeout(() => { _errorCooldown = false; }, 2000);
+        return;
+    }
 
     _errorCooldown = true;
 

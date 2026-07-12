@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>NUMORI – Anleitung</title>
+  <style>
+    @font-face {
+      font-family: "Poppins";
+      src: url("assets/fonts/Poppins-Medium.ttf") format("truetype");
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: "Poppins";
+      src: url("assets/fonts/Poppins-SemiBold.ttf") format("truetype");
+      font-weight: 700;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Poppins", system-ui, sans-serif;
+      color: #1a1a2e;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 210mm;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 3px solid #1a1a2e;
+    }
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 6px;
+    }
+    .header .sub {
+      margin-left: auto;
+      font-size: 0.85rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin: 1.5rem 0 0.5rem;
+      border-left: 4px solid #1a1a2e;
+      padding-left: 0.6rem;
+    }
+
+    p { margin-bottom: 0.6rem; font-size: 0.92rem; color: #333; }
+
+    .ops-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.6rem 0;
+      font-size: 0.88rem;
+    }
+    .ops-table th {
+      text-align: left;
+      padding: 0.4rem 0.8rem;
+      background: #1a1a2e;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .ops-table td {
+      padding: 0.4rem 0.8rem;
+      border-bottom: 1px solid #ddd;
+    }
+    .ops-table td:first-child {
+      font-weight: 700;
+      font-size: 1.1rem;
+      white-space: nowrap;
+    }
+
+    .grid-wrap {
+      display: grid;
+      grid-template-columns: repeat(3, 60px);
+      border: 3px solid #1a1a2e;
+      margin: 0.8rem auto;
+      width: fit-content;
+    }
+    .grid-wrap .cell {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      position: relative;
+    }
+    .grid-wrap .cell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .grid-wrap .cell.br { border-right: 2px solid #1a1a2e; }
+    .grid-wrap .cell.bl { border-left: 2px solid #1a1a2e; }
+    .grid-wrap .cell.bb { border-bottom: 2px solid #1a1a2e; }
+    .grid-wrap .cell.bt { border-top: 2px solid #1a1a2e; }
+    .grid-wrap .cell.br::after { border-right: none; }
+    .grid-wrap .cell.bl::after { border-left: none; }
+    .grid-wrap .cell.bb::after { border-bottom: none; }
+    .grid-wrap .cell.bt::after { border-top: none; }
+    .grid-wrap .cell .op {
+      position: absolute;
+      top: 1px;
+      left: 2px;
+      font-size: 0.55rem;
+      line-height: 1;
+      color: #1a1a2e;
+      z-index: 1;
+    }
+
+    .cage-pink   { background: #fce4ec; }
+    .cage-green  { background: #e8f5e9; }
+    .cage-blue   { background: #e3f2fd; }
+    .cage-orange { background: #fff3e0; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 1.2rem;
+      margin: 0.6rem 0;
+      font-size: 0.82rem;
+    }
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .legend .swatch {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .blank-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 68px);
+      border: 3px solid #1a1a2e;
+      margin: 0.8rem auto;
+      width: fit-content;
+    }
+    .blank-grid .cell {
+      width: 68px;
+      height: 68px;
+      position: relative;
+    }
+    .blank-grid .cell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .blank-grid .cell.br { border-right: 2px solid #1a1a2e; }
+    .blank-grid .cell.bl { border-left: 2px solid #1a1a2e; }
+    .blank-grid .cell.bb { border-bottom: 2px solid #1a1a2e; }
+    .blank-grid .cell.bt { border-top: 2px solid #1a1a2e; }
+    .blank-grid .cell.br::after { border-right: none; }
+    .blank-grid .cell.bl::after { border-left: none; }
+    .blank-grid .cell.bb::after { border-bottom: none; }
+    .blank-grid .cell.bt::after { border-top: none; }
+    .blank-grid .cell .op {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #1a1a2e;
+      z-index: 1;
+    }
+
+    .tip-box {
+      background: #f5f3ee;
+      border-left: 4px solid #1a1a2e;
+      padding: 0.6rem 1rem;
+      margin: 0.8rem 0;
+      font-size: 0.85rem;
+      color: #333;
+      border-radius: 0 4px 4px 0;
+    }
+    .tip-box strong { color: #1a1a2e; }
+
+    .footer-note {
+      margin-top: 2rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid #ddd;
+      font-size: 0.75rem;
+      color: #999;
+      text-align: center;
+    }
+
+    .seed-ref {
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      color: #777;
+    }
+
+    @media print {
+      body { padding: 0; }
+      .header { margin-bottom: 1rem; }
+      h2 { margin-top: 1rem; }
+      .footer-note { margin-top: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>NUMORI</h1>
+  <span class="sub">Anleitung (Beta)</span>
+</div>
+
+<h2>Spielprinzip</h2>
+<p>
+  NUMORI ist ein Logik-Rätsel auf einem <strong>n×n-Gitter</strong> (3×3 bis 9×9).
+  Fülle jede Zeile und jede Spalte mit den Zahlen <strong>1 bis n</strong> –
+  jede Zahl kommt genau einmal pro Zeile und einmal pro Spalte vor
+  (wie ein vereinfachtes Sudoku).
+</p>
+
+<h2>Käfige &amp; Rechenoperationen</h2>
+<p>
+  Das Gitter ist farbig in <strong>Käfige</strong> unterteilt. Jeder Käfig zeigt
+  oben links eine Zahl mit einer Rechenoperation – die Zahlen im Käfig müssen
+  zusammen das angegebene Ergebnis ergeben.
+</p>
+
+<table class="ops-table">
+  <tr><th>Anzeige</th><th>Bedeutung</th><th>Beispiel</th></tr>
+  <tr><td>6+</td><td>Summe der Zahlen ist 6</td><td>1 + 2 + 3 = 6</td></tr>
+  <tr><td>2−</td><td>Differenz (groß &#8722; klein) ist 2</td><td>3 &#8722; 1 = 2</td></tr>
+  <tr><td>12×</td><td>Produkt der Zahlen ist 12</td><td>3 × 4 = 12</td></tr>
+  <tr><td>3:</td><td>Quotient (groß ÷ klein) ist 3</td><td>6 ÷ 2 = 3</td></tr>
+  <tr><td>3</td><td>Zelle enthält genau diese Zahl</td><td>Einzelfeld-Käfig</td></tr>
+</table>
+
+<h2>Gelöstes Beispiel (3×3)</h2>
+<p>
+  Jede Zeile und Spalte enthält die Zahlen 1, 2, 3 genau einmal.
+  Jeder farbige Bereich ist ein Käfig – die Zahlen darin ergeben zusammen
+  den angegebenen Wert. Dicke Linien trennen die Käfige, dünne Linien die Zellen.
+</p>
+
+<div class="grid-wrap">
+  <div class="cell cage-pink br"><span class="op">3+</span>1</div>
+  <div class="cell cage-green bl br"><span class="op">5+</span>2</div>
+  <div class="cell cage-blue bl bb"><span class="op">3</span>3</div>
+  <div class="cell cage-pink br bb">2</div>
+  <div class="cell cage-green bl br bb">3</div>
+  <div class="cell cage-blue bl bb bt"><span class="op">1</span>1</div>
+  <div class="cell cage-orange bt"><span class="op">6+</span>3</div>
+  <div class="cell cage-orange bt">1</div>
+  <div class="cell cage-orange bt">2</div>
+</div>
+
+<div class="legend">
+  <span><span class="swatch cage-pink"></span> 3+ (1+2)</span>
+  <span><span class="swatch cage-green"></span> 5+ (2+3)</span>
+  <span><span class="swatch cage-blue"></span> 3, 1 (Einzelfelder)</span>
+  <span><span class="swatch cage-orange"></span> 6+ (3+1+2)</span>
+</div>
+
+<div class="tip-box">
+  <strong>Tipp:</strong> Beginne mit Käfigen die nur eine Zelle haben – oder
+  mit Käfigen deren Ergebnis nur eine mögliche Zahlenkombination zulässt.
+</div>
+
+<h2>Erste Schritte</h2>
+<p>
+  Probiere es gleich aus! Dieses 3×3-Rätsel hat die gleiche Form wie das Beispiel.
+  Trage die Zahlen 1 bis 3 so ein, dass Zeilen, Spalten und Käfige stimmen.
+</p>
+
+<div class="blank-grid">
+  <div class="cell cage-pink br"><span class="op">3+</span></div>
+  <div class="cell cage-green bl br"><span class="op">5+</span></div>
+  <div class="cell cage-blue bl bb"><span class="op">3</span></div>
+  <div class="cell cage-pink br bb"></div>
+  <div class="cell cage-green bl br bb"></div>
+  <div class="cell cage-blue bl bb bt"><span class="op">1</span></div>
+  <div class="cell cage-orange bt"><span class="op">6+</span></div>
+  <div class="cell cage-orange bt"></div>
+  <div class="cell cage-orange bt"></div>
+</div>
+
+<p class="seed-ref">
+  Die Lösung findest du oben im gelösten Beispiel.
+</p>
+
+<div class="footer-note">
+  NUMORI – numori.app
+</div>
+
+</body>
+</html>
