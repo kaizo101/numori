@@ -10,7 +10,7 @@ Fülle das Gitter so, dass jede Zeile und Spalte jede Zahl genau einmal enthält
 ## Webversion
 
 Numori ist auch als Web-App verfügbar:
-👉 [kaizo101.github.io/numori](https://kaizo101.github.io/numori)
+[kaizo101.github.io/numori](https://kaizo101.github.io/numori)
 
 Optimiert für Desktop und Mobile.
 
@@ -24,14 +24,17 @@ Optimiert für Desktop und Mobile.
 
 ---
 
-## Features (v1.1.0)
+## Features (v1.2.0)
 
+- **Achievement-System** — über 25 Achievements in verschiedenen Kategorien (Core, Leaderboard, Console, Flipper); Toast-Benachrichtigung bei Freischaltung, Detail-Modal bei Klick, retroaktive Vergabe für Bestandsnutzer; Statistik-Tracking pro Größe, Schwierigkeit und Theme
+- **PDF-Lösungsexport** — optionale zweite Seite im PDF-Export mit aufgedeckter Lösung
+- **Tutorial als PDF** — interaktives Tutorial ist jetzt auch als druckbare HTML/PDF-Seite verfügbar
 - Prozedural generierte Rätsel — unbegrenzt einzigartige Rätsel (AC-3 Constraint Propagation)
 - Gittergrößen: 3×3 bis 9×9
 - 4 Schwierigkeitsstufen (Leicht, Mittel, Schwer, Experte)
 - Rätsel-IDs — teile und spiele spezifische Rätsel erneut
 - **Android APK** — optimiertes Mobile-Layout mit Touch-Steuerung, Statusleiste mit Züge-Zähler und Kopier-Button
-- **Globales Leaderboard** — Online-Ranking via Supabase; Top 20 pro Gittergröße und Schwierigkeit mit täglichen, wöchentlichen, monatlichen und Gesamtzeiträumen
+- **Globales Leaderboard** — Online-Ranking via Supabase; Top 10 pro Gittergröße und Schwierigkeit mit täglichen, wöchentlichen, monatlichen und Gesamtzeiträumen
 - **Lokales Leaderboard** — Bestzeiten pro Gittergröße und Schwierigkeit mit Name, Zeit, Zügen und Datum; Gold/Silber/Bronze-Ranking
 - **DE/EN Lokalisierung** — automatische Spracherkennung, manuell umschaltbar in den Einstellungen
 - PDF-Export — speichere Rätsel als leeres A4-PDF zum Ausdrucken
@@ -52,6 +55,8 @@ Optimiert für Desktop und Mobile.
 - Automatische Updates via Electron
 - Einstellbare Schriftgröße (klein / mittel / groß)
 - Impressum & Datenschutzhinweis in den Einstellungen
+- Leaderboard-Consent mit Warnhinweis wenn deaktiviert
+- Error Toast bei Supabase-Fehlern
 
 ---
 
@@ -75,6 +80,7 @@ Numori bietet vier Themes, auswählbar über die Einstellungen. Deine Auswahl wi
 | Entf / Backspace | Zelle löschen |
 | N | Notiz-Modus umschalten |
 | V | Validierung umschalten |
+| T | Timer ein/aus |
 | Strg+Z | Undo |
 | Strg+Y | Redo |
 | Enter | Rätsel-ID laden |
